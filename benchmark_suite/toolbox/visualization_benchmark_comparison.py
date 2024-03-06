@@ -139,7 +139,7 @@ def plot_relative_errors_selected_benchmarks():
 
     # Save the plot
     image_directory_path = os.path.expanduser(os.path.join(
-        "/home", "hybrid_aara", "statistical_aara_test_suite", "images"))
+        "/home", "hybrid_aara", "benchmark_suite", "images"))
     if not os.path.exists(image_directory_path):
         os.makedirs(image_directory_path)
     image_path = os.path.join(image_directory_path, "relative_errors.pdf")

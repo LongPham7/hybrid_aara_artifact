@@ -27,7 +27,7 @@ def record_cost_gaps(analysis_info, runtime_cost_data, inference_result,
 
     # Project directory
     project_path = os.path.expanduser(
-        os.path.join("/home", "hybrid_aara", "statistical_aara_test_suite"))
+        os.path.join("/home", "hybrid_aara", "benchmark_suite"))
 
     # Create a bin directory if necessary
     benchmark_name = analysis_info["benchmark_name"]

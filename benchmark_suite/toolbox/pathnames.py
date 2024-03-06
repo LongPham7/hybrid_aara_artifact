@@ -10,7 +10,7 @@ def bin_directory(analysis_info):
 
     # Project directory
     project_path = os.path.expanduser(
-        os.path.join("/home", "hybrid_aara", "statistical_aara_test_suite"))
+        os.path.join("/home", "hybrid_aara", "benchmark_suite"))
 
     # Create a bin directory if necessary
     bin_path = os.path.join(
@@ -29,7 +29,7 @@ def image_directory(analysis_info):
 
     # Project directory
     project_path = os.path.expanduser(
-        os.path.join("/home", "hybrid_aara", "statistical_aara_test_suite"))
+        os.path.join("/home", "hybrid_aara", "benchmark_suite"))
 
     # Create a bin directory if necessary
     bin_path = os.path.join(

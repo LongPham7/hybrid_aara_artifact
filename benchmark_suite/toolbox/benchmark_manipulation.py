@@ -11,7 +11,7 @@ def get_module(module_name, analysis_info):
 
     # Benchmark directory
     benchmark_directory = os.path.expanduser(os.path.join(
-        "/home", "hybrid_aara", "statistical_aara_test_suite", benchmark_name))
+        "/home", "hybrid_aara", "benchmark_suite", benchmark_name))
     utility_directory = os.path.join(benchmark_directory, "utility")
 
     # Import the config module

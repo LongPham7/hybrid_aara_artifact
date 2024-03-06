@@ -65,7 +65,10 @@ def run_all_benchmarks():
     #     run_experiment_benchmark_hybrid_mode(benchmark_name, hybrid_mode)
 
     # Parallel computation
-    n_jobs = multiprocessing.cpu_count()
+    # Parallel computation does not work well inside a Docker container. So we
+    # set n_jobs = 1 instead of n_jobs = multiprocessing.cpu_count().
+    # n_jobs = multiprocessing.cpu_count()
+    n_jobs = 1
     Parallel(n_jobs=n_jobs)(delayed(run_experiment_benchmark_hybrid_mode)(
         benchmark_name, hybrid_mode) for benchmark_name, hybrid_mode in list_benchmark_hybrid_mode)
 

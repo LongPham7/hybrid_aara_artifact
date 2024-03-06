@@ -151,7 +151,7 @@ def get_cost_gap_statistic(analysis_info):
 
     # Project directory
     project_path = os.path.expanduser(
-        os.path.join("/home", "hybrid_aara", "statistical_aara_test_suite"))
+        os.path.join("/home", "hybrid_aara", "benchmark_suite"))
 
     # Retrieve the file storing cost gaps
     benchmark_name = analysis_info["benchmark_name"]

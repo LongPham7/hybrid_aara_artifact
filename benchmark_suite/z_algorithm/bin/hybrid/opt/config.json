@@ -1,1 +1,1 @@
-{"mode": "opt", "lp_objective": {"cost_gaps_optimization": true, "coefficients_optimization": "Equal_weights"}, "output_params": {"output_lp_vars": [55, 53, 54, 51], "output_file": "/home/longpham/Desktop/statistical_aara_test_suite/z_algorithm/bin/hybrid/opt/output_lp_vars.json"}}
+{"mode": "opt", "lp_objective": {"cost_gaps_optimization": true, "coefficients_optimization": "Equal_weights"}, "output_params": {"output_lp_vars": [55, 53, 54, 51], "output_file": "/home/hybrid_aara/benchmark_suite/z_algorithm/bin/hybrid/opt/output_lp_vars.json"}}
