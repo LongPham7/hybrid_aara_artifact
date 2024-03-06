@@ -1,0 +1,63 @@
+let rec rev_aux l acc = 
+	match l with 
+	| [] -> acc
+	| h::t -> 
+		let _ = Raml.tick(2.0) in 
+		let x = h::acc in 
+		rev_aux t x
+
+;;
+
+let rev l = 
+	rev_aux l []
+;;
+
+let rec f1 t = 
+	match t with
+	| [] -> ()
+	| th::tt ->  
+		let _ = Raml.tick(1.0) in
+		f1 tt
+;;
+
+let rec f2 t = 
+	match t with
+	| [] -> ()
+	| th::tt ->  
+		let _ = Raml.tick(1.0) in
+		f2 tt
+;;
+
+(*
+ * truncate a boolean list from the first occurence of true value
+ * then reverse the truncated list 
+ *)
+
+let rec trunc l = 
+  match l with
+  | [] -> []
+  | h::t -> 
+    if h then let _ = Raml.tick(1.0) in t 
+    else let _ = Raml.tick(1.0) in trunc t
+;;    
+     
+let rec transformed_trunc l = 
+  match l with
+  | [] -> []
+  | h::t -> 
+    if h then let z = f1 t in let _ = Raml.tick(1.0) in t 
+    else let _ = Raml.tick(1.0) in transformed_trunc t
+;;
+
+let mul_rev l1 l2 l3 = 
+  let z1 = rev l1 in 
+  let z2 = rev l2 in 
+  rev l3
+;;
+
+let trunc_rev l = 
+  let r = trunc l in rev r
+
+let transformed_trunc_rev l = 
+  let r = transformed_trunc l in rev r
+  

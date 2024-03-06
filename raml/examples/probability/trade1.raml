@@ -1,0 +1,45 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/trade1.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Expected cost of stocks. Degree 2.
+ *   
+ *)
+
+let reprice price =
+  if Rprob.flip(3,2)
+  then
+    match price with
+    | [] -> []
+    | _::t -> t
+  else ()::price
+
+let rec buy price =
+  match price with
+  | [] -> ()
+  | _::t ->
+    let () = Raml.tick(1.) in
+    buy t
+
+let rec trade price time =
+  match time with
+  | [] -> ()
+  | _::t ->
+    let () =
+      if Rprob.flip (1,2)
+      then buy price
+      else () in
+    trade (reprice price) t
+
+;;
+
+()  

@@ -1,0 +1,111 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/partialapp.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ *
+ * Description:
+ *   Various ways to partially apply functions.
+ *
+ *)
+
+let _ = (* Base cases *)
+let id x = x in
+let f x y = y in
+let f1, f2 = f, f in
+let g = f1 1 in
+let h = f 2 in
+let choice = Rnat.ifz Rnat.zero (fun _ x y -> y) (fun _ x y -> x) 12 in
+g 3, id g 4, h id 5, f2 6 7, id (f 8) 9 + f () f2 10 11
+, ((+) 1 : int -> int) 2
+, choice 13
+
+let _ = (* f : [int] -> [int] -> [int] -> int *)
+let f a b c = c in
+let g h x = let h' = h x in h' (f 1 2 x) in
+let h x = f x in
+g f 3 4
+
+let _ =
+let third x y z = z in
+let second = third () in
+ (if true then Some second else None)
+  ,
+ (let id = second 1 in id 2)
+  ,
+  second
+
+let _ =
+let first x y = x in
+let third x y z = z in
+  (let (f, g) = (first, first) in
+   let h = f 1 in
+   g 1 2, h 2)
+   ,
+  (let swap p = let (a, b) = p in (b, a) in
+   let (f, g) = swap (first, first) in
+   let h = f 1 in
+   g 1 2, h 2)
+   ,
+  (let f b = if b then third () else first in
+   let g = f true 1 in
+   g 2, f false 1 2)
+   ,
+  (let f b = if b then first else third () in
+   let g = f true 1 in
+   g 2, f false 1 2)
+
+let _ = (* references *)
+let first x y = x in
+let third x y z = z in
+ (let rf = ref first
+  in !rf 1 2)        (* deref constraints fully applied *)
+  ,
+ (let rf = ref first in
+  let h = !rf 1      (* deref constraints partially applied *)
+  in h 2)
+  ,
+ (let second = third () in
+  let rf = ref second in
+  let h = second 1   (* construct constraints partially applied (before) *)
+  in h 2)
+  ,
+ (let second = third () in
+  let h = second 1 in (* construct constraints partially applied (after) *)
+  let rf = ref second
+  in h 2)
+  ,
+ (let rf = ref first in
+  let second = third () in
+  second 1 2,
+  (rf := second))    (* assign constraints fully applied (after) *)
+  ,
+ (let rf = ref first in
+  let second = third () in
+  (rf := second),    (* assign constraints fully applied (before) *)
+  second 1 2)
+  ,
+ (let rf = ref first in
+  let second = third () in
+  (let h = second 1 in h 2),
+  (rf := second))    (* assign constraints partially applied (after) *)
+  ,
+ (let rf = ref first in
+  let second = third () in
+  (rf := second),    (* assign constraints partially applied (before) *)
+  let h = second 1 in h 2)
+  ,
+ (let rewrap r = let ret = ref !r in r := third 3; ret in
+  let rf = ref first
+  in !(rewrap rf) 1 2)
+  ,
+ (let rewrap r = let ret = ref !r in r := third 3; ret in
+  let rf = ref first in
+  let h = !(rewrap rf) 1
+  in h 2)

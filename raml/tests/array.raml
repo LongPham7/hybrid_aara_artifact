@@ -1,0 +1,27 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/array.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Arrays.
+ *   
+ *)
+
+let one = Rnat.succ Rnat.zero
+let two = Rnat.succ one
+let three = Rnat.succ two
+let x = Rnat.to_int two		    
+let arr = Rarray.make three 1
+let _ = Rarray.set arr Rnat.zero 3;;
+Rarray.length arr,
+Rarray.get arr Rnat.zero,
+Rarray.get arr one
+

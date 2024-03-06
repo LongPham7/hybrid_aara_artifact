@@ -1,0 +1,187 @@
+
+type var = Var of int
+
+let eq_var (Var v1) (Var v2) = v1 = v2
+
+type funct = Fun of int
+
+let eq_fun (Fun f1) (Fun f1) = f1 = f1
+
+
+type exp = Eadd of exp * exp
+         | Emult of exp * exp
+         | Ediv of exp * exp
+         | Econst of int
+         | Evar of var * exp
+         | Elet of var * exp * exp
+         | Eapp of funct * exp
+
+let eval1 e =
+
+  let rec eval e =
+    match e with
+    | Eadd (e1, e2) ->
+      (eval e1) + (eval e2)
+    | Emult (e1, e2) ->
+      (eval e1) * (eval e2)
+    | Ediv (e1, e2) ->
+      (eval e1) / (eval e2)
+    | Econst n ->
+      n
+  in
+  eval e
+
+
+
+
+
+exception DivByZero
+
+let eval2 e =
+
+  let rec eval e =
+    match e with
+    | Eadd (e1, e2) ->
+      (eval e1) + (eval e2)
+    | Emult (e1, e2) ->
+      (eval e1) * (eval e2)
+    | Ediv (e1, e2) ->
+      let n2 = eval e2 in
+      if n2 = 0 then
+        raise DivByZero
+      else
+        (eval e1) / n2
+    | Econst n ->
+      n
+  in
+  eval e
+
+exception VarNotFound
+
+
+let rec lookup eq env v =
+  match env with
+  | x::xs ->
+    let (u,n) = x in
+    if eq u v then
+      n
+    else
+      lookup eq xs v
+  | [] -> raise VarNotFound
+
+let lookup_var = lookup eq_var
+
+let lookup_fun env v = lookup eq_fun env v
+
+
+
+let eval3 env e =
+
+  let rec eval env e =
+    match e with
+    | Eadd (e1, e2) ->
+      (eval env e1) + (eval env e2)
+    | Emult (e1, e2) ->
+      (eval env e1) * (eval env e2)
+    | Ediv (e1, e2) ->
+      (eval env e1) / (eval env e2)
+    | Econst n ->
+      n
+    | Evar (v,e) -> lookup_var env v
+  in
+  eval env e
+
+
+let eval4 e =
+
+  let rec eval env e =
+    match e with
+    | Eadd (e1, e2) ->
+      (eval env e1) + (eval env e2)
+    | Emult (e1, e2) ->
+      (eval env e1) * (eval env e2)
+    | Ediv (e1, e2) ->
+      (eval env e1) / (eval env e2)
+    | Econst n ->
+      n
+    | Evar (v,e) -> lookup_var env v
+    | Elet (v,e1,e2) ->
+      let n1 = eval env e1 in
+      let env' = (v,n1)::env in
+      eval env' e2
+  in
+
+  eval [] e
+
+
+let eval5 env_fun env_var e =
+
+  let rec eval env_fun env_var e =
+    match e with
+    | Eadd (e1, e2) ->
+      (eval env_fun env_var e1) + (eval env_fun env_var e2)
+    | Emult (e1, e2) ->
+      (eval env_fun env_var e1) * (eval env_fun env_var e2)
+    | Ediv (e1, e2) ->
+      (eval env_fun env_var e1) / (eval env_fun env_var e2)
+    | Econst n ->
+      n
+    | Evar (vid,e) ->
+      lookup_var env_var vid
+    | Elet (v,e1,e2) ->
+      let n1 = eval env_fun env_var e1 in
+      let env_var' = (v,n1)::env_var in
+      eval env_fun env_var' e2
+    | Eapp (fid,e) ->
+      let f = lookup_fun env_fun fid in
+      let n = eval env_fun env_var e in
+      f n
+  in
+
+  eval env_fun env_var e
+
+let eval6 env_var e =
+  let env_fun =
+    [(Fun 1, fun x -> Raml.tick 1.0;1)
+    ;(Fun 2, fun x -> Raml.tick 2.0;x)
+    ]
+  in    
+  eval5 env_fun env_var e
+
+(*
+let eval7 e =
+
+  let rec eval env_fun env_var e =
+    match e with
+    | Eadd (e1, e2) ->
+      (eval env_fun env_var e1) + (eval env_fun env_var e2)
+    | Emult (e1, e2) ->
+      (eval env_fun env_var e1) * (eval env_fun env_var e2)
+    | Ediv (e1, e2) ->
+      (eval env_fun env_var e1) / (eval env_fun env_var e2)
+    | Econst n ->
+      n
+    | Evar (vid,e) ->
+      lookup_var env_var vid
+    | Elet (v,e1,e2) ->
+      let n1 = eval env_fun env_var e1 in
+      let env_var' = (v,n1)::env_var in
+      eval env_fun env_var' e2
+    | Eapp (fid,e) ->
+      let (x_f,e_f) = lookup_fun env_fun fid in
+      let n = eval env_fun env_var e in
+      eval [] [(x_f, n)] e_f
+    | Efun (fid,x_f,e_f,e) ->
+      let env_fun' = (fid,(x_f,e_f))::env_fun in
+      eval env_fun' env_var e
+  in
+
+  eval [] [] e
+*)
+
+;;
+
+let e = Elet(Var 1,Econst 0, Eadd(Econst 1,Econst 1)) in
+eval4 e
+
+    ;; ()

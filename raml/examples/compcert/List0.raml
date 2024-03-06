@@ -1,0 +1,238 @@
+(*-- Datatypes.ml --*)
+(** val implb : bool -> bool -> bool **)
+
+let implb b1 b2 =
+  if b1 then b2 else true
+
+(** val xorb : bool -> bool -> bool **)
+
+let xorb b1 b2 =
+  if b1 then if b2 then false else true else b2
+
+(** val negb : bool -> bool **)
+
+let negb = function x ->
+if (x = true) then false else true
+
+type nat =
+| O
+| S of nat
+
+type ('a, 'b) sum =
+| Coq_inl of 'a
+| Coq_inr of 'b
+
+(** val fst : ('a1 * 'a2) -> 'a1 **)
+
+let fst = function a ->
+let (x, y) = a in x
+
+(** val snd : ('a1 * 'a2) -> 'a2 **)
+
+let snd = function a ->
+let (x, y) = a in y
+
+(** val length : 'a1 list -> nat **)
+
+let rec length = function myvariable ->
+match myvariable with
+| [] -> O
+| y :: l' -> S (length l')
+
+(** val app : 'a1 list -> 'a1 list -> 'a1 list **)
+
+let rec app l m =
+  match l with
+  | [] -> m
+  | a :: l1 -> a :: (app l1 m)
+
+type comparison =
+| Eq
+| Lt
+| Gt
+
+(** val coq_CompOpp : comparison -> comparison **)
+
+let coq_CompOpp = function myvariable ->
+match myvariable with
+| Eq -> Eq
+| Lt -> Gt
+| Gt -> Lt
+
+type coq_CompareSpecT =
+| CompEqT
+| CompLtT
+| CompGtT
+
+(** val coq_CompareSpec2Type : comparison -> coq_CompareSpecT **)
+
+let coq_CompareSpec2Type = function myvariable ->
+match myvariable with
+| Eq -> CompEqT
+| Lt -> CompLtT
+| Gt -> CompGtT
+
+type 'a coq_CompSpecT = coq_CompareSpecT
+
+(** val coq_CompSpec2Type : 'a1 -> 'a1 -> comparison -> 'a1 coq_CompSpecT **)
+
+let coq_CompSpec2Type x y c =
+  coq_CompareSpec2Type c
+
+(*$$ Datatypes.ml $$*)
+(*-- Specif.ml --*)
+type 'a coq_sig =
+  'a
+  (* singleton inductive, whose constructor was exist *)
+
+type 'a sig2 =
+  'a
+  (* singleton inductive, whose constructor was exist2 *)
+
+type ('a, 'p) sigT =
+| Coq_existT of 'a * 'p
+
+(** val projT1 : ('a1, 'a2) sigT -> 'a1 **)
+
+let projT1 = function x ->
+match x with
+| Coq_existT (a, p) -> a
+
+(** val projT2 : ('a1, 'a2) sigT -> 'a2 **)
+
+let projT2 = function x ->
+match x with
+| Coq_existT (x0, h) -> h
+
+type 'a coq_Exc = 'a option
+
+(** val value : 'a1 -> 'a1 option **)
+
+let value x =
+  Some x
+
+(** val error : 'a1 option **)
+
+let error =
+  None
+
+(*$$ Specif.ml $$*)
+
+(** val hd : 'a1 -> 'a1 list -> 'a1 **)
+
+let hd default = function myvariable ->
+match myvariable with
+| [] -> default
+| x :: l0 -> x
+
+(** val tl : 'a1 list -> 'a1 list **)
+
+let tl = function myvariable ->
+match myvariable with
+| [] -> []
+| a :: m -> m
+
+(** val in_dec : ('a1 -> 'a1 -> bool) -> 'a1 -> 'a1 list -> bool **)
+
+let rec in_dec h a = function myvariable ->
+match myvariable with
+| [] -> false
+| y :: l0 -> let s = h y a in if s then true else in_dec h a l0
+
+(** val nth_error : 'a1 list -> nat -> 'a1 coq_Exc **)
+
+let rec nth_error l = function myvariable ->
+match myvariable with
+| O ->
+  (match l with
+   | [] -> error
+   | x :: l0 -> value x)
+| S n0 ->
+  (match l with
+   | [] -> error
+   | a :: l0 -> nth_error l0 n0)
+
+(** val remove : ('a1 -> 'a1 -> bool) -> 'a1 -> 'a1 list -> 'a1 list **)
+
+let rec remove eq_dec x = function myvariable ->
+match myvariable with
+| [] -> []
+| y :: tl0 ->
+  if eq_dec x y then remove eq_dec x tl0 else y :: (remove eq_dec x tl0)
+
+(** val rev : 'a1 list -> 'a1 list **)
+
+let rec rev = function myvariable ->
+match myvariable with
+| [] -> []
+| x :: l' -> app (rev l') (x :: [])
+
+(** val rev_append : 'a1 list -> 'a1 list -> 'a1 list **)
+
+let rec rev_append l l' =
+  match l with
+  | [] -> l'
+  | a :: l0 -> rev_append l0 (a :: l')
+
+(** val rev' : 'a1 list -> 'a1 list **)
+
+let rev' l =
+  rev_append l []
+
+(** val list_eq_dec :
+    ('a1 -> 'a1 -> bool) -> 'a1 list -> 'a1 list -> bool **)
+
+let rec list_eq_dec eq_dec l l' =
+  match l with
+  | [] ->
+    (match l' with
+     | [] -> true
+     | a :: l0 -> false)
+  | y :: l0 ->
+    (match l' with
+     | [] -> false
+     | a0 :: l1 -> if eq_dec y a0 then list_eq_dec eq_dec l0 l1 else false)
+
+(** val map : ('a1 -> 'a2) -> 'a1 list -> 'a2 list **)
+
+let rec map f = function myvariable ->
+match myvariable with
+| [] -> []
+| a :: t -> (f a) :: (map f t)
+
+(** val fold_left : ('a1 -> 'a2 -> 'a1) -> 'a2 list -> 'a1 -> 'a1 **)
+
+let rec fold_left f l a0 =
+  match l with
+  | [] -> a0
+  | b :: t -> fold_left f t (f a0 b)
+
+(** val fold_right : ('a2 -> 'a1 -> 'a1) -> 'a1 -> 'a2 list -> 'a1 **)
+
+let rec fold_right f a0 = function myvariable ->
+match myvariable with
+| [] -> a0
+| b :: t -> f b (fold_right f a0 t)
+
+(** val existsb : ('a1 -> bool) -> 'a1 list -> bool **)
+
+let rec existsb f = function myvariable ->
+match myvariable with
+| [] -> false
+| a :: l0 -> (||) (f a) (existsb f l0)
+
+(** val forallb : ('a1 -> bool) -> 'a1 list -> bool **)
+
+let rec forallb f = function myvariable ->
+match myvariable with
+| [] -> true
+| a :: l0 -> (&&) (f a) (forallb f l0)
+
+(** val filter : ('a1 -> bool) -> 'a1 list -> 'a1 list **)
+
+let rec filter f = function myvariable ->
+match myvariable with
+| [] -> []
+| x :: l0 -> if f x then x :: (filter f l0) else filter f l0
+
+;; ()

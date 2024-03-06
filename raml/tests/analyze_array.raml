@@ -1,0 +1,93 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_array.ml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   Arrays.
+ *   
+ *)
+
+
+let rec iterate f n =
+  Rnat.ifz n (fun () -> ())
+	   (fun n' -> iterate f n'; f n')
+
+let rec iterate_acc f n acc =
+  Rnat.ifz n (fun () -> ())
+	   (fun n' -> iterate_acc f n' acc; f n' acc)
+
+	   
+let rec iterate_down f n =
+  Rnat.ifz n (fun () -> ())
+	   (fun n' -> f n'; iterate_down f n')
+	   
+let map f arr =
+  let l = Rarray.length arr in
+  let update i =
+    let data = Rarray.get arr i in
+    Rarray.set arr i (f data)
+  in
+  iterate update l
+
+let mapi f arr =
+  let l = Rarray.length arr in
+  let update i =
+    let data = Rarray.get arr i in
+    Rarray.set arr i (f i data)
+  in
+  iterate_down update l
+
+	  
+let five = Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ Rnat.zero))))
+let ten =  Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ five))))
+
+let arr = Rarray.make ten 0
+let _ = map (fun i -> i+1) arr
+
+let arr2 = Rarray.make ten 0
+let _ = mapi (fun i d -> Rnat.to_int i) arr2
+
+let ti = Rnat.to_int
+	     
+let mk_array n =
+  let arr =
+    let temp = Rarray.make Rnat.zero 0 in
+    Rarray.make n temp
+  in
+  let update i n =
+    let a = Rarray.make n (Rnat.to_int i) in
+    let f j =
+      Rarray.set a j ((ti i)*(ti n)+(ti j))
+    in
+    iterate f n;
+    Rarray.set arr i a
+  in
+  let _ = iterate_acc update n n in
+  arr
+
+let plus_one arr =
+  let f j n =
+    let g i =
+      let a = Rarray.get arr j in
+      let d = Rarray.get a i in
+      Rarray.set a i (d+100)
+    in
+    iterate g n
+  in
+  let l = Rarray.length arr in
+  iterate_acc f l l
+
+let arr3 = mk_array ten
+let _ = plus_one arr3		    
+
+;;
+
+arr3

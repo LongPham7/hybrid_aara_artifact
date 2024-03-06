@@ -1,0 +1,62 @@
+
+exception Invalid_input
+
+let incur_cost (hd : int) =
+  if (hd mod 200) = 0 then Raml.tick 1.0 else Raml.tick 0.5
+
+let rec append (xs : int list) (ys : int list) =
+  match xs with [] -> ys | hd :: tl -> hd :: append tl ys
+
+let rec partition (pivot : int) (xs : int list) =
+  match xs with
+  | [] -> ([], [])
+  | hd :: tl ->
+      (* let lower_list, upper_list = Raml.stat (partition pivot tl) in *)
+      let lower_list, upper_list = partition pivot tl in
+      let _ = incur_cost hd in
+      if hd <= pivot then (hd :: lower_list, upper_list)
+      else (lower_list, hd :: upper_list)
+
+let rec partition_cost_free (pivot : int) (xs : int list) =
+  match xs with
+  | [] -> ([], [])
+  | hd :: tl ->
+      let lower_list, upper_list = partition_cost_free pivot tl in
+      if hd <= pivot then (hd :: lower_list, upper_list)
+      else (lower_list, hd :: upper_list)
+
+let rec list_length (xs : int list) =
+  match xs with [] -> 0 | hd :: tl -> 1 + list_length tl
+
+let rec quickselect (index : int) (xs : int list) =
+  match xs with
+  | [] -> raise Invalid_input
+  | [ x ] -> if index = 0 then x else raise Invalid_input
+  | hd :: tl ->
+      (* This is a workaround for an issue with the let-normal form inside
+      Raml.stat(...) *)
+      let tl = tl in
+      let lower_list, _ = partition_cost_free hd tl in
+      let lower_list_length = list_length lower_list in
+      if index < lower_list_length then
+        let lower_list, _ = Raml.stat (partition hd tl) in
+        quickselect index lower_list
+      else if index = lower_list_length then 
+        let _, _ = Raml.stat (partition hd tl) in
+        hd
+      else
+        let _, upper_list = Raml.stat (partition hd tl) in
+        quickselect (index - lower_list_length - 1) upper_list
+
+let rec map list f = match list with [] -> [] | x :: xs -> f x :: map xs f
+
+;;
+
+let input_dataset = [(5, [4; 0; 1; 6; 5; 3; 7; 2]);
+(5, [3; 4; 11; 0; 5; 1; 9; 7; 8; 2; 10; 6]);
+(10, [16; 8; 3; 14; 17; 7; 11; 2; 1; 6; 10; 5; 15; 4; 12; 13; 0; 9]);
+(11, [18; 17; 6; 22; 16; 13; 10; 12; 26; 20; 15; 0; 2; 24; 8; 23; 14; 3; 7; 21; 4; 1; 19; 11; 5; 25; 9]);
+(17, [20; 39; 31; 29; 10; 4; 27; 6; 28; 33; 16; 25; 2; 35; 37; 30; 5; 9; 26; 18; 32; 34; 17; 15; 11; 24; 19; 8; 38; 7; 3; 0; 14; 36; 21; 1; 23; 13; 12; 22]);
+(0, [5; 16; 50; 37; 34; 51; 0; 35; 39; 57; 29; 44; 21; 4; 10; 38; 42; 33; 19; 30; 3; 8; 31; 7; 22; 45; 54; 48; 23; 55; 6; 47; 49; 20; 43; 59; 27; 32; 52; 46; 41; 40; 13; 11; 15; 26; 53; 18; 2; 24; 12; 25; 14; 36; 56; 9; 1; 17; 28; 58]);
+(71, [24; 52; 51; 57; 33; 28; 4; 0; 60; 34; 79; 16; 40; 32; 12; 38; 22; 1; 35; 46; 80; 44; 39; 74; 68; 56; 84; 36; 13; 69; 81; 5; 66; 58; 75; 67; 7; 63; 47; 42; 10; 6; 76; 31; 3; 87; 45; 62; 78; 30; 21; 8; 85; 41; 59; 25; 88; 26; 54; 43; 53; 89; 61; 27; 50; 15; 82; 71; 17; 48; 19; 65; 9; 37; 2; 70; 20; 29; 18; 72; 77; 64; 83; 11; 73; 14; 23; 49; 55; 86])]
+in map input_dataset (fun (index, xs) -> quickselect index xs)

@@ -1,0 +1,60 @@
+(** compare ith element is constant. Two lists are consumed to have the same length. 
+ 	 [linear_compare l] compares l with existing list h. Returns true if l and h are 
+	 pairwise equivalent.
+	 Const model:
+	+ K^{matchN} = K^{matchL} = 1
+   + K^{cond} = 1
+ 	+ K^{op} = 1
+	+ K^{app} = 1
+ *)
+
+let compare_at i li = 
+	let get_at k = let _ = Raml.tick(1.0) in k in 
+	let hi = get_at i in 
+	let _ = Raml.tick(1.0) in 
+	if ((li : int)) = (hi : int) then true else false
+
+
+let linear_compare l = 
+	let rec linear_compare_aux res i l1 = 
+	match l1 with 
+	| [] -> let _ = Raml.tick(2.0) in res
+	| h1::t1 -> let _ = Raml.tick(3.0) in 
+	  let b = compare_at i h1 in 
+	  if b then 
+	    let _ = Raml.tick(1.0) in 
+		 linear_compare_aux res (i + 1) t1 
+ 	  else 
+ 		 let _ = Raml.tick(1.0) in
+	 	 false
+ 		 (* linear_compare_aux false (i + 1) t1 *)
+	in linear_compare_aux true 0 l
+
+
+let padded_linear_compare l = 
+	let rec linear_compare_aux res i l1 = 
+	match l1 with 
+	| [] -> let _ = Raml.tick(2.0) in res
+	| h1::t1 -> let _ = Raml.tick(3.0) in 
+	  let b = compare_at i h1 in 
+	  if b then 
+	    let _ = Raml.tick(1.0) in 
+		 linear_compare_aux res (i + 1) t1 
+ 	  else 
+ 		 let _ = Raml.tick(1.0) in
+ 		 linear_compare_aux false (i + 1) t1
+	in linear_compare_aux true 0 l
+
+
+let consume_linear_compare l = 
+	let rec consume_linear_compare_aux res i l1 = 
+	match l1 with 
+	| [] -> let _ = Raml.tick(2.0) in res
+	| h1::t1 -> let _ = Raml.tick(3.0) in 
+	  let b = compare_at i h1 in 
+	  if b then 
+	    let _ = Raml.tick(1.0) in 
+		 consume_linear_compare_aux res (i + 1) t1 
+ 	  else 
+ 		 (Raml.consume t1; let _ = Raml.tick(1.0) in false)
+	in consume_linear_compare_aux true 0 l

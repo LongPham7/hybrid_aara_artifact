@@ -1,0 +1,188 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/kmeans.raml
+ *
+ * Author:
+ *   Matt Fredrikson, Jan Hoffmann (2016)
+ * 
+ * Description:
+ *   K-means algorithm
+ *   
+ *)
+
+let reverse l = 
+  let rec reverse_aux a l' =
+    Raml.tick(1.0);
+    match l' with
+    | [] -> a
+    | h::t -> reverse_aux (h::a) t
+  in reverse_aux [] l
+
+let map f bag =  
+  let rec map_aux a bag' =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> reverse a
+    | h::t -> map_aux ((f h)::a) t
+  in map_aux [] bag
+
+let sum (bag:float list) =
+  let rec sum_aux (a:float) (bag': float list) =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> a
+    | h::t -> sum_aux (a +. h) t
+  in sum_aux 0.0 bag
+
+let size bag =
+  let rec size_aux a bag' =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> a
+    | h::t -> size_aux (Rnat.succ a) t
+  in size_aux Rnat.zero bag
+
+let split pred bag =
+  let rec split_aux bag' in_bag out_bag =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> (in_bag, out_bag)
+    | h::t ->
+      let pred_result = pred h in
+      let (new_in, new_out) = 
+        if (pred h) then (h::in_bag, out_bag) 
+        else (in_bag, h::out_bag) 
+      in
+      split_aux t new_in new_out
+  in split_aux bag [] []
+
+let rec zip l1 l2 =  
+  match l1 with
+  | [] -> []
+  | x::xs ->
+    match l2 with
+    | [] -> let _ = Raml.consume xs in []
+    | y::ys -> (x,y)::(zip xs ys)
+
+let avg pi =
+  let (p,i) = pi in
+  let (x,y) = p in
+  (x/.i, y/.i)
+
+let sqdist p1 p2 =
+  let (x1,y1) = p1 in
+  let (x2,y2) = p2 in
+  let dx = x2 -. x1 in
+  let dy = y2 -. y1 in
+  dx*.dx +. dy*.dy
+
+let argmin l =
+  let rec argmin_aux best bestidx curidx (x:float list) =
+    let nextidx = curidx + 1 in
+    match x with
+    | [] -> bestidx
+    | h::t ->
+      if h < best then (argmin_aux h curidx nextidx t)
+      else (argmin_aux best bestidx nextidx t)
+  in argmin_aux 10000000.0 0 0 l
+
+
+let rec map_arg f acc l =
+  match l with
+  | [] -> []
+  | x::xs ->
+    (f acc x) :: map_arg f acc xs
+
+let assign means db =
+  let distmapper means pt =
+    let sqdists = map (fun pt2 -> sqdist pt pt2) means in
+    (pt, argmin sqdists)
+  in map_arg distmapper means db
+
+
+let partition ldb m =
+
+  let rec insert x bags overflow =
+      let () = Raml.consume () in
+    let (pt,i) = x in
+    Raml.tick 1.0;
+    match bags with
+    | [] -> ([], x::overflow)
+    | y::ys ->
+      let (n,bag) = y in
+      if n = (i:int) then
+        let () = Raml.consume ys in
+        ((n,x::bag)::ys,overflow)
+      else
+        let (bags',overflow') = insert x ys overflow in
+        ((n,bag)::bags', overflow')
+  in
+
+  let rec partition ldb bags overflow =
+    Raml.tick 1.0;
+    match ldb with
+    | [] -> (bags, overflow)
+    | x::xs ->
+      let (bags',overflow') = insert x bags overflow in
+      partition xs bags' overflow'
+
+  in
+
+  let rec mk_bags m =
+    Rnat.ifz m
+      (fun () -> [])
+      (fun m' ->
+         let n = Rnat.to_int m' in
+         let bags = mk_bags m' in
+         (n,[])::bags
+      )
+  in
+
+  let bags = mk_bags m in
+  let (bags, overflow) = partition ldb bags [] in
+  let bags = (-1,overflow)::bags in
+  map (fun (a,b) -> b) bags
+
+(* let rec partition ldb m = *)
+(*   Rnat.ifz m *)
+(*     (fun () -> Raml.consume ldb; []) *)
+(*     (fun m' -> *)
+(*        let yes, no = split (fun x -> let (pt, i) = x in i = Rnat.to_int m') ldb in *)
+(*        Raml.consume(yes,no,m'); *)
+(*        yes::(partition no m') *)
+(*     ) *)
+
+let totx db = sum (map (fun r -> let (x,y)=r in x) db)
+let toty db = sum (map (fun r -> let (x,y)=r in y) db)
+let tot db = sum (map (fun r -> 1.0) db)
+
+let iterate db means =
+  let ldb = assign means db in
+  let p = partition ldb (size means) in
+  let db2 = map (fun el -> map (fun e -> let (pt, n) = e in pt) el) p in
+  let tx = map totx db2 in
+  let ty = map toty db2 in
+  let t = map tot db2 in
+  map avg (zip (zip tx ty) t)
+
+let initmeans x =
+  let point1 = (1.0, 1.0) in
+  let point2 = (2.0, 2.0) in
+  let point3 = (3.0, 3.0) in
+  [point1; point2; point3]
+
+let main db =
+  let means = initmeans () in
+  let foo = iterate db means in
+  let foo2 = iterate db foo in
+  foo2
+
+let ref_db = [(1.0,1.0); (1.25,1.0); (2.0,2.5); (1.75,4.0); (10.0,10.0); (6.5,15.0)]
+
+let _ = main ref_db
+

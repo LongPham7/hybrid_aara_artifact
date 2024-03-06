@@ -1,0 +1,36 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/stack_types.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ *
+ * Description:
+ *   Testing the stack-based typing.
+ *
+ *)
+
+
+let snd : int -> int -> int =
+  fun a -> let x = 1 in
+	   fun b -> let x = 1 in
+		    b
+
+let f_if : int -> int -> int -> int =
+  fun a b ->
+    if a = 1 then
+      fun b -> b + a
+    else
+      fun c -> c + b
+
+
+let f_match : int list * int -> int -> int =
+  function [], b -> (fun c -> b)
+    | (a::_), b -> (fun c -> a + b)
+;;
+()

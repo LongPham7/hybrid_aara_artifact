@@ -1,0 +1,59 @@
+(** 
+ * [isort_list l] returns the sorted list. 
+ * The upper bound is quadric, howerver the lower bound is linear
+ * Cost model: 
+ * K^{matchN} = K^{matchL} = 1
+ * K^{cond} = 1
+ * K^{op} = 1
+ * K^{app} = 1
+ * K^{cons} = 1
+ *)
+
+(** 
+ * Compare two lists
+ *)
+
+let rec compare_list (l1:int list) l2 =
+	match l1 with
+ 	| [] -> let _ = Raml.tick(2.0) in true
+ 	| x::xs -> let _ = Raml.tick(1.0) in 
+   	match l2 with
+   	| [] -> let _ = Raml.tick(2.0) in false
+   	| y::ys -> let _ = Raml.tick(3.0) in 
+	  		if x = y then 
+				let _ = Raml.tick(1.0) in 
+	   		compare_list xs ys
+	  	 	else
+				let _ = Raml.tick(1.0) in 
+	   		x < y
+
+(** 
+ * Insert x into a sorted list l 
+ *)
+
+let rec insert le x l =
+	match l with
+  	| [] -> let _ = Raml.tick(2.0) in [x]
+  	| y::ys -> let _ = Raml.tick(3.0) in 
+		if le y x then 
+			let _ = Raml.tick(2.0) in y::insert le x ys
+     	else 
+			let _ = Raml.tick(1.0) in x::y::ys
+
+let rec isort le l =
+  match l with
+  | [] -> let _ = Raml.tick(2.0) in []
+  | x::xs -> let _ = Raml.tick(2.0) in insert le x (isort le xs)
+
+let isort_list = isort compare_list
+
+let l1 = [1;2;3;4;5]
+let l2 = [1;2;3;4;4]
+let l3 = [1;2;3;4]
+let l4 = [1;2;3;4;4;4]
+let l5 = [1;1;3;4;4;4]
+let l6 = [-1;0;1;2;3;4]
+let l7 = [1;2;3;5;5]
+let l8 = []
+	   
+let _ = isort_list [l1;l2;l3;l4;l5;l6;l7;l8]

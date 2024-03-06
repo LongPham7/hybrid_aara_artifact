@@ -1,0 +1,6 @@
+exception Empty_List of string
+
+let get_header l = match l with 
+| [] -> let _ = Raml.tick(1.0) in raise (Empty_List "Empty list")
+| h::t -> let _ = Raml.tick(1.0) in (h,t)
+

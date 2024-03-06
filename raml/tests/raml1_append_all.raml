@@ -1,0 +1,81 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/raml1_appedn_all.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2015)
+ * 
+ * Description:
+ *   Append all from old raml implementation.
+ *   
+ *)
+
+
+let rec append l1 l2  =
+  match l1 with
+    | [] -> l2
+    | x::xs -> x::(append xs l2)
+
+
+let rec append_all l =
+  match l with
+    | [] -> []
+    | l1::ls -> append l1 (append_all ls)
+
+
+let rec append_all2 l =
+  match l with
+    | [] -> []
+    | l1::ls -> append (append_all l1) (append_all2 ls)
+
+
+let rec append_all3 l =
+  match l with
+    | [] -> []
+    | l1::ls -> append (append_all2 l1) (append_all3 ls)
+
+
+let rec app_all f l =
+  match l with
+    | [] -> []
+    | l1::ls -> append (f l1) (app_all f ls)
+
+
+let app_all1 l = app_all (fun x -> x) l
+
+let app_all2 l = app_all app_all1 l
+
+let app_all3 l = app_all app_all2 l
+
+let x = [1;2;3;4]
+
+let y = [1;2;3;4;5;6;7]
+
+let z = [-1;-2;-3;-4;-5;-6;-7;-8]
+
+let _ = let l = append x y in ()
+
+let xx = [z;z;x;z;y;x;z;z;]
+
+let yy = [z;x;z;x;z;z;y;y;y;y;y;z;x]
+
+let _ = let (a,b) = (app_all1 xx, append_all yy) in ()
+
+let xxx = [xx;xx;yy;xx;yy;yy]
+
+let yyy = [yy;yy;xx;xx;yy;xx;xx;xx]
+
+let _ = let (a,b) = (app_all2 xxx, append_all2 yyy) in ()
+
+let xxxx = [xxx;xxx;yyy;yyy;yyy;yyy]
+
+let yyyy = [yyy;xxx;yyy;yyy;xxx;xxx;yyy;xxx]
+
+let _ = let (a,b) = (app_all3 xxxx, append_all3 yyyy) in ()
+  
+

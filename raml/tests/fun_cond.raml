@@ -1,0 +1,42 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/fun_cond.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Interaction between abstraction/application and conditionals.
+ *   
+ *)
+
+
+
+let h = 
+  let g = 
+    fun (z:int) -> let x = 1 in z 
+  in
+  fun (x:int) -> 
+    let x = x in g
+
+
+let f =
+  fun x ->
+    if x then
+      fun y z -> let x = z in y
+    else
+      fun y z -> z
+
+let _ = if true then let x = 1 in let y = 2 in 4 else 4
+
+let _ = h 3 3
+
+let _ = f true 4 4
+
+;;
+()

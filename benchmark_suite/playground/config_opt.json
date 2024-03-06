@@ -1,0 +1,7 @@
+{
+  "mode": "opt",
+  "lp_objective": {
+    "cost_gaps_optimization": true,
+    "coefficients_optimization": "Equal_weights"
+  }
+}

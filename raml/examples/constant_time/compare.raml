@@ -1,0 +1,79 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/compare.raml
+ *
+ * Author:
+ *   Van Chan Ngo (2016)
+ * 
+ * Description:
+ *   
+ *)
+
+
+
+(** 
+ * [compare h l] returns true if two lists have same length and elements are pair-wise equivalent
+ *)
+
+let rec compare h l = 
+	match h with
+	| [] -> begin
+	  match l with 
+		| [] -> (Raml.tick 1.0; true)
+		| y::ys -> (Raml.tick 1.0; false)
+	  end
+	| x::xs -> 
+		match l with 
+		| [] -> (Raml.tick 1.0; false)
+		| y::ys -> 
+     	  if ((x : int) = (y : int)) then 
+			  (Raml.tick 5.0; compare xs ys)
+     	  else (Raml.tick 5.0; false)
+		  
+(** 
+ * If we only pad the if-expression then the function is only constant w.r.t both h and l. 
+ *	It is only constant w.r.t h iff we pad both if-expression and nil-case of match l when h is not nil. 
+ *	This makes the function always loop through all h's elements. 
+ *)
+
+let padded_compare h l = 
+	let rec aux r h l = 
+	match h with
+	| [] -> begin
+	  match l with 
+	  | [] -> (Raml.tick 1.0; r) 
+	  | y::ys -> (Raml.tick 1.0; false)
+	  end
+	| x::xs -> 
+		match l with 
+		| [] -> (Raml.tick 5.0; aux false xs [])
+		| y::ys -> 
+		  if ((x : int) = (y : int)) then 
+		  		(Raml.tick 5.0; aux r xs ys)
+     	   else (Raml.tick 5.0; aux false xs ys)
+	in aux true h l
+
+(** 
+ * Transform to constant function w.r.t h with the consume expressions
+ *)
+
+let rec consume_compare h l = 
+  match h with
+  | [] -> begin
+    match l with 
+    | [] -> (Raml.tick 1.0; true) 
+    | y::ys -> (Raml.tick 1.0; false)
+    end
+  | x::xs -> 
+     match l with 
+     | [] -> (Raml.tick 1.0; Raml.consume xs; false)
+     | y::ys ->
+        if ((x : int) = (y : int)) then
+           (Raml.tick 5.0; consume_compare xs ys)
+        else
+		     (Raml.tick 5.0; Raml.consume xs; false)

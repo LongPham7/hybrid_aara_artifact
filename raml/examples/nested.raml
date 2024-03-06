@@ -1,0 +1,19 @@
+type ('a,'b,'c) l =
+| A of 'a * ('a,'b,'c) l
+| B of 'b * ('a,'b,'c) l
+| T of 'c * ('a,'b,'c) l * ('a,'b,'c) l
+| Nil
+
+let rec append l1 l2 =
+  match l1 with
+    | x::xs -> []
+    | _ -> []
+
+let hello = []
+let world = []
+
+;;
+
+(* let hello' = append hello (A(3,Nil)) in *)
+(* let world' = append world (B(4,Nil)) in *)
+append hello world

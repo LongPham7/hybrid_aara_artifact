@@ -1,0 +1,49 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/compress.raml
+ *
+ * Author:
+ *   Van Chan Ngo (2016)
+ * 
+ * Description:
+ *   
+ *)
+
+(**
+ * [compress l] returns a compressed list by replacing multiple sequential 
+ * occurences of a values by single occurrence. 
+ *)
+
+let rec compress l = 
+	match l with
+  	| [] -> (Raml.tick 1.0; [])
+  	| h::t -> (Raml.tick 1.0;  
+		match t with 
+		| [] -> (Raml.tick 1.0; l)
+		| x::xs -> 
+			if ((x : int) = (h : int)) then 
+				(Raml.tick 3.0; compress t)
+			else 
+				(Raml.tick 4.0; h::(compress t)))
+
+(** 
+ * Transform to constant w.r.t l with the consume expressions 
+ *)
+
+let rec consume_compress l = 
+	match l with
+	| [] -> (Raml.tick 1.0; [])
+	| h::t -> (Raml.tick(1.0);
+		match t with 
+		| [] -> (Raml.tick(1.0); Raml.consume(h,t); l)
+		| x::xs -> 
+			if ((x : int) = (h : int)) then 
+				(Raml.tick(3.0); Raml.consume(x,xs); consume_compress t)
+			else 
+				(Raml.tick(4.0); h::(consume_compress t)))
+

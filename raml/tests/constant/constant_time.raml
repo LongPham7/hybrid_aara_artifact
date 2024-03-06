@@ -1,0 +1,40 @@
+
+let rec compare_list (l1:int list) l2 =
+  match l1 with
+  | [] -> true
+  | x::xs ->
+    match l2 with
+    | [] -> false
+    | y::ys ->
+      if x = y then
+	compare_list xs ys
+      else
+        x <= y
+
+let rec split n l =
+  if n = 0 then
+    ([],l)
+  else
+    match l with
+    | [] -> ([],[])
+    | x::xs ->
+      Raml.tick(1.0);
+      let (a,b) = split (n-1) xs in
+      (x::a,b)
+
+let f n l =
+  let _ = split n l in
+  ()
+
+let rec iter x =
+  match x with
+  | [] -> ()
+  | x::xs -> Raml.tick(1.0); iter xs
+
+let g l =
+  if true then
+    iter l
+  else
+    ()
+
+;; ()

@@ -1,0 +1,52 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/booleans.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2015)
+ * 
+ * Description:
+ *   User defined booleans.
+ *   
+ *)
+
+
+type bool = True | False
+
+let f x y = 
+  match x with
+    | True -> begin
+      match y with 
+	| True -> Raml.tick(1.0)
+	| False -> ()
+    end
+    | False -> ()
+
+let rec map f l =
+  match l with
+    | [] -> []
+    | x::xs -> let _ = Raml.tick(1.0) in (f x)::(map f xs)
+
+let tick_true l =
+  let f x = 
+    match x with
+      | True -> Raml.tick(1.0)
+      | False -> ()
+  in
+  map f l
+
+
+
+let _ = tick_true [True;False;True;False;True;False]
+
+let _ = f True False
+
+let _ = f True True
+
+let _ = f False False
+

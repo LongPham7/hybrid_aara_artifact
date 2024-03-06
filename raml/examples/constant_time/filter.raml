@@ -1,0 +1,47 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/filter.raml
+ *
+ * Author:
+ *   Van Chan Ngo (2016)
+ * 
+ * Description:
+ *   
+ *)
+
+
+(** 
+ * [filter l] returns a list by removing all positive elements
+ * and increases other elements by 1.
+ * Filtering out an element takes 8 resource units.
+ * Increasing an element takes 3 units.
+ *)
+
+
+let rec filter l =
+ match l with
+ | [] -> (Raml.tick 1.0; [])
+ | x::xs -> 
+   if x > 0 then
+     (Raml.tick 8.0; filter xs)
+   else
+     (Raml.tick 3.0; (x+1)::filter xs)
+
+let f l = filter (filter l) 
+
+(** 
+ * Transform to constant function w.r.t the argument l with consume expression 
+ *)
+let rec consume_filter l =
+ match l with
+ | [] -> (Raml.tick 1.0; [])
+ | x::xs -> 
+   if x > 0 then
+     (Raml.tick 8.0; consume_filter xs)
+   else
+     (Raml.tick 3.0; Raml.consume(x,xs); (x+1)::consume_filter xs)

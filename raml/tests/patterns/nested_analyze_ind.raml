@@ -1,0 +1,147 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_ind.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ *
+ * Description:
+ *   Analsyis of programs with inductive types.
+ *
+ *)
+
+
+
+
+(* type my_list =
+  | Nil of int
+  | Cons1 of int*my_list
+  | Cons2 of float*my_list
+  | Cons4 of my_list
+
+
+
+
+let rec switch l =
+  match l with
+    | Nil x -> Nil x
+    | Cons1 (x,l') ->
+      let y = switch l' in
+      Cons2 (1.0,y)
+    | Cons2 (x,l') ->
+      Cons1(1, switch l' )
+    | Cons4 l' -> switch l'
+
+
+let _ =
+  let y =
+    Cons1 (1, Cons4 (Cons2 (1.0, Cons2 (3.0, Cons2 (1.0, Cons4 (Cons1 (2, Cons1 (3,(Nil 4)))))))))
+  in
+  switch (switch y)
+
+
+let rec exp_cons4 l =
+  match l with
+    | Nil _ -> Nil 0
+    | Cons1 _ -> Nil 0
+    | Cons2 _ -> Nil 0
+    | Cons4 l' -> let x = 3 in let x = 4 in let x = 4 in (exp_cons4 l')
+
+let _ =
+  let y =
+    Cons1 (1, Cons4 (Cons2 (1.0, Cons2 (3.0, Cons2 (1.0, Cons4 (Cons1 (2, Cons1 (3,(Nil 4)))))))))
+  in
+  exp_cons4 (switch y)
+
+
+type tree =
+  | Leaf of int*int
+  | Node1 of int*tree*tree
+  | Node2 of (float*float)*tree*tree*tree
+
+
+let t =
+  let l1 = Leaf (1,2) in
+  let l2 = Leaf (3,4) in
+  let l3 = Leaf (5,6) in
+  let l4 = Leaf (7,8) in
+  let n1 = Node1 (1,l1,l2) in
+  let n2 = Node1 (2,l3,l4) in
+  let l5 = Leaf (1,2) in
+  let l6 = Leaf (3,4) in
+  let l7 = Leaf (5,6) in
+  let n3 = Node2 ((1.2,2.2),l5,l6,l7) in
+  Node2 ((1.2,2.2),n1,n2,n3)
+
+let rec length (xs : int list) =
+  match xs with
+    | [] -> 0
+    | x::xs' -> let x = 3 in let y = x in
+       	        let n = length xs' in
+	        n
+
+
+let _ = length [1;2;3;4;5;6;7;8;9]
+
+let rec f l =
+  match l with
+    | Nil x -> x
+    | Cons1 (x,l') -> f l'
+    | Cons2 (x,l') -> let y = x in f l'
+    | Cons4 _ -> 4
+
+
+let rec g tree =
+  match tree with
+    | Leaf (i,j) -> 0
+    | Node1 (n,t1,t2) ->
+      let _ = g t1 in
+      let _ = g t2 in
+      4
+    | Node2 (n,t1,t2,t3) ->
+      let _ = g t1 in
+      let _ = g t2 in
+      let _ = g t3 in
+      4
+
+
+let rec id l =
+  match l with
+    | [] -> []
+    | x::xs -> x::(id xs)
+
+
+let rec apply_all l =
+  match l with
+    | [] -> []
+    | ((f,y)::xs) ->
+      (f y) :: (apply_all xs) *)
+
+let rec zip l1 l2 =
+  match l1,l2 with
+    | [],_ -> []
+    | x::xs,[] -> []
+    | x::xs,y::ys -> (x,y) :: (zip xs ys)
+
+;;4
+(* let rec mk_funs l =
+  match l with
+    | [] -> []
+    | x::xs -> (fun y -> x) :: (mk_funs xs)
+
+let _ = g t
+
+let _ = id (id [1;2;3;4;5;6;7;8;9])
+
+let h x y = x::y
+
+;;
+
+let funs = mk_funs [1;2;3;4;5] in
+let funs_vals = zip funs [1;2;3;4;5] in
+apply_all funs_vals *)

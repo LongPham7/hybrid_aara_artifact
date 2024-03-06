@@ -1,0 +1,10 @@
+let sum l = 
+  let rec aux acc = function 
+  | [] -> 
+    let _ = Raml.tick(2.0) in acc
+  | h::t ->
+    let _ = Raml.tick(2.0) in 
+    aux (acc + h) t
+  in 
+    aux 0 l
+

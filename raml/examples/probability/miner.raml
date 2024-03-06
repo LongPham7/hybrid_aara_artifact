@@ -1,0 +1,38 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/nested.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Miner. Degree 1.
+ *   
+ *)
+
+let rec b () =
+  if Rprob.flip (1,2)
+  then Raml.tick(3.0)
+  else if Rprob.flip(1,1)
+  then (Raml.tick(5.0); b ())
+  else (Raml.tick(7.0); b ())
+
+let rec miner n =
+  match n with
+  | [] -> ()
+  | _::t ->
+    let () =
+      if Rprob.flip(1,1)
+      then b ()
+      else ()
+    in
+    miner t
+
+;;
+
+()

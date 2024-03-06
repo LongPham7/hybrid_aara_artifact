@@ -1,0 +1,52 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/nat_arith.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Arithmetic operations for natural numbers.
+ *   
+ *)
+
+
+
+let one = Rnat.of_int(1)
+
+let rec plus : Rnat.t -> Rnat.t -> Rnat.t =
+  fun n m -> 
+    Rnat.ifz n
+      (fun () -> m)
+      (fun n' -> Rnat.succ (plus n' m)  ) 
+
+
+let rec mult : Rnat.t -> Rnat.t -> Rnat.t =
+  fun n m -> 
+    Rnat.ifz n
+      (fun () -> Rnat.zero)
+      (fun n' -> 
+	let t = mult n' m in
+	plus t m  )
+
+let rec to_int : Rnat.t -> int =
+  fun n ->
+    if n = Rnat.zero then 
+      0
+    else 
+      let (n',_) = Rnat.minus n one in
+      1 + (to_int n')
+
+let (x,y) = (Rnat.of_int 30), (Rnat.of_int 20)
+
+;;
+( mult x y
+, plus x y
+, to_int y
+)
+

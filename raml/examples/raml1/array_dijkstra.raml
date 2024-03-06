@@ -1,0 +1,145 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ * File:
+ *   examples/raml1/array_dijkstra.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ *
+ * Resource Bound:
+ *   O(n^2)
+ *
+ * Description:
+ *   Dijkstra's algorithm for the single-source shortest-path problem of a weighted,
+ *   undirected graph.  Edges are required to have non-negative weights.  For more
+ *   info see http://en.wikipedia.org/wiki/Dijkstra's_algorithm.
+ *)
+
+(* Get and set the weight of an edge in a graph. *)
+(* The weight -1 indicates that the edge does not exist.*)
+
+let getWeight g v u =
+  Rarray.get (Rarray.get g v) u
+
+
+let setWeight g v u d =
+  let _ = Rarray.set (Rarray.get g v) u d in
+  Rarray.set (Rarray.get g u) v d
+
+
+exception Invalid_argument
+			     
+(* Compute the node v in the queue l with minimal distance in
+   the array dist and remove v from l.*)
+
+(*makeGraph(n,l) creates a graph with n nodes 0,...,n-1 and edges as
+  given in the list l. *)
+
+let rec fillGraph l g = 
+  match l with
+  | [] -> ()
+  | e::es ->
+     let (u,v,d) = e in
+     let _ = setWeight g u v d in
+     fillGraph es g
+
+let rec fillEmpty n size g = 
+  Rnat.ifz n
+    (fun () -> ())
+    begin fun n' -> 
+      let a = Rarray.make size (-1) in
+      let _ = Rarray.set g n' a in
+      fillEmpty n' size g
+    end
+
+let emptyGraph n =
+  let dummy = Rarray.make Rnat.zero (-1) in 
+  let g = Rarray.make n dummy in
+  let _ = fillEmpty n n g in
+  g
+
+let makeGraph n l = 
+  let g = emptyGraph n in
+  let _ = fillGraph l g in g
+
+
+let rec getMin l dist =
+  match l with
+  | [] -> raise Invalid_argument
+  | v::vs ->
+     match vs with
+     | [] -> ([],v,Rarray.get dist v)
+     | y::ys ->
+        let (l',u,d_u) = getMin vs dist in
+        let d_v = Rarray.get dist v in
+        if (d_v < d_u && d_v > -1) || d_u = -1 then
+          (u::l',v,d_v)
+        else
+          (v::l',u,d_u)
+
+
+(* Create a queue with all nodes. *)
+
+let rec startQueue n =
+  Rnat.ifz n
+   (fun () -> [])
+   (fun n -> n::(startQueue n))
+
+let rec updateNeighbors n v g dist prev =
+  Rnat.ifz n
+   (fun () -> () )
+   begin fun n' ->
+     let (u,d_u) = (n', Rarray.get dist n') in
+     let d_u_v = (Rarray.get dist v) + (getWeight g v u) in
+     let _ = updateNeighbors n' v g dist prev in
+     if (getWeight g v u) > (-1) && (d_u > d_u_v || d_u = -1 ) then
+        let _ = Rarray.set dist u d_u_v in
+        Rarray.set prev u v
+      else
+        ()
+   end
+
+let rec processNodes queue g dist prev =
+  match queue with
+  | [] -> ()
+  | _::_q ->
+     let (queue',v,d_v) = getMin queue dist in
+     if d_v = -1 then
+       ()
+     else
+       let _ = updateNeighbors (Rarray.length g) v g dist prev in
+       processNodes queue' g dist prev
+
+
+let dijkstra g source =
+  let n = Rarray.length g in
+  let dist = Rarray.make n (-1) in
+  let prev = Rarray.make n Rnat.zero in
+  let _ = Rarray.set dist source 0 in
+  let queue = startQueue n in
+  let _ = processNodes queue g dist prev in
+  dist
+
+
+let arr_of_list l seed =
+  let rec a_of_l l n =
+    match l with
+    | [] -> Rarray.make n seed
+    | x::xs -> let arr = a_of_l xs (Rnat.succ n) in
+               let _ = Rarray.set arr n x in arr
+  in
+  a_of_l l Rnat.zero
+
+let _ =
+  let g = arr_of_list
+  [ arr_of_list [-1;  1; 1000; 1000; 1000; 1000] 0
+  ; arr_of_list [-1; -1;    1; 900; 900; 900] 0
+  ; arr_of_list [-1; -1;   -1;    1; 800; 800] 0
+  ; arr_of_list [-1; -1;   -1;   -1;    1; 700] 0
+  ; arr_of_list [-1; -1;   -1;   -1;   -1;    1] 0
+  ; arr_of_list [-1; -1;   -1;   -1;   -1;   -1] 0
+  ]
+  (Rarray.make Rnat.zero 0)
+  in dijkstra g Rnat.zero
+

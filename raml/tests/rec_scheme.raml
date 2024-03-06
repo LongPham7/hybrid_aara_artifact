@@ -1,0 +1,31 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/rec_scheme.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2015)
+ * 
+ * Description:
+ *   A simple recursion scheme.
+ *   
+ *)
+
+
+let tail l =
+  match l with
+    | [] -> raise (Invalid_argument "")
+    | x::xs -> xs;;
+
+let rec rec_scheme f l =
+  match l with
+    | [] -> []
+    | x::xs -> rec_scheme f (f l);;
+
+let f = rec_scheme tail;;
+
+f [1;2;3;4;5;6;7;8];

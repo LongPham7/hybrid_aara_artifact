@@ -1,0 +1,73 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/mergesort.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   Mergesort with an auxiliary variable that is the logarithm of 
+ *   the length of the input list.
+ *   
+ *)
+
+
+let rec split l =
+  match l with
+    | [] -> ([],[])
+    | x1::xs ->
+      match xs with
+        | [] -> ([x1],[])
+        | x2::xs' ->
+	  let (l1,l2) = split xs' in
+          (x1::l1,x2::l2)
+
+let rec merge compare l1 l2 =
+  match l1 with
+    | [] -> l2
+    | x::xs ->
+      match l2 with
+        | [] -> (x::xs)
+        | y::ys -> Raml.tick 1.0;
+	  if compare x y then
+	    x:: (merge compare xs l2)
+          else
+	    y::(merge compare l1 ys)
+
+let rec mergesort compare _log_l l =
+  Rnat.ifz _log_l (fun () -> [])
+    (fun _log_l' ->
+      match l with
+	| [] -> raise Not_found
+	| x1::xs -> 
+	  match xs with
+            | [] -> [x1]
+            | (x2::xs') ->
+              let (l1,l2) = split l in
+              let l1' = mergesort compare _log_l' l1 in
+	      let l2' = mergesort compare _log_l' l2 in
+	      merge compare l1' l2';
+    )
+
+let rec compare_list (l1:int list) l2 =
+  match l1 with
+    | [] -> true
+    | x::xs ->
+      match l2 with
+	| [] -> false
+	| y::ys ->
+	  if x = y then
+	    compare_list xs ys
+	  else
+	    x <= y
+
+let mergesort_list = mergesort compare_list		   
+
+;;
+
+mergesort (>) (Rnat.of_int 6) [1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17]

@@ -1,0 +1,13 @@
+{
+  "mode": "bayeswc",
+  "stan_params": {
+    "scale_beta": 5.0,
+    "scale_s": 5.0,
+    "num_chains": 2,
+    "num_stan_samples": 500
+  },
+  "lp_objective": {
+    "cost_gaps_optimization": true,
+    "coefficients_optimization": "Equal_weights"
+  }
+}

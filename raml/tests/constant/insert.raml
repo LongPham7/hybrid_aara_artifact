@@ -1,0 +1,35 @@
+let rec insert n l = 
+  match l with 
+  | [] -> let _ = Raml.tick(2.0) in [ n ]
+  | h::t -> 
+    let _ = Raml.tick(1.0) in
+    if ((n : int) < (h : int)) then
+      let _ = Raml.tick(3.0) in
+      let _ = insert n t in n::l
+    else
+      let _ = Raml.tick(3.0) in
+      let _ = n::l in h::(insert n t)
+;;
+
+let rec iter l = 
+  match l with
+  | [] -> ()
+  | h::t -> let _ = Raml.tick(1.0) in iter t
+;;
+
+
+(*
+ * index is the index of inserted value
+ *)
+let rec const_insert index n l = 
+  match l with
+  | [] -> 
+    let _ = Raml.tick(2.0) in index
+  | h::t ->
+  	let _ = Raml.tick(1.0) in 
+    if ((n : int) < (h : int)) then
+    	let _ = Raml.tick(3.0) in 
+    	let _ = const_insert index n t in index
+    else
+     	let _ = Raml.tick(3.0) in 
+			let new_index = index + 1 in const_insert new_index n t      

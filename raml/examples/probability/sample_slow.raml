@@ -1,0 +1,50 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/sample_slow.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Sample complexity. Degree 1.
+ *   
+ *)
+
+
+type red_or_black = Red | Black
+
+let rec sample_slow () =
+  let _ = Raml.tick 1. in
+  if Rprob.flip(1,1) then
+    let _ = Raml.tick 1. in
+    if Rprob.flip(1,1) then
+      sample_slow ()
+    else
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        sample_slow ()
+      else
+        let _ = Raml.tick 1. in
+        if Rprob.flip(1,1) then
+          Red
+        else
+          Black
+  else
+    let _ = Raml.tick 1. in
+    if Rprob.flip(1,1) then
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        Black
+      else
+        Red
+    else
+      Black
+
+;;
+
+()  

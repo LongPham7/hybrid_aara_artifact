@@ -1,0 +1,32 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/nat_fac.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2017)
+ * 
+ * Description:
+ *   Factorial
+ *   
+ *)
+
+
+
+let one = Rnat.of_int(1)
+
+let mult x y = Raml.tick 1.0; Rnat.mult x y
+
+let rec fac : Rnat.t -> Rnat.t =
+  fun n -> 
+    Rnat.ifz n
+      (fun () -> one)
+      (fun n' -> mult n (fac n') ) 
+;;
+
+fac (Rnat.of_int 4)
+

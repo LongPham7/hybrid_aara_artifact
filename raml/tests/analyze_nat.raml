@@ -1,0 +1,85 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_nat.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Pattern matching for natural number, and zero/succ.
+ *   
+ *)
+
+
+
+let succ = fun x -> Rnat.succ x
+let zero = Rnat.zero 
+
+let n = succ (succ zero)
+
+let _ = let g = fun f -> f 4 in
+        g (fun x -> x)
+
+
+let _ = Rnat.ifz Rnat.zero
+          (fun () -> Rnat.zero )
+	  (fun n' -> Rnat.succ (Rnat.succ n')  ) 
+
+let _ = Rnat.ifz (Rnat.succ Rnat.zero)
+          (fun () -> Rnat.zero )
+	  (fun n' -> Rnat.succ (Rnat.succ Rnat.zero)  ) 
+
+
+let z  = 1
+
+let rec f x = 
+  let y = x in 
+  Rnat.ifz y
+    begin fun () -> 
+      Rnat.zero 
+    end begin fun n -> 
+      if true then
+	h n
+      else
+	f n
+    end
+
+and h x =  Rnat.ifz x
+  (fun () -> Rnat.zero )
+  (fun n -> f n   )
+
+
+let rec g = fun n b ->
+  Rnat.ifz n
+    (fun () -> Rnat.zero ) 
+    (fun n -> 
+      if b then 
+	f (Rnat.succ n)
+      else if false then
+	g n false
+      else 
+	let rec id x =  
+	  Rnat.ifz x
+	  (fun () -> Rnat.zero )
+	  (fun n -> 
+	    if true then
+	      id n
+	    else 
+	      f n
+	  )
+	in
+	id n
+    )
+
+
+let _ = Rnat.ifz (g (Rnat.succ (Rnat.succ (Rnat.succ Rnat.zero))) false)
+              (fun () -> Rnat.zero )
+        	  (fun n -> f (Rnat.succ n) )
+
+;;
+()

@@ -1,0 +1,33 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/hello_world.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   Hello world with ASCII.
+ *)
+
+
+let rec append l1 l2 =
+  match l1 with
+    | [] -> l2
+    | x::xs ->
+      let _ = Raml.tick(1.2) in
+      x::(append xs l2)
+
+let hello = [72;101;108;108;111]
+let world = [87;111;114;108;100]
+
+;;
+
+let hello' = append hello [32] in
+let world' = append world [33] in
+append hello' world'
+

@@ -1,0 +1,39 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/dtmc.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   
+ *)
+
+type coin = Head | Tails
+
+type state = Q0 | Q1 | Q2 | Q3 | Q4 | Q5 | Q6
+  | Q11 | Q12 | Q13 | Q14 | Q15 | Q16
+
+let rec trans q =
+  let coin = if Rprob.flip(1,1) then Head else Tails in
+  match q with
+  | Q0 -> (match coin with | Head -> trans Q1 | Tails -> trans Q2)
+  | Q1 -> (match coin with | Head -> trans Q3 | Tails -> trans Q4)
+  | Q2 -> (match coin with | Head -> trans Q5 | Tails -> trans Q6)
+  | Q3 -> (match coin with | Head -> trans Q1 | Tails -> trans Q11)
+  | Q4 -> (match coin with | Head -> trans Q12 | Tails -> trans Q13)
+  | Q5 -> (match coin with | Head -> trans Q14 | Tails -> trans Q15)
+  | Q6 -> (match coin with | Head -> trans Q16 | Tails -> trans Q2)
+  | Q11 -> Raml.tick(1.0)
+  | _ -> ()
+
+let trans' () = trans Q0
+
+;;
+
+()              

@@ -1,0 +1,25 @@
+
+let comp f g = fun z -> f (g z);; 
+
+let rev l =
+  let rec walk = function
+  [] -> (fun ys -> ys)
+    | x :: xs -> comp (walk xs) (fun ys -> x :: ys)
+  in walk l [];;
+
+
+type 'a closure = Lam1 of 'a closure * 'a closure | Lam2 | Lam3 of 'a ;;
+
+let rec apply c a = match c with
+  Lam1(f,g) -> apply f (apply g a) | Lam2 -> a | Lam3(x) -> x :: a ;;
+
+let comp f g = Lam1(f,g);; 
+
+let rev l =
+  let rec walk = function
+    | [] -> Lam2
+    | x :: xs -> comp (walk xs) (Lam3 x)
+in 
+  apply (walk l) [];;
+
+rev [1;2;3]

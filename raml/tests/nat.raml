@@ -1,0 +1,40 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/nat.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Natural numbers.
+ *   
+ *)
+
+
+let nat_one = Rnat.succ Rnat.zero
+
+let nat_two = Rnat.succ nat_one
+
+let p = Rnat.minusc 1 nat_two
+
+let (n1, _) = p
+let (n2, _) = Rnat.minus nat_two nat_one
+
+let x = Rnat.of_int (10)
+let y = Rnat.of_int (5)
+
+;;
+( Rnat.ifz (Rnat.add n1 n2)
+     (fun () -> raise (Assert_failure ("", 0, 0)))
+     (fun n -> Rnat.div_mod n nat_two)
+, Rnat.minus x y 
+, Rnat.add x y
+, Rnat.div_mod x y
+, Rnat.minusc 10 x
+, Rnat.to_int y
+)

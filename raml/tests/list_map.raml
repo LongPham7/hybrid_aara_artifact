@@ -1,0 +1,75 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/list_map.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   List map.
+ *   
+ *)
+
+
+let rec map_rev1 f1 f2 l acc =
+  match l with
+    | [] -> acc
+    | x::xs -> 
+      let g = map_rev2 f1 f2 in 
+      g xs ((f1 x) :: acc)
+
+and map_rev2 f1 f2 l acc =
+  match l with
+    | [] -> acc
+    | x::xs -> 
+      let g = map_rev1 f1 f2 in 
+      g xs ((f2 x) :: acc)
+
+let rec map f l =
+  match l with
+    | [] -> []
+    | x::xs ->
+      let g = map f in
+      let ys = g xs in
+      (f x)::ys
+
+let rec map1 f l =
+  match l with
+    | [] -> []
+    | x::xs ->
+      let g = map2 f in
+      let ys = g xs in
+      (f x)::ys
+
+and map2 f l =
+  match l with
+    | [] -> []
+    | x::xs ->
+      let g = map1 f in
+      (f x)::(g xs)
+
+let _ =
+  let f = fun _ -> Raml.tick 1.0 in
+  let g = map f in
+  let h = map g in
+  let x = [[1;2;3;1;3;3];[1;2;3;1;3;3];[1;2;3;1;3;3];[1;2;3;1;3;3]] in
+  h x
+
+
+let _ =
+  let f = fun _ -> Raml.tick 1.0 in
+  let g = map1 f in
+  let h = map2 g in
+  let x = [[1;2;3;1;3;3];[1;2;3;1;3;3];[1;2;3;1;3;3];[1;2;3;1;3;3]] in
+  h x
+
+let _ =
+  let f x = x*x*x in
+  let g x = x+2 in
+  let map = map_rev1 f g in
+  map [2;3;4;4;5;5;5] []

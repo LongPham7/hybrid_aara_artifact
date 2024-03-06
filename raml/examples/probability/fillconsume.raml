@@ -1,0 +1,46 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/fillconsume.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Probabilistic producer/consumer. Degree 2.
+ *   
+ *)
+
+let rec consume x =
+  match x with
+  | [] -> []
+  | h::t ->
+    if Rprob.flip h
+    then (Raml.tick(1.); consume t)
+    else consume t
+
+let rec fill x =
+  match x with
+  | [] -> []
+  | _::t ->
+    if Rprob.flip(1,1)
+    then (Rprob.create(1,2))::(fill t)
+    else (Rprob.create(1,3))::(fill t)
+
+let rec fill2 x p =
+  match x with
+  | [] -> []
+  | _::t ->
+    if Rprob.flip p
+    then Rprob.create(1,1)::(fill2 t p)
+    else Rprob.create(1,2)::(fill2 t p)
+
+let f x p = consume (fill2 x p)
+
+;;
+
+()

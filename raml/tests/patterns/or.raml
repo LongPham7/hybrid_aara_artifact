@@ -1,0 +1,28 @@
+type 'a abcd = A of 'a
+        | B of 'a
+        | C of 'a * 'a
+        | D of 'a * 'a
+            
+let tt y =
+  match y with
+  | A x 
+  | B x 
+  | C (x,_)
+  | D (x,_) -> x
+  
+let tt' = 
+function  
+    A x 
+  | B x 
+  | C (x,_)
+  | D (x,_) -> x
+  
+;;
+
+let (A a | B a) = A 5 in 
+let (A b | B b) = B 6 in
+let x = tt (A (a,b)) in 
+let y = tt (B (a,b)) in 
+let c = C (x,y) in 
+let d = D (x,y) in 
+tt' (C (c,d))

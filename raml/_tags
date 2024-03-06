@@ -1,0 +1,2 @@
+true: package(core), package(ppx_jane), use_clp, use_volesti, debug, package(pyml), package(owl), package(ctypes), package(ctypes.foreign), package(yojson)
+true: thread, rectypes

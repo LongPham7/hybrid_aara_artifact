@@ -1,0 +1,1401 @@
+(*-- BinNums.ml --*)
+type positive =
+| Coq_xI of positive
+| Coq_xO of positive
+| Coq_xH
+
+type coq_N =
+| N0
+| Npos of positive
+
+type coq_Z =
+| Z0
+| Zpos of positive
+| Zneg of positive
+
+(*$$ BinNums.ml $$*)
+(*-- BinPos.ml --*)
+(*-- BinNums.ml --*)
+(*$$ BinNums.ml $$*)
+(*-- BinPosDef.ml --*)
+(*-- BinNums.ml --*)
+(*$$ BinNums.ml $$*)
+(*-- Datatypes.ml --*)
+(** val implb : bool -> bool -> bool **)
+
+let implb b1 b2 =
+  if b1 then b2 else true
+
+(** val xorb : bool -> bool -> bool **)
+
+let xorb b1 b2 =
+  if b1 then if b2 then false else true else b2
+
+(** val negb : bool -> bool **)
+
+let negb = function x ->
+if (x = true) then false else true
+
+type nat =
+| O
+| S of nat
+
+type ('a, 'b) sum =
+| Coq_inl of 'a
+| Coq_inr of 'b
+
+(** val fst : ('a1 * 'a2) -> 'a1 **)
+
+let fst = function a ->
+let (x, y) = a in x
+
+(** val snd : ('a1 * 'a2) -> 'a2 **)
+
+let snd = function a ->
+let (x, y) = a in y
+
+(** val length : 'a1 list -> nat **)
+
+let rec length = function myvariable ->
+match myvariable with
+| [] -> O
+| y :: l' -> S (length l')
+
+(** val app : 'a1 list -> 'a1 list -> 'a1 list **)
+
+let rec app l m =
+  match l with
+  | [] -> m
+  | a :: l1 -> a :: (app l1 m)
+
+type comparison =
+| Eq
+| Lt
+| Gt
+
+(** val coq_CompOpp : comparison -> comparison **)
+
+let coq_CompOpp = function myvariable ->
+match myvariable with
+| Eq -> Eq
+| Lt -> Gt
+| Gt -> Lt
+
+type coq_CompareSpecT =
+| CompEqT
+| CompLtT
+| CompGtT
+
+(** val coq_CompareSpec2Type : comparison -> coq_CompareSpecT **)
+
+let coq_CompareSpec2Type = function myvariable ->
+match myvariable with
+| Eq -> CompEqT
+| Lt -> CompLtT
+| Gt -> CompGtT
+
+type 'a coq_CompSpecT = coq_CompareSpecT
+
+(** val coq_CompSpec2Type : 'a1 -> 'a1 -> comparison -> 'a1 coq_CompSpecT **)
+
+let coq_CompSpec2Type x y c =
+  coq_CompareSpec2Type c
+
+(*$$ Datatypes.ml $$*)
+(*-- Peano.ml --*)
+(*-- Datatypes.ml --*)
+(*$$ Datatypes.ml $$*)
+
+(** val plus : nat -> nat -> nat **)
+
+let rec plus n m =
+  match n with
+  | O -> m
+  | S p -> S (plus p m)
+
+(** val max : nat -> nat -> nat **)
+
+let rec max n m =
+  match n with
+  | O -> m
+  | S n' ->
+    (match m with
+     | O -> n
+     | S m' -> S (max n' m'))
+
+(** val min : nat -> nat -> nat **)
+
+let rec min n m =
+  match n with
+  | O -> O
+  | S n' ->
+    (match m with
+     | O -> O
+     | S m' -> S (min n' m'))
+
+(** val nat_iter : nat -> ('a1 -> 'a1) -> 'a1 -> 'a1 **)
+
+let rec nat_iter n f x =
+  match n with
+  | O -> x
+  | S n' -> f (nat_iter n' f x)
+
+(*$$ Peano.ml $$*)
+
+(*module Pos = 
+ struct 
+  type t = positive*)
+  
+  (** val succ : positive -> positive **)
+  
+  let rec succ = function myvariable ->
+match myvariable with
+  | Coq_xI p -> Coq_xO (succ p)
+  | Coq_xO p -> Coq_xI p
+  | Coq_xH -> Coq_xO Coq_xH
+  
+  (** val add : positive -> positive -> positive **)
+  
+  let rec add x y =
+    match x with
+    | Coq_xI p ->
+      (match y with
+       | Coq_xI q -> Coq_xO (add_carry p q)
+       | Coq_xO q -> Coq_xI (add p q)
+       | Coq_xH -> Coq_xO (succ p))
+    | Coq_xO p ->
+      (match y with
+       | Coq_xI q -> Coq_xI (add p q)
+       | Coq_xO q -> Coq_xO (add p q)
+       | Coq_xH -> Coq_xI p)
+    | Coq_xH ->
+      (match y with
+       | Coq_xI q -> Coq_xO (succ q)
+       | Coq_xO q -> Coq_xI q
+       | Coq_xH -> Coq_xO Coq_xH)
+  
+  (** val add_carry : positive -> positive -> positive **)
+  
+  and add_carry x y =
+    match x with
+    | Coq_xI p ->
+      (match y with
+       | Coq_xI q -> Coq_xI (add_carry p q)
+       | Coq_xO q -> Coq_xO (add_carry p q)
+       | Coq_xH -> Coq_xI (succ p))
+    | Coq_xO p ->
+      (match y with
+       | Coq_xI q -> Coq_xO (add_carry p q)
+       | Coq_xO q -> Coq_xI (add p q)
+       | Coq_xH -> Coq_xO (succ p))
+    | Coq_xH ->
+      (match y with
+       | Coq_xI q -> Coq_xI (succ q)
+       | Coq_xO q -> Coq_xO (succ q)
+       | Coq_xH -> Coq_xI Coq_xH)
+  
+  (** val pred_double : positive -> positive **)
+  
+  let rec pred_double = function myvariable ->
+match myvariable with
+  | Coq_xI p -> Coq_xI (Coq_xO p)
+  | Coq_xO p -> Coq_xI (pred_double p)
+  | Coq_xH -> Coq_xH
+  
+  (** val pred : positive -> positive **)
+  
+  let pred = function myvariable ->
+match myvariable with
+  | Coq_xI p -> Coq_xO p
+  | Coq_xO p -> pred_double p
+  | Coq_xH -> Coq_xH
+  
+  (** val pred_N : positive -> coq_N **)
+  
+  let pred_N = function myvariable ->
+match myvariable with
+  | Coq_xI p -> Npos (Coq_xO p)
+  | Coq_xO p -> Npos (pred_double p)
+  | Coq_xH -> N0
+  
+  type mask =
+  | IsNul
+  | IsPos of positive
+  | IsNeg
+  
+  (** val mask_rect : 'a1 -> (positive -> 'a1) -> 'a1 -> mask -> 'a1 **)
+  
+  let mask_rect f f0 f1 = function myvariable ->
+match myvariable with
+  | IsNul -> f
+  | IsPos x -> f0 x
+  | IsNeg -> f1
+  
+  (** val mask_rec : 'a1 -> (positive -> 'a1) -> 'a1 -> mask -> 'a1 **)
+  
+  let mask_rec f f0 f1 = function myvariable ->
+match myvariable with
+  | IsNul -> f
+  | IsPos x -> f0 x
+  | IsNeg -> f1
+  
+  (** val succ_double_mask : mask -> mask **)
+  
+  let succ_double_mask = function myvariable ->
+match myvariable with
+  | IsNul -> IsPos Coq_xH
+  | IsPos p -> IsPos (Coq_xI p)
+  | IsNeg -> IsNeg
+  
+  (** val double_mask : mask -> mask **)
+  
+  let double_mask = function myvariable ->
+match myvariable with
+  | IsPos p -> IsPos (Coq_xO p)
+  | IsNul -> IsNul
+  | IsNeg -> IsNeg
+  
+  (** val double_pred_mask : positive -> mask **)
+  
+  let double_pred_mask = function myvariable ->
+match myvariable with
+  | Coq_xI p -> IsPos (Coq_xO (Coq_xO p))
+  | Coq_xO p -> IsPos (Coq_xO (pred_double p))
+  | Coq_xH -> IsNul
+  
+  (** val pred_mask : mask -> mask **)
+  
+  let pred_mask = function myvariable ->
+match myvariable with
+  | IsPos q ->
+    (match q with
+     | Coq_xH -> IsNul
+     | Coq_xI p -> IsPos (pred q)
+     | Coq_xO p -> IsPos (pred q))
+  | IsNeg -> IsNeg
+  | IsNul -> IsNeg
+  
+  (** val sub_mask : positive -> positive -> mask **)
+  
+  let rec sub_mask x y =
+    match x with
+    | Coq_xI p ->
+      (match y with
+       | Coq_xI q -> double_mask (sub_mask p q)
+       | Coq_xO q -> succ_double_mask (sub_mask p q)
+       | Coq_xH -> IsPos (Coq_xO p))
+    | Coq_xO p ->
+      (match y with
+       | Coq_xI q -> succ_double_mask (sub_mask_carry p q)
+       | Coq_xO q -> double_mask (sub_mask p q)
+       | Coq_xH -> IsPos (pred_double p))
+    | Coq_xH ->
+      (match y with
+       | Coq_xH -> IsNul
+       | Coq_xI a -> IsNeg
+       | Coq_xO p -> IsNeg)
+  
+  (** val sub_mask_carry : positive -> positive -> mask **)
+  
+  and sub_mask_carry x y =
+    match x with
+    | Coq_xI p ->
+      (match y with
+       | Coq_xI q -> succ_double_mask (sub_mask_carry p q)
+       | Coq_xO q -> double_mask (sub_mask p q)
+       | Coq_xH -> IsPos (pred_double p))
+    | Coq_xO p ->
+      (match y with
+       | Coq_xI q -> double_mask (sub_mask_carry p q)
+       | Coq_xO q -> succ_double_mask (sub_mask_carry p q)
+       | Coq_xH -> double_pred_mask p)
+    | Coq_xH -> IsNeg
+  
+  (** val sub : positive -> positive -> positive **)
+  
+  let sub x y =
+    match sub_mask x y with
+    | IsPos z -> z
+    | IsNul -> Coq_xH
+    | IsNeg -> Coq_xH
+  
+  (** val mul : positive -> positive -> positive **)
+  
+  let rec mul x y =
+    match x with
+    | Coq_xI p -> add y (Coq_xO (mul p y))
+    | Coq_xO p -> Coq_xO (mul p y)
+    | Coq_xH -> y
+  
+  (** val iter : positive -> ('a1 -> 'a1) -> 'a1 -> 'a1 **)
+  
+  let rec iter n f x =
+    match n with
+    | Coq_xI n' -> f (iter n' f (iter n' f x))
+    | Coq_xO n' -> iter n' f (iter n' f x)
+    | Coq_xH -> f x
+  
+  (** val pow : positive -> positive -> positive **)
+  
+  let pow x y =
+    iter y (mul x) Coq_xH
+  
+  (** val square : positive -> positive **)
+  
+  let rec square = function myvariable ->
+match myvariable with
+  | Coq_xI p0 -> Coq_xI (Coq_xO (add (square p0) p0))
+  | Coq_xO p0 -> Coq_xO (Coq_xO (square p0))
+  | Coq_xH -> Coq_xH
+  
+  (** val div2 : positive -> positive **)
+  
+  let div2 = function myvariable ->
+match myvariable with
+  | Coq_xI p0 -> p0
+  | Coq_xO p0 -> p0
+  | Coq_xH -> Coq_xH
+  
+  (** val div2_up : positive -> positive **)
+  
+  let div2_up = function myvariable ->
+match myvariable with
+  | Coq_xI p0 -> succ p0
+  | Coq_xO p0 -> p0
+  | Coq_xH -> Coq_xH
+  
+  (** val size_nat : positive -> nat **)
+  
+  let rec size_nat = function myvariable ->
+match myvariable with
+  | Coq_xI p0 -> S (size_nat p0)
+  | Coq_xO p0 -> S (size_nat p0)
+  | Coq_xH -> S O
+  
+  (** val size : positive -> positive **)
+  
+  let rec size = function myvariable ->
+match myvariable with
+  | Coq_xI p0 -> succ (size p0)
+  | Coq_xO p0 -> succ (size p0)
+  | Coq_xH -> Coq_xH
+  
+  (** val compare_cont : positive -> positive -> comparison -> comparison **)
+  
+  let rec compare_cont x y r =
+    match x with
+    | Coq_xI p ->
+      (match y with
+       | Coq_xI q -> compare_cont p q r
+       | Coq_xO q -> compare_cont p q Gt
+       | Coq_xH -> Gt)
+    | Coq_xO p ->
+      (match y with
+       | Coq_xI q -> compare_cont p q Lt
+       | Coq_xO q -> compare_cont p q r
+       | Coq_xH -> Gt)
+    | Coq_xH ->
+      (match y with
+       | Coq_xH -> r
+       | Coq_xO p -> Lt
+       | Coq_xI p -> Lt)
+  
+  (** val compare : positive -> positive -> comparison **)
+  
+  let compare x y =
+    compare_cont x y Eq
+  
+  (** val min : positive -> positive -> positive **)
+  
+  let min p p' =
+    match compare p p' with
+    | Gt -> p'
+    | Eq -> p
+    | Lt -> p
+  
+  (** val max : positive -> positive -> positive **)
+  
+  let max p p' =
+    match compare p p' with
+    | Gt -> p
+    | Eq -> p'
+    | Lt -> p'
+  
+  (** val eqb : positive -> positive -> bool **)
+  
+  let rec eqb p q =
+    match p with
+    | Coq_xI p0 ->
+      (match q with
+       | Coq_xI q0 -> eqb p0 q0
+       | Coq_xO q -> false
+       | Coq_xH -> false)
+    | Coq_xO p0 ->
+      (match q with
+       | Coq_xO q0 -> eqb p0 q0
+       | Coq_xI q -> false
+       | Coq_xH -> false)
+    | Coq_xH ->
+      (match q with
+       | Coq_xH -> true
+       | Coq_xI a -> false
+       | Coq_xO a -> false)
+  
+  (** val leb : positive -> positive -> bool **)
+  
+  let leb x y =
+    match compare x y with
+    | Gt -> false
+    | Eq -> true
+    | Lt -> true
+  
+  (** val ltb : positive -> positive -> bool **)
+  
+  let ltb x y =
+    match compare x y with
+    | Lt -> true
+    | Eq -> false
+    | Gt -> false
+  
+  (** val sqrtrem_step :
+      (positive -> positive) -> (positive -> positive) -> (positive * mask)
+      -> positive * mask **)
+  
+  let sqrtrem_step f g = function myvariable ->
+  let (s, y) = myvariable in
+    (match y with
+     | IsPos r ->
+       let s' = Coq_xI (Coq_xO s) in
+       let r' = g (f r) in
+       if leb s' r'
+       then ((Coq_xI s), (sub_mask r' s'))
+       else ((Coq_xO s), (IsPos r'))
+     | IsNeg -> ((Coq_xO s), (sub_mask (g (f Coq_xH)) (Coq_xO (Coq_xO Coq_xH))))
+     | IsNul -> ((Coq_xO s), (sub_mask (g (f Coq_xH)) (Coq_xO (Coq_xO Coq_xH)))))
+  
+  (** val sqrtrem : positive -> positive * mask **)
+  
+  let rec sqrtrem = function myvariable ->
+match myvariable with
+  | Coq_xI p0 ->
+    (match p0 with
+     | Coq_xI p1 ->
+       sqrtrem_step (fun x -> Coq_xI x) (fun x -> Coq_xI x) (sqrtrem p1)
+     | Coq_xO p1 ->
+       sqrtrem_step (fun x -> Coq_xO x) (fun x -> Coq_xI x) (sqrtrem p1)
+     | Coq_xH -> (Coq_xH, (IsPos (Coq_xO Coq_xH))))
+  | Coq_xO p0 ->
+    (match p0 with
+     | Coq_xI p1 ->
+       sqrtrem_step (fun x -> Coq_xI x) (fun x -> Coq_xO x) (sqrtrem p1)
+     | Coq_xO p1 ->
+       sqrtrem_step (fun x -> Coq_xO x) (fun x -> Coq_xO x) (sqrtrem p1)
+     | Coq_xH -> (Coq_xH, (IsPos Coq_xH)))
+  | Coq_xH -> (Coq_xH, IsNul)
+  
+  (** val sqrt : positive -> positive **)
+  
+  let sqrt p =
+    fst (sqrtrem p)
+  
+  (** val gcdn : nat -> positive -> positive -> positive **)
+  
+  let rec gcdn n a b =
+    match n with
+    | O -> Coq_xH
+    | S n0 ->
+      (match a with
+       | Coq_xI a' ->
+         (match b with
+          | Coq_xI b' ->
+            (match compare a' b' with
+             | Eq -> a
+             | Lt -> gcdn n0 (sub b' a') a
+             | Gt -> gcdn n0 (sub a' b') b)
+          | Coq_xO b0 -> gcdn n0 a b0
+          | Coq_xH -> Coq_xH)
+       | Coq_xO a0 ->
+         (match b with
+          | Coq_xI p -> gcdn n0 a0 b
+          | Coq_xO b0 -> Coq_xO (gcdn n0 a0 b0)
+          | Coq_xH -> Coq_xH)
+       | Coq_xH -> Coq_xH)
+  
+  (** val gcd : positive -> positive -> positive **)
+  
+  let gcd a b =
+    gcdn (plus (size_nat a) (size_nat b)) a b
+  
+  (** val ggcdn :
+      nat -> positive -> positive -> positive * (positive * positive) **)
+  
+  let rec ggcdn n a b =
+    match n with
+    | O -> (Coq_xH, (a, b))
+    | S n0 ->
+      (match a with
+       | Coq_xI a' ->
+         (match b with
+          | Coq_xI b' ->
+            (match compare a' b' with
+             | Eq -> (a, (Coq_xH, Coq_xH))
+             | Lt ->
+               let (g, p) = ggcdn n0 (sub b' a') a in
+               let (ba, aa) = p in (g, (aa, (add aa (Coq_xO ba))))
+             | Gt ->
+               let (g, p) = ggcdn n0 (sub a' b') b in
+               let (ab, bb) = p in (g, ((add bb (Coq_xO ab)), bb)))
+          | Coq_xO b0 ->
+            let (g, p) = ggcdn n0 a b0 in
+            let (aa, bb) = p in (g, (aa, (Coq_xO bb)))
+          | Coq_xH -> (Coq_xH, (a, Coq_xH)))
+       | Coq_xO a0 ->
+         (match b with
+          | Coq_xI p ->
+            let (g, p0) = ggcdn n0 a0 b in
+            let (aa, bb) = p0 in (g, ((Coq_xO aa), bb))
+          | Coq_xO b0 -> let (g, p) = ggcdn n0 a0 b0 in ((Coq_xO g), p)
+          | Coq_xH -> (Coq_xH, (a, Coq_xH)))
+       | Coq_xH -> (Coq_xH, (Coq_xH, b)))
+  
+  (** val ggcd : positive -> positive -> positive * (positive * positive) **)
+  
+  let ggcd a b =
+    ggcdn (plus (size_nat a) (size_nat b)) a b
+  
+  (** val coq_Nsucc_double : coq_N -> coq_N **)
+  
+  let coq_Nsucc_double = function myvariable ->
+match myvariable with
+  | N0 -> Npos Coq_xH
+  | Npos p -> Npos (Coq_xI p)
+  
+  (** val coq_Ndouble : coq_N -> coq_N **)
+  
+  let coq_Ndouble = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p -> Npos (Coq_xO p)
+  
+  (** val coq_lor : positive -> positive -> positive **)
+  
+  let rec coq_lor p q =
+    match p with
+    | Coq_xI p0 ->
+      (match q with
+       | Coq_xI q0 -> Coq_xI (coq_lor p0 q0)
+       | Coq_xO q0 -> Coq_xI (coq_lor p0 q0)
+       | Coq_xH -> p)
+    | Coq_xO p0 ->
+      (match q with
+       | Coq_xI q0 -> Coq_xI (coq_lor p0 q0)
+       | Coq_xO q0 -> Coq_xO (coq_lor p0 q0)
+       | Coq_xH -> Coq_xI p0)
+    | Coq_xH ->
+      (match q with
+       | Coq_xO q0 -> Coq_xI q0
+       | Coq_xI a -> q
+       | Coq_xH -> q)
+  
+  (** val coq_land : positive -> positive -> coq_N **)
+  
+  let rec coq_land p q =
+    match p with
+    | Coq_xI p0 ->
+      (match q with
+       | Coq_xI q0 -> coq_Nsucc_double (coq_land p0 q0)
+       | Coq_xO q0 -> coq_Ndouble (coq_land p0 q0)
+       | Coq_xH -> Npos Coq_xH)
+    | Coq_xO p0 ->
+      (match q with
+       | Coq_xI q0 -> coq_Ndouble (coq_land p0 q0)
+       | Coq_xO q0 -> coq_Ndouble (coq_land p0 q0)
+       | Coq_xH -> N0)
+    | Coq_xH ->
+      (match q with
+       | Coq_xO q0 -> N0
+       | Coq_xI q0 -> Npos Coq_xH
+       | Coq_xH -> Npos Coq_xH)
+  
+  (** val ldiff : positive -> positive -> coq_N **)
+  
+  let rec ldiff p q =
+    match p with
+    | Coq_xI p0 ->
+      (match q with
+       | Coq_xI q0 -> coq_Ndouble (ldiff p0 q0)
+       | Coq_xO q0 -> coq_Nsucc_double (ldiff p0 q0)
+       | Coq_xH -> Npos (Coq_xO p0))
+    | Coq_xO p0 ->
+      (match q with
+       | Coq_xI q0 -> coq_Ndouble (ldiff p0 q0)
+       | Coq_xO q0 -> coq_Ndouble (ldiff p0 q0)
+       | Coq_xH -> Npos p)
+    | Coq_xH ->
+      (match q with
+       | Coq_xO q0 -> Npos Coq_xH
+       | Coq_xI q0 -> N0
+       | Coq_xH -> N0)
+  
+  (** val coq_lxor : positive -> positive -> coq_N **)
+  
+  let rec coq_lxor p q =
+    match p with
+    | Coq_xI p0 ->
+      (match q with
+       | Coq_xI q0 -> coq_Ndouble (coq_lxor p0 q0)
+       | Coq_xO q0 -> coq_Nsucc_double (coq_lxor p0 q0)
+       | Coq_xH -> Npos (Coq_xO p0))
+    | Coq_xO p0 ->
+      (match q with
+       | Coq_xI q0 -> coq_Nsucc_double (coq_lxor p0 q0)
+       | Coq_xO q0 -> coq_Ndouble (coq_lxor p0 q0)
+       | Coq_xH -> Npos (Coq_xI p0))
+    | Coq_xH ->
+      (match q with
+       | Coq_xI q0 -> Npos (Coq_xO q0)
+       | Coq_xO q0 -> Npos (Coq_xI q0)
+       | Coq_xH -> N0)
+  
+  (** val shiftl_nat : positive -> nat -> positive **)
+  
+  let shiftl_nat p n =
+    nat_iter n (fun x -> Coq_xO x) p
+  
+  (** val shiftr_nat : positive -> nat -> positive **)
+  
+  let shiftr_nat p n =
+    nat_iter n div2 p
+  
+  (** val shiftl : positive -> coq_N -> positive **)
+  
+  let shiftl p = function myvariable ->
+match myvariable with
+  | N0 -> p
+  | Npos n0 -> iter n0 (fun x -> Coq_xO x) p
+  
+  (** val shiftr : positive -> coq_N -> positive **)
+  
+  let shiftr p = function myvariable ->
+match myvariable with
+  | N0 -> p
+  | Npos n0 -> iter n0 div2 p
+  
+  (** val testbit_nat : positive -> nat -> bool **)
+  
+  let rec testbit_nat p n =
+    match p with
+    | Coq_xI p0 ->
+      (match n with
+       | O -> true
+       | S n' -> testbit_nat p0 n')
+    | Coq_xO p0 ->
+      (match n with
+       | O -> false
+       | S n' -> testbit_nat p0 n')
+    | Coq_xH ->
+      (match n with
+       | O -> true
+       | S n0 -> false)
+  
+  (** val testbit : positive -> coq_N -> bool **)
+  
+  let rec testbit p n =
+    match p with
+    | Coq_xI p0 ->
+      (match n with
+       | N0 -> true
+       | Npos n0 -> testbit p0 (pred_N n0))
+    | Coq_xO p0 ->
+      (match n with
+       | N0 -> false
+       | Npos n0 -> testbit p0 (pred_N n0))
+    | Coq_xH ->
+      (match n with
+       | N0 -> true
+       | Npos p0 -> false)
+  
+  (** val iter_op : ('a1 -> 'a1 -> 'a1) -> positive -> 'a1 -> 'a1 **)
+  
+  let rec iter_op op p a =
+    match p with
+    | Coq_xI p0 -> op a (iter_op op p0 (op a a))
+    | Coq_xO p0 -> iter_op op p0 (op a a)
+    | Coq_xH -> a
+  
+  (** val to_nat : positive -> nat **)
+  
+  let to_nat x =
+    iter_op plus x (S O)
+  
+  (** val of_nat : nat -> positive **)
+  
+  let rec of_nat = function myvariable ->
+match myvariable with
+  | O -> Coq_xH
+  | S x ->
+    (match x with
+     | O -> Coq_xH
+     | S n0 -> succ (of_nat x))
+  
+  (** val of_succ_nat : nat -> positive **)
+  
+  let rec of_succ_nat = function myvariable ->
+match myvariable with
+  | O -> Coq_xH
+  | S x -> succ (of_succ_nat x)
+ (*end*)
+
+(*$$ BinPosDef.ml $$*)
+(*-- Bool.ml --*)
+(** val bool_dec : bool -> bool -> bool **)
+
+let bool_dec b1 b2 =
+  if b1 then if b2 then true else false else if b2 then false else true
+
+(** val eqb : bool -> bool -> bool **)
+
+let eqb_b b1 b2 =
+  if b1 then b2 else if b2 then false else true
+
+type reflect =
+| ReflectT
+| ReflectF
+
+(** val iff_reflect : bool -> reflect **)
+
+let iff_reflect = function x ->
+if (x) then ReflectT else ReflectF
+
+(*$$ Bool.ml $$*)
+(*-- Datatypes.ml --*)
+(*$$ Datatypes.ml $$*)
+(*-- Peano.ml --*)
+(*-- Datatypes.ml --*)
+(*$$ Peano.ml $$*)
+
+type __
+let __ = ()
+
+
+(*$$ BinPos.ml $$*)
+(*-- Bool.ml --*)
+(*$$ Bool.ml $$*)
+(*-- Datatypes.ml --*)
+(*$$ Datatypes.ml $$*)
+(*-- Peano.ml --*)
+(*-- Datatypes.ml --*)
+(*$$ Peano.ml $$*)
+
+
+(*module N = 
+ struct 
+  type t = coq_N*)
+  
+  (** val zero : coq_N **)
+  
+  let zero =
+    N0
+  
+  (** val one : coq_N **)
+  
+  let one =
+    Npos Coq_xH
+  
+  (** val two : coq_N **)
+  
+  let two =
+    Npos (Coq_xO Coq_xH)
+  
+  (** val succ_double_n : coq_N -> coq_N **)
+  
+  let succ_double_n = function myvariable ->
+match myvariable with
+  | N0 -> Npos Coq_xH
+  | Npos p -> Npos (Coq_xI p)
+  
+  (** val double : coq_N -> coq_N **)
+  
+  let double_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p -> Npos (Coq_xO p)
+  
+  (** val succ : coq_N -> coq_N **)
+  
+  let succ_n = function myvariable ->
+match myvariable with
+  | N0 -> Npos Coq_xH
+  | Npos p -> Npos (succ p)
+  
+  (** val pred : coq_N -> coq_N **)
+  
+  let pred_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p -> pred_N p
+  
+  (** val succ_pos : coq_N -> positive **)
+  
+  let succ_pos_n = function myvariable ->
+match myvariable with
+  | N0 -> Coq_xH
+  | Npos p -> succ p
+  
+  (** val add : coq_N -> coq_N -> coq_N **)
+  
+  let add_n n m =
+    match n with
+    | N0 -> m
+    | Npos p ->
+      (match m with
+       | N0 -> n
+       | Npos q -> Npos (add p q))
+  
+  (** val sub : coq_N -> coq_N -> coq_N **)
+  
+  let sub_n n m =
+    match n with
+    | N0 -> N0
+    | Npos n' ->
+      (match m with
+       | N0 -> n
+       | Npos m' ->
+         (match sub_mask n' m' with
+          | IsPos p -> Npos p
+          | IsNul -> N0
+          | IsNeg -> N0))
+  
+  (** val mul : coq_N -> coq_N -> coq_N **)
+  
+  let mul_n n m =
+    match n with
+    | N0 -> N0
+    | Npos p ->
+      (match m with
+       | N0 -> N0
+       | Npos q -> Npos (mul p q))
+  
+  (** val compare : coq_N -> coq_N -> comparison **)
+  
+  let compare_n n m =
+    match n with
+    | N0 ->
+      (match m with
+       | N0 -> Eq
+       | Npos m' -> Lt)
+    | Npos n' ->
+      (match m with
+       | N0 -> Gt
+       | Npos m' -> compare n' m')
+  
+  (** val eqb : coq_N -> coq_N -> bool **)
+  
+  let rec eqb_n n m =
+    match n with
+    | N0 ->
+      (match m with
+       | N0 -> true
+       | Npos p -> false)
+    | Npos p ->
+      (match m with
+       | N0 -> false
+       | Npos q -> eqb p q)
+  
+  (** val leb : coq_N -> coq_N -> bool **)
+  
+  let leb_n x y =
+    match compare_n x y with
+    | Gt -> false
+    | Eq -> true
+    | Lt -> true
+  
+  (** val ltb : coq_N -> coq_N -> bool **)
+  
+  let ltb_n x y =
+    match compare_n x y with
+    | Lt -> true
+    | Eq -> false
+    | Gt -> false
+  
+  (** val min : coq_N -> coq_N -> coq_N **)
+  
+  let min_n n n' =
+    match compare_n n n' with
+    | Gt -> n'
+    | Eq -> n
+    | Lt -> n
+  
+  (** val max : coq_N -> coq_N -> coq_N **)
+  
+  let max_n n n' =
+    match compare_n n n' with
+    | Gt -> n
+    | Eq -> n'
+    | Lt -> n'
+  
+  (** val div2 : coq_N -> coq_N **)
+  
+  let div2_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p0 ->
+    (match p0 with
+     | Coq_xI p -> Npos p
+     | Coq_xO p -> Npos p
+     | Coq_xH -> N0)
+  
+  (** val even : coq_N -> bool **)
+  
+  let even_n = function myvariable ->
+match myvariable with
+  | N0 -> true
+  | Npos p ->
+    (match p with
+     | Coq_xO p0 -> true
+     | Coq_xI p0 -> false
+     | Coq_xH -> false)
+  
+  (** val odd : coq_N -> bool **)
+  
+  let odd n =
+    negb (even_n n)
+  
+  (** val pow : coq_N -> coq_N -> coq_N **)
+  
+  let pow_n n = function myvariable ->
+match myvariable with
+  | N0 -> Npos Coq_xH
+  | Npos p0 ->
+    (match n with
+     | N0 -> N0
+     | Npos q -> Npos (pow q p0))
+  
+  (** val square : coq_N -> coq_N **)
+  
+  let square_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p -> Npos (square p)
+  
+  (** val log2 : coq_N -> coq_N **)
+  
+  let log2_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p0 ->
+    (match p0 with
+     | Coq_xI p -> Npos (size p)
+     | Coq_xO p -> Npos (size p)
+     | Coq_xH -> N0)
+  
+  (** val size : coq_N -> coq_N **)
+  
+  let size_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p -> Npos (size p)
+  
+  (** val size_nat : coq_N -> nat **)
+  
+  let size_nat_n = function myvariable ->
+match myvariable with
+  | N0 -> O
+  | Npos p -> size_nat p
+  
+  (** val pos_div_eucl : positive -> coq_N -> coq_N * coq_N **)
+  
+  let rec pos_div_eucl a b =
+    match a with
+    | Coq_xI a' ->
+      let (q, r) = pos_div_eucl a' b in
+      let r' = succ_double_n r in
+      if leb_n b r' then ((succ_double_n q), (sub_n r' b)) else ((double_n q), r')
+    | Coq_xO a' ->
+      let (q, r) = pos_div_eucl a' b in
+      let r' = double_n r in
+      if leb_n b r' then ((succ_double_n q), (sub_n r' b)) else ((double_n q), r')
+    | Coq_xH ->
+      (match b with
+       | N0 -> (N0, (Npos Coq_xH))
+       | Npos p ->
+         (match p with
+          | Coq_xH -> ((Npos Coq_xH), N0)
+          | Coq_xI p0 -> (N0, (Npos Coq_xH))
+          | Coq_xO p0 -> (N0, (Npos Coq_xH))))
+  
+  (** val div_eucl : coq_N -> coq_N -> coq_N * coq_N **)
+  
+  let div_eucl a b =
+    match a with
+    | N0 -> (N0, N0)
+    | Npos na ->
+      (match b with
+       | N0 -> (N0, a)
+       | Npos p -> pos_div_eucl na b)
+  
+  (** val div : coq_N -> coq_N -> coq_N **)
+  
+  let div a b =
+    fst (div_eucl a b)
+  
+  (** val modulo : coq_N -> coq_N -> coq_N **)
+  
+  let modulo a b =
+    snd (div_eucl a b)
+  
+  (** val gcd : coq_N -> coq_N -> coq_N **)
+  
+  let gcd_n a b =
+    match a with
+    | N0 -> b
+    | Npos p ->
+      (match b with
+       | N0 -> a
+       | Npos q -> Npos (gcd p q))
+  
+  (** val ggcd : coq_N -> coq_N -> coq_N * (coq_N * coq_N) **)
+  
+  let ggcd_n a b =
+    match a with
+    | N0 -> (b, (N0, (Npos Coq_xH)))
+    | Npos p ->
+      (match b with
+       | N0 -> (a, ((Npos Coq_xH), N0))
+       | Npos q ->
+         let (g, p0) = ggcd p q in
+         let (aa, bb) = p0 in ((Npos g), ((Npos aa), (Npos bb))))
+  
+  (** val sqrtrem : coq_N -> coq_N * coq_N **)
+  
+  (*let sqrtrem_n = function myvariable ->
+match myvariable with
+  | N0 -> (N0, N0)
+  | Npos p ->
+    let (s, m) = sqrtrem p in
+    (match m with
+     | IsPos r -> ((Npos s), (Npos r))
+     | IsNul -> ((Npos s), N0)
+     | IsNeg -> ((Npos s), N0))
+  
+  (** val sqrt : coq_N -> coq_N **)
+  
+  let sqrt_n = function myvariable ->
+match myvariable with
+  | N0 -> N0
+  | Npos p -> Npos (sqrt p)*)
+  
+  (** val coq_lor : coq_N -> coq_N -> coq_N **)
+  
+  let coq_lor_n n m =
+    match n with
+    | N0 -> m
+    | Npos p ->
+      (match m with
+       | N0 -> n
+       | Npos q -> Npos (coq_lor p q))
+  
+  (** val coq_land : coq_N -> coq_N -> coq_N **)
+  
+  let coq_land_n n m =
+    match n with
+    | N0 -> N0
+    | Npos p ->
+      (match m with
+       | N0 -> N0
+       | Npos q -> coq_land p q)
+  
+  (** val ldiff : coq_N -> coq_N -> coq_N **)
+  
+  let rec ldiff_n n m =
+    match n with
+    | N0 -> N0
+    | Npos p ->
+      (match m with
+       | N0 -> n
+       | Npos q -> ldiff p q)
+  
+  (** val coq_lxor : coq_N -> coq_N -> coq_N **)
+  
+  let coq_lxor_n n m =
+    match n with
+    | N0 -> m
+    | Npos p ->
+      (match m with
+       | N0 -> n
+       | Npos q -> coq_lxor p q)
+  
+  (** val shiftl_nat : coq_N -> nat -> coq_N **)
+  
+  let shiftl_nat a n =
+    nat_iter n double_n a
+  
+  (** val shiftr_nat : coq_N -> nat -> coq_N **)
+  
+  let shiftr_nat a n =
+    nat_iter n div2_n a
+  
+  (** val shiftl : coq_N -> coq_N -> coq_N **)
+  
+  let shiftl_n a n =
+    match a with
+    | N0 -> N0
+    | Npos a0 -> Npos (shiftl a0 n)
+  
+  (** val shiftr : coq_N -> coq_N -> coq_N **)
+  
+  let shiftr_n a = function myvariable ->
+match myvariable with
+  | N0 -> a
+  | Npos p -> iter p div2_n a
+  
+  (** val testbit_nat : coq_N -> nat -> bool **)
+  
+  let testbit_nat_n = function myvariable ->
+match myvariable with
+  | N0 -> (fun x -> false)
+  | Npos p -> testbit_nat p
+  
+  (** val testbit : coq_N -> coq_N -> bool **)
+  
+  let testbit_n a n =
+    match a with
+    | N0 -> false
+    | Npos p -> testbit p n
+  
+  (** val to_nat : coq_N -> nat **)
+  
+  let to_nat_n = function myvariable ->
+match myvariable with
+  | N0 -> O
+  | Npos p -> to_nat p
+  
+  (** val of_nat : nat -> coq_N **)
+  
+  let of_nat_n = function myvariable ->
+match myvariable with
+  | O -> N0
+  | S n' -> Npos (of_succ_nat n')
+  
+  (** val iter : coq_N -> ('a1 -> 'a1) -> 'a1 -> 'a1 **)
+  
+  let iter_n n f x =
+    match n with
+    | N0 -> x
+    | Npos p -> iter p f x
+  
+  
+  (** val discr : coq_N -> positive option **)
+  
+  let discr = function myvariable ->
+match myvariable with
+  | N0 -> None
+  | Npos p -> Some p
+  
+  (** val binary_rect :
+      'a1 -> (coq_N -> 'a1 -> 'a1) -> (coq_N -> 'a1 -> 'a1) -> coq_N -> 'a1 **)
+  
+  let binary_rect f0 f2 fS2 n =
+    let f2' = fun p -> f2 (Npos p) in
+    let fS2' = fun p -> fS2 (Npos p) in
+    (match n with
+     | N0 -> f0
+     | Npos p ->
+       let rec f = function myvariable ->
+match myvariable with
+       | Coq_xI p1 -> fS2' p1 (f p1)
+       | Coq_xO p1 -> f2' p1 (f p1)
+       | Coq_xH -> fS2 N0 f0
+       in f p)
+  
+  (** val binary_rec :
+      'a1 -> (coq_N -> 'a1 -> 'a1) -> (coq_N -> 'a1 -> 'a1) -> coq_N -> 'a1 **)
+  
+  let binary_rec =
+    binary_rect
+  
+  (** val leb_spec0 : coq_N -> coq_N -> reflect **)
+  
+  let leb_spec0 x y =
+    iff_reflect (leb_n x y)
+  
+  (** val ltb_spec0 : coq_N -> coq_N -> reflect **)
+  
+  let ltb_spec0 x y =
+    iff_reflect (ltb_n x y)
+  
+  module Private_BootStrap = 
+   struct 
+    
+   end
+  
+  (** val recursion : 'a1 -> (coq_N -> 'a1 -> 'a1) -> coq_N -> 'a1 **)
+  
+  
+  module Private_OrderTac = 
+   struct 
+    module IsTotal = 
+     struct 
+      
+     end
+    
+    module Tac = 
+     struct 
+      
+     end
+   end
+  
+  module Private_NZPow = 
+   struct 
+    
+   end
+  
+  module Private_NZSqrt = 
+   struct 
+    
+   end
+  
+  (** val sqrt_up : coq_N -> coq_N **)
+  
+  (*let sqrt_up a =
+    match compare_n N0 a with
+    | Lt -> succ_n (sqrt_n (pred_n a))
+    | Gt -> N0
+    | Eq -> N0*)
+  
+  (** val log2_up : coq_N -> coq_N **)
+  
+  let log2_up a =
+    match compare_n (Npos Coq_xH) a with
+    | Lt -> succ_n (log2_n (pred_n a))
+    | Gt -> N0
+    | Eq -> N0
+  
+  module Private_NZDiv = 
+   struct 
+    
+   end
+  
+  (** val lcm : coq_N -> coq_N -> coq_N **)
+  
+  let lcm a b =
+    mul_n a (div b (gcd_n a b))
+  
+  (** val eqb_spec : coq_N -> coq_N -> reflect **)
+  
+  let eqb_spec x y =
+    iff_reflect (eqb_n x y)
+  
+  (** val b2n : bool -> coq_N **)
+  
+  let b2n myvariable =
+if (myvariable = true) then Npos Coq_xH else N0
+  
+  (** val setbit : coq_N -> coq_N -> coq_N **)
+  
+  let setbit a n =
+    coq_lor_n a (shiftl_n (Npos Coq_xH) n)
+  
+  (** val clearbit : coq_N -> coq_N -> coq_N **)
+  
+  let clearbit a n =
+    ldiff_n a (shiftl_n (Npos Coq_xH) n)
+  
+  (** val ones : coq_N -> coq_N **)
+  
+  let ones n =
+    pred_n (shiftl_n (Npos Coq_xH) n)
+  
+  (** val lnot : coq_N -> coq_N -> coq_N **)
+  
+  let lnot a n =
+    coq_lxor_n a (ones n)
+  
+  module Private_Tac = 
+   struct 
+    
+   end
+  
+  (*module Private_Dec = 
+   struct*) 
+    (** val max_case_strong :
+        coq_N -> coq_N -> (coq_N -> coq_N -> __ -> 'a1 -> 'a1) -> (__ -> 'a1)
+        -> (__ -> 'a1) -> 'a1 **)
+    
+    let max_case_strong n m compat hl hr =
+      let c = coq_CompSpec2Type n m (compare_n n m) in
+      (match c with
+       | CompGtT -> compat n (max_n n m) __ (hl __)
+       | CompEqT -> compat m (max_n n m) __ (hr __)
+       | CompLtT -> compat m (max_n n m) __ (hr __))
+    
+    (** val max_case :
+        coq_N -> coq_N -> (coq_N -> coq_N -> __ -> 'a1 -> 'a1) -> 'a1 -> 'a1
+        -> 'a1 **)
+    
+    let max_case n m x x0 x1 =
+      max_case_strong n m x (fun myvariable -> x0) (fun myvariable -> x1)
+    
+    (** val max_dec : coq_N -> coq_N -> bool **)
+    
+    let max_dec n m =
+      max_case n m (fun x y myvariable h0 -> h0) true false
+    
+    (** val min_case_strong :
+        coq_N -> coq_N -> (coq_N -> coq_N -> __ -> 'a1 -> 'a1) -> (__ -> 'a1)
+        -> (__ -> 'a1) -> 'a1 **)
+    
+    let min_case_strong n m compat hl hr =
+      let c = coq_CompSpec2Type n m (compare_n n m) in
+      (match c with
+       | CompGtT -> compat m (min_n n m) __ (hr __)
+       | CompEqT -> compat n (min_n n m) __ (hl __)
+       | CompLtT -> compat n (min_n n m) __ (hl __))
+    
+    (** val min_case :
+        coq_N -> coq_N -> (coq_N -> coq_N -> __ -> 'a1 -> 'a1) -> 'a1 -> 'a1
+        -> 'a1 **)
+    
+    let min_case n m x x0 x1 =
+      min_case_strong n m x (fun myvariable -> x0) (fun myvariable -> x1)
+    
+    (** val min_dec : coq_N -> coq_N -> bool **)
+    
+    let min_dec n m =
+      min_case n m (fun x y myvariable h0 -> h0) true false
+   (*end*)
+  
+  (** val max_case_strong :
+      coq_N -> coq_N -> (__ -> 'a1) -> (__ -> 'a1) -> 'a1 **)
+  
+  let max_case_strong_pd n m x x0 =
+    max_case_strong n m (fun x1 y myvariable x2 -> x2) x x0
+  
+  (** val max_case : coq_N -> coq_N -> 'a1 -> 'a1 -> 'a1 **)
+  
+  let max_case n m x x0 =
+    max_case_strong n m (fun myvariable -> x) (fun myvariable -> x0)
+  
+  (** val max_dec : coq_N -> coq_N -> bool **)
+  
+  let max_dec_pd =
+    max_dec
+  
+  (** val min_case_strong :
+      coq_N -> coq_N -> (__ -> 'a1) -> (__ -> 'a1) -> 'a1 **)
+  
+  let min_case_strong_pd n m x x0 =
+    min_case_strong n m (fun x1 y myvariable x2 -> x2) x x0
+  
+  (** val min_case : coq_N -> coq_N -> 'a1 -> 'a1 -> 'a1 **)
+  
+  let min_case n m x x0 =
+    min_case_strong n m (fun myvariable -> x) (fun myvariable -> x0)
+  
+  (** val min_dec : coq_N -> coq_N -> bool **)
+  
+  let min_dec_pd =
+    min_dec
+ (*end*)
+
+;; ()

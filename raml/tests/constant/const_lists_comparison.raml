@@ -1,0 +1,41 @@
+
+(*
+ * Call the annotations of l1 and l2 be p1 and p2
+ * Consider the case the solver assigns the potential to l2 and p1 = 0
+ * Here in the nil-branch of match l1, the l-branch of match l2, the expression "false"
+ * does not use the potential from l2, thus by weakening rule, p2 = 0. However, p2 = 1 
+ * in the l-branch of match l1
+ * The same thing happens if the solver choose p2 = 0
+ *)
+
+let rec iter x =
+  match x with
+  | [] -> ()
+  | x::xs -> Raml.tick(1.0); iter xs
+
+
+let rec const_compare_aux r l1 l2 = 
+  match l1 with 
+  | [] -> 
+    (match l2 with 
+     | [] ->
+       r 
+     | h::t -> 
+       let _ = iter l2 in false
+	 )
+  | h1::t1 -> 
+    (match l2 with 
+     | [] -> 
+       false
+     | h2::t2 -> 
+       let b = ((h1 : int) = (h2 : int)) in
+       if b then 
+     	 let _ = Raml.tick(1.0) in 
+       	 const_compare_aux r t1 t2 
+       else 
+     	 let _ = Raml.tick(1.0) in 
+       	 const_compare_aux false t1 t2)
+
+;;
+
+const_compare_aux true [1;1;1;1] [1;1]

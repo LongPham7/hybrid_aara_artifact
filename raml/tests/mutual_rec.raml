@@ -1,0 +1,27 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/mutual_rec.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Mutually-recursive functions.
+ *   
+ *)
+
+
+
+let rec
+    if_even n x y = if n = 0 then x else if_odd (n - 1) x y
+and if_odd  n x y = if n = 0 then y else if_even (n - 1) x y
+and f       n x y = if n = 0 then x else f (n - 1) y x in
+
+(if_even 3   2.    3., if_even 4 true false,  (*    3. true *)
+ if_odd  3 true false, if_odd  4   4.     5., (*  true   5. *)
+ f       3 true false, f       4   6.     7.) (* false   6. *)

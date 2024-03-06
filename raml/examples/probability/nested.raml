@@ -1,0 +1,42 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/nested.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Nested probabilistic loops. Degree 2.
+ *   
+ *)
+
+
+let rec mnest m =
+  match m with
+  | [] -> ()
+  | _::t ->
+    let () = if Rprob.flip(1,1)
+    then Raml.tick(1.0)
+    else ()
+    in
+    if Rprob.flip(1,1)
+    then mnest t
+    else mnest m
+
+let rec nested n =
+  match n with
+  | [] -> ()
+  | _::t -> mnest n;
+    if Rprob.flip(1,1)
+    then nested t
+    else nested n
+
+;;
+
+()
+  

@@ -1,0 +1,24 @@
+(** val string_dec : char list -> char list -> bool **)
+
+let rec string_dec s s0 =
+  match s with
+  | [] ->
+    (match s0 with
+     | [] -> true
+     | a::s1 -> false)
+  | a::s1 ->
+    (match s0 with
+     | [] -> false
+     | a0::s2 -> if ((a:int) = (a0:int) ) then string_dec s1 s2 else false)
+
+(** val prefix : char list -> char list -> bool **)
+
+let rec prefix s1 s2 =
+  match s1 with
+  | [] -> true
+  | a::s1' ->
+    (match s2 with
+     | [] -> false
+     | b::s2' -> if ((a:int) = (b:int)) then prefix s1' s2' else false)
+
+;; ()

@@ -1,0 +1,156 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/ueser_defined_list.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Functions for a list with multiple cons nodes.
+ *   
+ *)
+
+
+type ('a,'b,'c) mlist =
+    Aons of 'a * ('a,'b,'c) mlist
+  | Bons of 'b * ('a,'b,'c) mlist
+  | Cons of 'c * ('a,'b,'c) mlist
+  | Nil
+
+let map fa fb fc =
+  let rec ma l = 
+    match l with
+      | Aons (a,l') ->
+	Aons (fa a, ma l')
+      | Bons (b,l') ->
+	Bons (fb b, ma l')
+      | Cons (c,l') ->
+	Cons (fc c, ma l')
+      | Nil -> Nil
+  in
+  fun l -> ma l
+
+
+let rec map2 fa fb fc l =
+  match l with
+    | Aons (a,l') ->
+      Aons (fa a, map2 fa fb fc l')
+    | Bons (b,l') ->
+      Bons (fb b, map2 fa fb fc l')
+    | Cons (c,l') ->
+      Cons (fc c, map2 fa fb fc l')
+    | Nil -> Nil
+
+
+let rec append l1 l2 =
+  match l1 with
+    | [] -> l2
+    | x::xs -> x::(append xs l2)
+
+let _ =
+  let list =
+    let a = Aons( [1;2], Nil) in
+    let b = Bons( 1.0, a) in
+    let c = Bons( 2.0, b) in
+    let d = Aons( [4;5;6], c) in
+    Cons ((),d)
+  in
+  let fa l = append l [0;1] in
+  let fb q = q *. 2.0 in
+  let fc () = () in
+  map fa fb fc list
+
+
+let rec append_all list =
+  match list with
+    | Aons (xs,l) ->
+      append xs (append_all l)
+    | Bons (x, l) ->
+      x :: (append_all l)
+    | Cons ((),l) ->
+      append_all l
+    | Nil -> []
+
+let _ = 
+  let list =
+    let a = Aons( [1;2], Nil) in
+    let b = Bons( 1, a) in
+    let c = Bons( 2, b) in
+    let d = Aons( [4;5;6], c) in
+    Cons ((),d)
+  in
+  append_all list
+
+let rec delete_a list =
+  match list with
+    | Aons (a,l) ->
+      delete_a l
+    | Bons (b,l) ->
+      Bons (b, delete_a l)
+    | Cons (c,l) ->
+      Cons (c, delete_a l)
+    | Nil -> Nil
+
+let rec delete_b list =
+  match list with
+    | Aons (a,l) ->
+      Aons (a, delete_b l)
+    | Bons (b,l) ->
+      delete_b l
+    | Cons (c,l) ->
+      Cons (c, delete_b l)
+    | Nil -> Nil
+
+let rec delete_c list =
+  match list with
+    | Aons (a,l) ->
+      Aons (a, delete_c l)
+    | Bons (b,l) ->
+      Bons (b, delete_c l)
+    | Cons (c,l) ->
+      delete_c l
+    | Nil -> Nil
+
+
+let rec attach x list =
+  match list with
+    | Aons (a,l) ->
+      (x,a):: (attach x l)
+    | Bons (b,l) ->
+      (x,b):: (attach x l)
+    | Cons (c,l) ->
+      (x,c):: (attach x l)
+    | Nil -> []
+
+
+let rec pairs list = 
+  match list with
+    | Aons (a,l) ->
+      let new_pairs = attach a (delete_a l) in
+      let old_pairs = pairs l in
+      append new_pairs old_pairs
+    | Bons (b,l) ->
+      let new_pairs = attach b (delete_b l) in
+      let old_pairs = pairs l in
+      append new_pairs old_pairs
+    | Cons (c,l) ->
+      let new_pairs = attach c (delete_c l) in
+      let old_pairs = pairs l in
+      append new_pairs old_pairs
+    | Nil -> []
+
+
+let _ =
+  let list =
+    let a = Aons( 1, Nil) in
+    let b = Bons( 2, a) in
+    let c = Bons( 2, b) in
+    let d = Aons( 1, c) in
+    Cons (3,d)
+  in
+  pairs list

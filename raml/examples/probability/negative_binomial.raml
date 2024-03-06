@@ -1,0 +1,30 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/negative_binomial.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Sample complexity: negative binomial. Degree 1.
+ *   
+ *)
+
+
+let rec negative_binomial p r =
+  match r with
+  | [] -> []
+  | h::t ->
+    let p = Rprob.consume (0.,1.,0.) p in
+    if Rprob.flip p
+    then () :: negative_binomial p (h::t)
+    else negative_binomial p t
+
+;;
+
+()

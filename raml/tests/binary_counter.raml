@@ -1,0 +1,52 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/binary_counter.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   A binary counter; a classic example of amortized analysis
+ *   
+ *)
+
+
+type bin = Zero | One
+
+
+let rec add_one l =
+  match l with
+    | [] -> [One]
+    | b::bs ->
+      begin
+	match b with
+          | Zero -> One::bs
+          | One -> 
+            let _ = Raml.tick(1.0) in 
+            Zero::add_one bs;
+      end
+
+let rec add_many l n =
+  Rnat.ifz n
+    (fun () -> l
+    )
+    (fun n' -> 
+      let l' = add_one l in
+      add_many l' n'
+    )
+
+let rec add_list counter l =
+  match l with
+    | [] -> (fun () -> counter) ()
+    | x::xs -> let f xs counter = (add_list (add_one counter) xs) in f xs counter
+
+(*let _ =
+  add_one (add_one (add_one [One;Zero])) (*Rnat.zero*)*)
+
+let _ =
+  add_list [Zero] [1;2;3;4]

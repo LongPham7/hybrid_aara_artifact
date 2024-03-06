@@ -1,0 +1,30 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/binomial.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Sample complexity: binomial. Degree 1.
+ *   
+ *)
+
+let rec binomial p l =
+  match l with
+  | [] -> []
+  | _::l' ->
+    let res = binomial p l' in
+    let _ = Raml.tick 1. in
+    if Rprob.flip p
+    then ()::res
+    else res
+
+;;
+
+()

@@ -1,0 +1,32 @@
+(* source: http://rosettacode.org/wiki/Pattern_matching#OCaml *)
+
+type color = R | B
+type 'a tree = E | T of color * 'a * 'a tree * 'a tree
+
+(** val balance : color * 'a * 'a tree * 'a tree -> 'a tree *)
+let balance = function
+  | B, z, T (R, y, T (R,x,a,b), c), d
+  | B, z,T (R, x, a, T (R,y,b,c)), d
+  | B, x, a, T (R, z, T (R,y,b,c), d)
+  | B, x, a, T (R, y, b, T (R,z,c,d)) -> T (R, y, T (B,x,a,b), T (B,x,c,d))
+  | col, x, a, b                      -> T (col, x, a, b)
+
+(** val insert : 'a -> 'a tree -> 'a tree *)
+let insert (x : int) s =
+  let rec ins = function
+    | E                  -> T (R,x,E,E)
+    | T (col,y,a,b) ->
+    let s = T (col,y,a,b) in
+	if x < y then
+	  balance (col, y, ins a, b)
+	else if x > y then
+	  balance (col, y, a, ins b)
+	else
+	  s
+  in let T (_,y,a,b) = ins s
+  in T (B,y,a,b)
+
+;;
+
+let t1 = T(R,1,T(B,2,E,E),T(R,3,E,E)) in
+insert 4 t1

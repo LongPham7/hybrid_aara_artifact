@@ -1,0 +1,35 @@
+
+let rec consume_fc1 t = 
+	match t with
+	| [] -> ()
+	| th::tt ->  
+		let _ = Raml.tick(1.0) in consume_fc1 tt
+;;
+
+let consume_fc2 t = ()
+;;
+
+let rec f l = 
+  match l with
+  | [] -> []
+  | h::t -> 
+    if h then 
+    	let _ = Raml.tick(1.0) in
+    	let z = consume_fc1 t in t
+    else 
+    	let _ = Raml.tick(1.0) in 
+    	let z = consume_fc2 t in 
+      f t
+;;
+
+let rec naive_f l = 
+  match l with
+  | [] -> []
+  | h::t ->
+    if h then
+    	let _ = Raml.tick(1.0) in   
+    	let z = naive_f t in t
+    else
+    	let _ = Raml.tick(1.0) in  
+    	let z = t in naive_f t
+      

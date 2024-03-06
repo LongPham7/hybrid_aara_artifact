@@ -1,0 +1,80 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_polyrec.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Computing all ordered pairs of the elements of a list.
+ *   
+ *)
+
+
+let rec append l1 l2 =
+  match l1 with
+    | [] -> l2
+    | x::xs -> x::(append xs l2)
+
+
+let rec attach x ys =
+  match ys with
+    | [] -> []
+    | y::ys -> (x,y)::(attach x ys)
+
+
+let rec pairs l =
+  match l with
+    | [] -> []
+    | x::xs -> 
+      append (pairs xs) (attach x xs)
+
+let rec partition f l =
+  match l with
+    | [] -> ([],[])
+    | x::xs ->
+      let (cs,bs) = partition f xs in
+      if f x then
+	(x::cs,bs)
+      else
+	(cs,x::bs)
+	
+
+let rec quicksort gt = function
+  | [] -> []
+  | x::xs ->
+      let ys, zs = partition (gt x) xs in
+      append (quicksort gt ys) (x :: (quicksort gt zs))
+
+
+let compare (a:int*int) (b:int*int) =
+  let (a1,a2) = a in
+  let (b1,b2) = b in
+  if not (a1=b1) then
+    a1 > b1
+  else
+    a2 >= b2
+
+let rec compare_list (l1:int list) l2 =
+  match l1 with
+    | [] -> true
+    | x::xs ->
+      match l2 with
+	| [] -> false
+	| y::ys ->
+	  if x = y then
+	    compare_list xs ys
+	  else
+	    x <= y
+
+let _ = pairs [1;2;3;4;5;6;7]
+
+let _ = quicksort (fun a b -> a <= b)  [1;2;3;45;5;6;7;0]
+
+let _ = quicksort compare_list [[1;2;3];[1;2;2]]
+

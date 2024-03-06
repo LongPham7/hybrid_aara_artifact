@@ -1,0 +1,28 @@
+let rev l = 
+	let rec rev_aux l acc = 
+  		match l with 
+		| [] -> acc
+  	 	| h::t -> (Raml.tick 1.0;
+		  let x = h::acc in rev_aux t x)
+ 	 in rev_aux l [] 
+
+(**
+ * [trunc l a] returns the sub-list of [l] from the first 
+ * occurrence of the given value a to the end of list [l].
+ *)
+
+let rec trunc l a =
+  match l with 
+  | [] -> []
+  | h::t -> (Raml.tick 1.0;
+  	 if ((h : int) = (a : int)) then t
+    else trunc t a) 
+
+(** 
+ * if rev and trunc consume the same tick value in the cons case 
+ * then trunc_rev is constant. 
+ *)
+
+let trunc_rev l a = let r = trunc l a in rev r
+
+let rev_trunc_rev l a = let r = trunc_rev l a in rev r

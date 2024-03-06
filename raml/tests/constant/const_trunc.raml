@@ -1,0 +1,28 @@
+(* 
+ * const_trunc is constant function
+ *)
+
+let const_trunc l =
+  let rec trunc_aux index res l1 = 
+  match l1 with 
+  | [] -> res
+  | h::t -> 
+    let _ = Raml.tick(1.0) in 
+    if (h && index = 0) then trunc_aux 1 t t 
+    else trunc_aux index res t
+  in trunc_aux 0 [] l 
+;;
+
+let rev l = 
+	let rec rev_aux l1 acc = 
+  match l1 with 
+  | [] -> acc
+  | h::t -> 
+    let _ = Raml.tick(1.0) in 
+    let x = h::acc in 
+    rev_aux t x
+	in rev_aux l []
+;;
+
+let const_trunc_rev l = 
+	let x = const_trunc l in rev x 

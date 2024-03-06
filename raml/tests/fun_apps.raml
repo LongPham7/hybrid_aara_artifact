@@ -1,0 +1,59 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/fun_apps.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Function applications.
+ *   
+ *)
+
+
+
+
+(*let id x = x 
+let _ = id (fun x -> x) 4
+*)
+
+let f g x = g x
+let _ = f (fun x -> x) 4
+
+
+let _ = 
+  let id : (int -> int) -> (int -> int) = 
+    fun x -> x
+  in
+  id (fun x -> x) 4
+
+
+let _ = 
+  let id x = 
+    let y = 3 in x
+  in
+  let f g x = g x in 
+  f id 4 
+
+let _ =
+  let apply2 f x y = f x y in
+  let snd x y = y in
+  apply2 snd 3 4
+
+let _ =
+  let f x y z = 1.0 in
+  let y = 0 in
+  let g x = f x y 2 in
+  let h = f in
+  h 1 2 3
+
+let id (x : int list) = x
+
+;;
+
+()

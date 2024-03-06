@@ -1,0 +1,10 @@
+let length l = 
+  let rec aux n = function 
+  | [] ->
+    let _ = Raml.tick(2.0) in n
+  | h::t ->
+    let _ = Raml.tick(2.0) in 
+    aux (n + 1) t
+  in 
+    aux 0 l
+

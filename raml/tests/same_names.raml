@@ -1,0 +1,25 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/same_names.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Testing naming clashes.
+ *   
+ *)
+
+
+let test = false in
+let test = 1 in 
+let test = test + 1 in
+let test = (test,test) in
+let test = (test,test) in
+let (test1,test2) = (let test = test in test,test) in
+test1

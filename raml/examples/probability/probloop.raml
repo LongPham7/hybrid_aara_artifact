@@ -1,0 +1,38 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/probLoop.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Loop with probabilistic termination test. Degree 1.
+ *   
+ *)
+
+type mybool = True | False
+
+let rec probLoop () =
+  let x =
+    if Rprob.flip(1,1)
+    then True
+    else False
+  in
+  let y =
+    if Rprob.flip(1,1)
+    then True
+    else False
+  in
+  match x,y with
+  | False, False -> probLoop ()
+  | True, True -> Raml.tick(2.0)
+  | _ -> Raml.tick(1.0)
+
+;;
+
+()

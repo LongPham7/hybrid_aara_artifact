@@ -1,0 +1,27 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/geometric_expe.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Sample complexity: geometric. Degree 1.
+ *   
+ *)
+
+
+
+let rec geometric_expe p =
+  if Rprob.flip p
+  then []
+  else let p = Rprob.consume (1.,0.,0.) p in () :: geometric_expe p
+
+;;
+
+()  

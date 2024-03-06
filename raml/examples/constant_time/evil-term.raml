@@ -1,0 +1,110 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/evil-term.raml
+ *
+ * Author:
+ *   Matt Fredrikson (2016)
+ * 
+ * Description:
+ *   
+*)
+
+
+type ip = Ip of int * int * int * int
+type logline = Line of ip * int
+
+let reverse l = 
+  let rec reverse_aux a l' =
+    Raml.tick(1.0);
+    match l' with
+    | [] -> a
+    | h::t -> reverse_aux (h::a) t
+  in reverse_aux [] l
+
+let map f bag =  
+  let rec map_aux a bag' =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> reverse a
+    | h::t -> map_aux ((f h)::a) t
+  in map_aux [] bag
+
+let sum (bag:int list) =
+  let rec sum_aux (a:int) (bag': int list) =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> a
+    | h::t -> sum_aux (a + h) t
+  in sum_aux 0 bag
+
+let size bag =
+  let rec size_aux (a:int) bag' =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> a
+    | h::t -> size_aux (a + 1) t
+  in size_aux 0 bag
+
+let split pred bag =
+  let rec split_aux bag' in_bag out_bag =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> (in_bag, out_bag)
+    | h::t ->
+      let pred_result = pred h in
+      let (new_in, new_out) = 
+        if (pred h) then (h::in_bag, out_bag) 
+        else (in_bag, h::out_bag) 
+      in
+      split_aux t new_in new_out
+  in split_aux bag [] []
+
+let rec fold_left f acc l =
+  match l with
+  | [] -> acc
+  | x :: xs -> fold_left f (f acc x) xs
+
+let webserverlog_list preds log =
+  let apply_pred acc pred =
+    let (loglist, ac) = acc in
+    let (a,b) = ac in
+    let (inl, outl) = split pred loglist in
+    let insize = size inl in
+    let outsize = size outl in
+    (loglist, (insize::a,outsize::b))
+  in
+  let (loglist, predcounts) = fold_left apply_pred (log, ([],[])) preds in
+  predcounts
+
+let rec loop l =
+  Raml.tick(1.0);
+  match l with
+  | [] -> 0
+  | h::t -> loop t
+
+let q line =
+  match line with
+  | Line (ipaddr, code) ->
+    match ipaddr with
+    | Ip (ip1,ip2,ip3,ip4) ->
+      let x = if ip1 = 1 && ip2 = 2 && ip3 = 3 then 0 else loop [0;0;0;0;0;0;0;0;0;0;0;0] in
+      ip1 = 66 && ip2 = 249 && ip3 = 71
+
+let row1 = Line (Ip (192,168,0,1), 10)
+let row2 = Line (Ip (192,168,0,2), 3)
+let row3 = Line (Ip (192,168,0,3), 100)
+let row4 = Line (Ip (192,168,0,4), 10)
+let row5 = Line (Ip (1,2,3,0), 10)
+
+let db = [row1; row2; row3; row4; row5]
+
+let main apache_log =
+  let cnts = webserverlog_list [q] apache_log in
+  cnts
+
+let _ = main db

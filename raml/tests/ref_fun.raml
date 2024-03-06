@@ -1,0 +1,45 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/ref_fun.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   References.
+ *   
+ *)
+
+
+let rec map f l =
+  match l with
+    | [] -> []
+    | x::xs ->
+      let g = map f in
+      let ys = g xs in
+      (f x)::ys
+
+
+let g () =
+  let r = ref (fun l -> l) in
+  let ref_fun () =
+    let f = fun () -> Raml.tick(1.0) in
+    r := map f
+  in
+
+  let _ = ref_fun () in
+
+  let _ = ref_fun () in
+
+  let f = !r in
+  f [();();();()]
+
+let _ = g ()
+
+
+

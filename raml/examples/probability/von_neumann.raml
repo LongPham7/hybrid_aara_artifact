@@ -1,0 +1,37 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/von_neumann.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Degree 3
+ *)
+
+let rec von_neumann p =
+  let p = Rprob.consume (0.,0.,1.) p in
+  if Rprob.flip p
+  then (* T *)
+    let p = Rprob.consume (0.,0.,1.) p in
+    if Rprob.flip p
+    then (* TT *)
+      von_neumann p
+    else (* TF *)
+      true
+  else (* F *)
+    let p = Rprob.consume (0.,0.,1.) p in
+    if Rprob.flip p
+    then (* FT *)
+      false
+    else (* FF *)
+      von_neumann p
+
+;;
+
+()  

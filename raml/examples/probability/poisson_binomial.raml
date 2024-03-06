@@ -1,0 +1,28 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/poisson_binomial.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Sample complexity: Poisson. Degree 1.
+ *   
+ *)
+
+let rec poisson_binomial ps =
+  match ps with
+  | [] -> []
+  | p::ps' ->
+    if Rprob.flip p
+    then (Raml.tick 1.; ()::poisson_binomial ps')
+    else (Raml.tick 1.; poisson_binomial ps')
+
+;;
+
+()

@@ -1,0 +1,70 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/list_misc.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Several recursive list functions.
+ *   
+ *)
+
+
+(* let rec id x  = *)
+(*   match x with *)
+(*     | [] -> ((),fun () -> []) *)
+(*     | x::xs ->  *)
+(*       let ys =  *)
+(* 	let ((),f) = id2 xs in *)
+(* 	f () *)
+(*       in *)
+(*       ((),fun () -> x::ys) *)
+
+(* and id2 x = let (_,f) = id x in ((), f) *)
+
+
+(* let rec id3 x  = *)
+(*   Raml.tick 1.0; *)
+(*   match x with *)
+(*     | [] -> fun () -> [] *)
+(*     | x::xs ->  *)
+(*       let ys =  *)
+(* 	(\* let f = id3 xs in *\) *)
+(* 	(\* f () *\) id3 xs () *)
+(*       in *)
+(*       fun () -> x::ys *)
+
+let id3 x y =
+  (x,[])
+
+(* and id4 x = id3 x *)
+
+(* let rec rev_app l1 l2 = *)
+(*   match l1 with *)
+(*     | [] -> l2 *)
+(*     | x::xs -> rev_app xs (x::l2) *)
+
+(* let rec id5 x = *)
+(*     match x with *)
+(*       | [] -> [] *)
+(*       | x::xs -> let xs' = rev_app xs [] in x::(id5 xs') *)
+
+(* let _ =  *)
+(*     let l = rev_app (id5 [[4];[4;3;4;5]]) [[3;3;3]] in rev_app l [] *)
+
+
+(* let _ =  *)
+(*     let ((),f) = id2 [1;2;3;4] in f () *)
+
+
+let _ = id3 [3]
+
+
+(* let _ = id5 (rev_app [4;4;3;4;5] []) *)
+

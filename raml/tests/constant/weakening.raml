@@ -1,0 +1,18 @@
+let rec rev_aux l acc = 
+	match l with 
+	| [] -> acc
+	| h::t -> 
+		let _ = Raml.tick(1.0) in 
+		let x = h::acc in 
+		rev_aux t x
+;;
+
+let rev l = 
+	rev_aux l []
+;;
+
+let weakening l1 l2 = 
+	match l1 with
+	| [] -> rev l2
+	| h::t -> []
+

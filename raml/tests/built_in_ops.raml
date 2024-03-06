@@ -1,0 +1,89 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/lets.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Built-in operations.
+ *   
+ *)
+
+
+let x = 1.0
+let y = 2.0
+
+
+let float_test =
+( x +. y
+, x *. y
+, x /. y
+, x < y
+, x > y
+, x = y
+, x >= y
+, x <= y
+, -.y
+)
+
+
+
+let x = 1
+let y = 2
+
+
+let int_test =
+( x + y
+, x * y
+, x / y
+, x mod y
+, x < y
+, x > y
+, x = y
+, x >= y
+, x <= y
+, -x
+)
+
+
+
+let x = true
+let y = false
+
+
+let bool_test =
+( x = y
+, x && y
+, x || y
+, not x
+)
+
+
+let _ = 
+    let f = (+) 4 in
+    f 3, f 4, f 5
+
+
+
+let not = fun x -> not x
+let plus = (+)
+let plus1 = fun x -> x + 1
+
+let _ = 
+( not true
+, not false
+, plus 4 5
+, plus 7 8
+, plus1 5
+, plus1 6
+)
+
+;;
+
+float_test, int_test, bool_test

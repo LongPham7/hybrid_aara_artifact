@@ -1,0 +1,26 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/option.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Option type.
+ *   
+ *)
+
+
+let option_map f o =
+  match o with
+  | Some o' -> Some (f o')
+  | None -> None in
+let plus1 i = i + 1 in
+let fplus1 f = f +. 1. in
+(option_map plus1 (Some 1), option_map plus1 None,
+ option_map fplus1 (Some 1.), option_map fplus1 None)

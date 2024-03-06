@@ -1,0 +1,57 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/user_types.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Coverage test for user-defined data type.
+ *   
+ *)
+
+type singular =
+  | Singular of int * int * int
+
+let ssum (s : singular) = match s with
+  | Singular (a, b, c) -> a + b + c
+
+let s123 = Singular (1, 2, 3)
+let s68A = Singular (ssum s123, 8, 0xA)
+
+type typ =
+  | C00
+  | Cu0 of unit
+  | C10 of int
+  | C30 of int * int * int
+  | C02 of                   typ * typ
+  | Cu2 of unit            * typ * typ
+  | C12 of int             * typ * typ
+  | C32 of int * int * int * typ * typ
+
+let rec sum (t : typ) = match t with
+  | C00                   -> 0
+  | Cu0 ()                -> 0
+  | C10 i                 -> i
+  | C30 (a, b, c)         -> a + b + c
+  | C02 (t1, t2)          ->             sum t1 + sum t2
+  | Cu2 (_, t1, t2)       ->             sum t1 + sum t2
+  | C12 (i, t1, t2)       -> i         + sum t1 + sum t2
+  | C32 (a, b, c, t1, t2) -> a + b + c + sum t1 + sum t2;;
+
+let c00 = C00
+let cu0 = Cu0 ()
+let c10 = C10 1
+let c30 = C30 (2, 3, 4)
+let c02 = C02 (         c00, cu0)
+let cu2 = Cu2 ((),      c10, c30)
+let c12 = C12 (5,       c02, cu2)
+let c32 = C32 (6, 7, 8, c12, c12);;
+
+sum c32, ssum s68A
+

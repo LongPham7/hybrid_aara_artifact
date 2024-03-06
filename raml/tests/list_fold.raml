@@ -1,0 +1,77 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/list_fold.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   List fold.
+ *   
+ *)
+
+let rec fold f a xs =
+  match xs with
+    | [] -> a
+    | x::xs ->
+      fold f (f a x) xs
+
+let map_rev f l =
+    let g = fun a x -> (f x)::a in
+    fold g [] l
+
+let rev l = map_rev (fun x -> x) l
+
+
+let sum l =
+  let f acc x = acc +. x in
+  fold f 0. l
+
+let _ = 
+  sum [2.0;3.0;4.0]
+
+let _ = 
+  rev [1;2;3]
+
+let attach x ys =
+  let f = fun y -> let _ = Raml.tick 1.0 in y in
+  map_rev f ys
+
+let rec pairs xs =
+  match xs with
+    | [] -> []
+    | x::xs ->
+      let ys = attach x xs in
+      pairs ys
+
+let _ = pairs (rev [[1];[2];[3];[4]])
+
+let append l1 l2 =
+  let f acc x = x::acc in
+  rev (fold f (rev l1) l2)
+
+let _ =
+  append (rev [0;-1;-2;-3;-4]) (append [1;2;3;4] [5;6;7;8])
+
+let rec foldr f a xs =
+  match xs with
+    | [] -> a
+    | x::xs ->
+      let a' = foldr f a xs in
+      f x a'
+
+let append l1 l2 =
+  foldr (fun x a -> x::a) l2 l1
+
+
+let append_all l = foldr append [] l
+
+;;
+
+append_all [ [1;2;3]; [1;2;3]; [1;2;3]; [1;2;3] ]
+

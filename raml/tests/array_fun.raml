@@ -1,0 +1,62 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/array_fun.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   References.
+ *   
+ *)
+
+let rec iterate f n =
+  Rnat.ifz n (fun () -> ())
+	   (fun n' -> iterate f n'; f n')
+
+let rec iterate_acc f n acc =
+  Rnat.ifz n (fun () -> ())
+	   (fun n' -> iterate_acc f n' acc; f n' acc)
+
+let rec fold f start n =
+  Rnat.ifz n (fun () -> start)
+	   (fun n' -> let res = fold f start n' in
+		      f res n'
+	   )
+
+let rec map f l =
+  match l with
+    | [] -> []
+    | x::xs ->
+      let g = map f in
+      let ys = g xs in
+      (f x)::ys
+
+let rec apply_all arr x =
+  let l = Rarray.length arr in
+  let f acc i =
+    let g = Rarray.get arr i in
+    g acc
+  in
+  fold f x l
+
+let five = Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ Rnat.zero))))
+let ten =  Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ (Rnat.succ five))))
+
+let arr = Rarray.make five (fun x -> x)
+let _ = Rarray.set arr Rnat.zero (map (fun x -> let _ = Raml.tick 1.0 in 1))
+
+let arr2 = Rarray.make five (fun x y -> x)
+let g = Rarray.get arr2 Rnat.zero
+
+let arr3 = Rarray.make five 3
+let three = Rarray.get arr2 Rnat.zero
+		   
+;;
+
+apply_all arr [1;2;3]

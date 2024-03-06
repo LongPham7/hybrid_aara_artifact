@@ -1,0 +1,38 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/tuples.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ *
+ * Description:
+ *   Testing tuples.
+ *
+ *)
+
+let (x, y) = (4, 5)
+
+let x = (x,y)
+
+let swap : (int * int) -> (int * int) =
+    function (a1,a2) -> (a2,a1)
+
+let _ = match (1,2) with
+  | (x,y) -> 3
+
+let z = (x,x)
+
+let z = ((z,z,z,z),(z,z))
+
+let (z,_) = z
+
+;;
+( swap x
+, swap (swap x)
+, z
+)

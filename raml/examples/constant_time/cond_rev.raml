@@ -1,0 +1,34 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/cond_rev.raml
+ *
+ * Author:
+ *   Van Chan Ngo (2016)
+ * 
+ * Description:
+ *   
+ *)
+
+let rev l = 
+	let rec rev_aux l acc = 
+		match l with 
+		| [] -> let _ = Raml.tick(2.0) in acc
+		| h::t ->  let _ = Raml.tick(4.0) in 
+		  let x = h::acc in rev_aux t x
+	in rev_aux l [] 
+
+(** 
+ * [cond_rev b l1 l2] reverses l1 then l2 if b is true. 
+ * Otherwise reverses l2 then l1. Finally, it returns unit.
+ *)
+
+let cond_rev l1 l2 b = 
+	let r = 
+		if b then (rev l1; l2) 
+		else (rev l2; l1)
+	in (rev r; ())

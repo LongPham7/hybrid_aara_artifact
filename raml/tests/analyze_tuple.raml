@@ -1,0 +1,32 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_tuple.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Analsyis of programs with tuples.
+ *   
+ *) 
+
+let f x =
+  let (x1,x2,x3) = x in
+  let (y,z) = x1 in
+  let (a,b,c,d) = x3 in 
+  let _ = b in
+  let _ = b in 
+  let _ = y in
+  z
+
+
+let g x y = (x,x,y,y)
+
+;;
+
+()

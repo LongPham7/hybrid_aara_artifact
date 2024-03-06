@@ -1,0 +1,61 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/dice.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Simulating a dice with a fair coin. Degree 2.
+ *   
+ *)
+
+
+
+type dice = One | Two | Three | Four | Five | Six
+
+let dice () =
+  let rec dice1 () =
+    let _ = Raml.tick 1. in
+    if Rprob.flip(1,1) then
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        dice1 ()
+      else
+        One
+    else
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        Two
+      else
+        Three
+  in
+  let rec dice2 () =
+    let _ = Raml.tick 1. in
+    if Rprob.flip(1,1) then
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        dice2 ()
+      else
+        Four
+    else
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        Five
+      else
+        Six
+  in
+  let _ = Raml.tick 1. in
+  if Rprob.flip(1,1) then
+    dice1()
+  else
+    dice2()
+
+;;
+
+()  

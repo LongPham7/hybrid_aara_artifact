@@ -1,0 +1,11 @@
+(*
+Unsupported patterns:
+- guards
+*)
+
+let guard y =
+  match y with
+  | [x] when x > 0 -> 0
+
+;;
+0

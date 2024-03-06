@@ -1,0 +1,18 @@
+type __
+
+type 'x arrows_left = __
+
+type 'x arrows_right = __
+
+type tuple = __
+
+let rec magic x = magic x
+
+(** val uncurry : __ list -> 'a1 arrows_left -> tuple -> 'a1 **)
+
+let rec uncurry args f x =
+  match args with
+  | [] -> magic f
+  | _ :: q -> let (d, t) = magic x in magic uncurry q f t d
+
+;; ()

@@ -1,0 +1,24 @@
+(** 
+	[trunc l] List truncation. Return the rest of l from the fist occurence of a true element.  
+	Cost model: 
+	+ K^{matchN} = K^{matchL} = 1
+   + K^{cond} = 1
+ 	+ K^{op} = 1
+	+ K^{app} = 1
+ *)
+
+let rec trunc l =
+  match l with 
+  | [] -> let _ = Raml.tick(2.0) in []
+  | h::t -> let _ = Raml.tick(2.0) in 
+  	 if h then let _ = Raml.tick(1.0) in t 
+    else let _ = Raml.tick(1.0) in trunc t 
+
+;;
+
+let rec consume_trunc l = 
+   match l with 
+   | [] -> let _ = Raml.tick(2.0) in []
+   | h::t -> let _ = Raml.tick(2.0) in 
+     if h then (Raml.consume(t); let _ = Raml.tick(1.0) in t)
+     else let _ = Raml.tick(1.0) in consume_trunc t 

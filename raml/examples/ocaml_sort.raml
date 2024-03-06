@@ -1,0 +1,74 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/ocaml_sort.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   Slightly modified merge sort for list as found in sort.ml from OCaml's standard library:
+ *   
+ *     https://github.com/ocaml/ocaml/blob/trunk/stdlib/sort.ml
+ *
+ *   To enable the analysis in RAML with made the following changes:
+ *     - untangle nested pattern matches
+ *)
+
+
+
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the GNU Library General Public License, with    *)
+(*  the special exception on linking described in file ../LICENSE.     *)
+(*                                                                     *)
+(***********************************************************************)
+
+(* Merging and sorting *)
+
+let rec merge order l1 l2 =
+  match l1 with
+    [] -> l2
+  | h1 :: t1 ->
+      match l2 with
+        [] -> l1
+      | h2 :: t2 ->
+          if order h1 h2
+          then h1 :: merge order t1 l2
+          else h2 :: merge order l1 t2
+
+let list order l =
+  let rec initlist = function
+      [] -> []
+    | e1::es ->
+      match es with
+	| [] -> [[e1]]
+	| e2::rest ->
+          (if order e1 e2 then [e1;e2] else [e2;e1]) :: initlist rest in
+  let rec merge2 = function
+    | [] -> []
+    | l1::rest ->
+      match rest with
+	| l2::rest -> merge order l1 l2 :: merge2 rest
+	| [] -> [l1]
+  in
+  let rec mergeall = function
+      [] -> []
+    | l::ls ->
+      match ls with
+	| [] -> l
+	| _::_ -> mergeall (merge2 (l::ls))
+  in
+  mergeall(initlist l)
+
+;; ()

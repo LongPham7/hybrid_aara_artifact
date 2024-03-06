@@ -1,0 +1,14 @@
+let rec find_aux r a l1 = 
+	match l1 with
+  | [] -> 
+  	let _ = Raml.tick(2.0) in 
+  	r
+  | h::t -> 
+  	let _ = Raml.tick(4.0) in 
+  	let b = ((a : int) = (h : int)) in 
+    if b then
+    	let _ = Raml.tick(1.0) in  
+    	find_aux true a t 
+    else 
+    	let _ = Raml.tick(1.0) in 
+    	find_aux r a t

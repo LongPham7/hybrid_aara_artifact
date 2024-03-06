@@ -1,0 +1,22 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/exn.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Exceptions.
+ *   
+ *)
+
+exception Test of int
+
+let f x = raise (Test x)
+let _ = f 1
+let _ = raise Not_found

@@ -1,0 +1,99 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/bayes.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Degree 1.
+ *)
+
+
+type mybool = True | False
+
+let rec bayes () =
+  let i =
+    if Rprob.flip(3,7)
+    then True
+    else False
+  in
+  let d =
+    if Rprob.flip(4,6)
+    then True
+    else False
+  in
+  let g =
+    match i,d with
+    | False, False ->
+      begin
+        if Rprob.flip(7,3)
+        then True
+        else False
+      end
+    | False, True ->
+      begin
+        if Rprob.flip(95,5)
+        then True
+        else False
+      end
+    | True, False ->
+      begin
+        if Rprob.flip(1,9)
+        then True
+        else False
+      end
+    | True, True ->
+      begin
+        if Rprob.flip(1,1)
+        then True
+        else False
+      end
+  in
+  match g with
+  | False -> bayes ()
+  | True ->
+    begin
+      let s =
+        match i with
+        | True ->
+          begin
+            if Rprob.flip(4,1)
+            then True
+            else False
+          end
+        | False ->
+          begin
+            if Rprob.flip(5,95)
+            then True
+            else False
+          end
+      in
+      let l =
+        match g with
+        | True ->
+          begin
+            if Rprob.flip(3,2)
+            then True
+            else False
+          end
+        | False ->
+          begin
+            if Rprob.flip(1,9)
+            then True
+            else False
+          end
+      in
+      match l with
+      | True -> Raml.tick(1.0)
+      | False -> ()
+    end
+
+;;
+
+()  

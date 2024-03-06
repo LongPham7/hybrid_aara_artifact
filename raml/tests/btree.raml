@@ -1,0 +1,39 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/btree.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   A binary tree.
+ *   
+ *)
+
+
+type 'a btree = Leaf | Node of int * 'a * 'a btree * 'a btree
+
+let rec btree_map f = function
+  | Leaf -> Leaf
+  | Node (n, d, l, r) -> Node (n, f d, btree_map f l, btree_map f r)
+
+let rec btree_insert_at t n a =
+  match t with
+  | Leaf -> Node (0, a, Leaf, Leaf)
+  | Node (k, d, l, r) ->
+    if n <= k then
+      Node (k + 1, d, btree_insert_at l n a, r)
+    else
+      Node (k, d, l, btree_insert_at r (n - k) a)
+
+let leaf = Leaf
+let tree_23 = Node (1, 3, Node (0, 2, Leaf, leaf), leaf)
+
+let plus1 i = i + 1
+
+let _ = btree_map plus1 (btree_insert_at tree_23 1 4)

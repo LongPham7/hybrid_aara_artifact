@@ -1,0 +1,108 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Examples * * *
+ *
+ * File:
+ *   tests/constant/consume.ml
+ *
+ * Author:
+ *   Jan Hoffmann (2016)
+ * 
+ * Description:
+ *   Examples of how to use Raml.consume.
+ *   
+ *)
+
+
+(*
+Raml is now equipped with a built in function
+
+  Raml.consume : 'a -> ()
+
+Raml.consume consumes the potential assigned to its argument. This is
+useful in conjunction with constant time analysis.
+*)
+
+(* First consider the function linear below that uses the tick metric
+   to define linear cost.
+
+   If you run the following raml command then you will see that linear
+   is a constant-time function.
+
+   raml analyze constant ticks 2 -m consume.raml
+*)
+
+let rec linear l =
+  match l with
+  | [] -> ()
+  | x::xs ->
+    let () = Raml.tick 1.0 in
+    linear xs
+
+(* Now consider the function f1 below. f1 is clearly not constant
+   time.
+*)
+
+let f1 b l =
+  if b then
+    linear l
+  else
+    ()
+
+(* We can use Raml.consume to turn it into a constant time function by
+   adding a consume command to the else branch. If you run the
+   following command then raml will print the potential that is used
+   by each call to consume.
+
+   raml analyze constant ticks 2 -print consume -m consume.raml
+
+   The Raml.consume calls are printed with the line number in which
+   they occur. For example:
+
+      == consume @ L83 :
+
+        'a list -> unit
+      
+        Non-zero annotations of the argument:
+            1.00  <--  [::( * )]
+      
+        Non-zero annotations of result:
+      
+        Simplified bound:
+           1.00*M
+         where
+           M is the number of ::-nodes of the argument
+*)
+
+let f2 b l =
+  if b then
+    linear l
+  else
+    Raml.consume l
+
+(* It doesn't hurt to add additional Raml.consume calls or additional
+   arguments. For instance, f3 below has the same resource behavior as
+   f2.
+*)
+
+let f3 b l =
+  if b then
+    let () = Raml.consume(b,l) in
+    linear l
+  else
+    Raml.consume (b,l,[1;2;3;4])
+
+(* However, we need to consume the potential that is assigned to the
+   variable l. So the following function f4 isn't constant time. *)
+      
+let f4 b l =
+  if b then
+    let () = Raml.consume(b,l) in
+    linear l
+  else
+    Raml.consume (b,[1;2;3;4])
+
+;;
+()

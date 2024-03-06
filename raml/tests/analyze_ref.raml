@@ -1,0 +1,78 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_ref.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Testing the analysis with references.
+ *   
+ *)
+
+
+let _ =
+  let x = ref 4 in
+  !x
+
+
+let _ =
+  let x = ref (ref 4) in
+  !(!x)
+
+let r = ref [1;2;3;4]
+
+let _ = r := [1;2]
+
+let rec id l =
+  match l with
+    | [] -> []
+    | x::xs -> x :: (id xs)
+
+let f = ref (fun x -> id x)
+
+let _ =
+  let g = !f in g [1;2;3;4]
+
+
+
+let rec double l =
+  match l with
+    | [] -> []
+    | x::xs -> 2*x :: (double xs)
+
+let r = ref id
+let _ = 
+    r := double
+
+
+let f = !r
+
+let _ =
+  id (f [1;2;3;4])
+
+let sum = ref 0
+
+let rec add l =
+  match l with
+    | [] -> ()
+    | x::xs -> sum := !sum + x; add xs
+
+let _ = add [1;2;3;4]
+
+let _ = add [1;2;3;4]
+
+let _ =
+  double [1;2;3;4]
+
+
+
+;;
+
+!sum
+

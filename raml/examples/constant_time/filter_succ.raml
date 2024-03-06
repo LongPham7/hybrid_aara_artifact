@@ -1,0 +1,33 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/filter_succ.raml
+ *
+ * Author:
+ *   Jan Hoffmann (2016)
+ * 
+ * Description:
+ *   
+ *)
+
+let rec filter_succ l =
+  match l with
+  | [] ->
+    let () = Raml.tick 1.0 in
+    []
+  | x::xs ->
+    if x>0 then
+      let () = Raml.tick 8.0 in
+      filter_succ xs
+    else
+      let () = Raml.tick 3.0 in
+      (x+1)::filter_succ xs
+
+let fs_twice l = filter_succ (filter_succ l)
+;;
+
+()

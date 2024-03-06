@@ -1,0 +1,133 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/constant_time/evil-ensus.raml
+ *
+ * Author:
+ *   Matt Fredrikson (2016)
+ * 
+ * Description:
+ *   
+ *)
+
+
+type race_t = Caucasian | Black | Hispanic | Asian | Other
+type gender_t = Male | Female
+type union_t = Married | Single | Divorced | Widowed | Separated
+
+(* age, gender, race, union, income *)
+type census_line = Line of int * gender_t * race_t * union_t * int
+
+let reverse l = 
+  let rec reverse_aux a l' =
+    Raml.tick(1.0);
+    match l' with
+    | [] -> a
+    | h::t -> reverse_aux (h::a) t
+  in reverse_aux [] l
+
+let map f bag =  
+  let rec map_aux a bag' =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> reverse a
+    | h::t -> map_aux ((f h)::a) t
+  in map_aux [] bag
+
+let sum (bag:int list) =
+  let rec sum_aux (a:int) (bag': int list) =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> a
+    | h::t -> sum_aux (a + h) t
+  in sum_aux 0 bag
+
+let size bag =
+  let rec size_aux (a:int) bag' =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> a
+    | h::t -> size_aux (a + 1) t
+  in size_aux 0 bag
+
+let bagsplit pred bag =
+  let rec bagsplit_aux bag' in_bag out_bag =
+    Raml.tick(1.0);
+    match bag' with
+    | [] -> (in_bag, out_bag)
+    | h::t ->
+      let pred_result = pred h in
+      let (new_in, new_out) = 
+        if (pred h) then (h::in_bag, out_bag) 
+        else (in_bag, h::out_bag) 
+      in
+      bagsplit_aux t new_in new_out
+  in bagsplit_aux bag [] []
+
+let is_male (line:census_line) =
+  Raml.tick(1.0);
+  match line with
+  | Line (age, gender, race, union, income) ->    
+    match gender with
+    | Male -> 1
+    | Female -> 0
+
+let is_female (line:census_line) =
+  Raml.tick(1.0);
+  match line with
+  | Line (age, gender, race, union, income) ->
+    match gender with
+    | Male -> 0
+    | Female -> 1
+
+let male_income (line:census_line) =
+  Raml.tick(1.0);
+  match line with
+  | Line (age, gender, race, union, income) ->    
+    match gender with
+    | Male -> income
+    | Female -> 0
+
+let rec loop l =
+  Raml.tick(1.0);
+  match l with
+  | [] -> 0
+  | h::t -> loop t
+
+let female_income (line:census_line) =
+  Raml.tick(1.0);
+  match line with
+  | Line (age, gender, race, union, income) ->    
+    match gender with
+    | Male -> 0
+    | Female ->      
+      match race with
+      | Caucasian ->
+        if age = 59 && income > 200000 then loop [0;0;0;0;0;0;0;0;0;0;0;0]
+        else income
+      | Black -> income
+      | Hispanic -> income
+      | Asian -> income
+      | Other -> income
+
+let row1 = (Line (30, Male, Caucasian, Married, 100000))
+let row2 = (Line (40, Female, Hispanic, Widowed, 200000))
+let row3 = (Line (32, Female, Asian, Separated, 50000))
+let row4 = (Line (25, Male, Black, Single, 5000000))
+let row5 = (Line (59, Female, Caucasian, Married, 500000))
+
+let db = [row1; row2; row3; row4; row5]
+
+let main census_db =
+  let n_male = (sum (map is_male census_db)) in
+  let n_female = (sum (map is_female census_db)) in
+  let male_income = (sum (map male_income census_db)) in
+  let female_income = (sum (map female_income census_db)) in
+
+  ((male_income, n_male), (female_income, n_female))
+
+let _ = main db

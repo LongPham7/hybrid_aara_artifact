@@ -1,0 +1,49 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/goat2.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Mountain goat looking for food. Degree 2.
+ *   
+ *)
+
+type food = Grass | Lichen
+
+let rec goat below at above =
+  Raml.tick(1.0);
+  match at with
+  | Grass ->
+    begin
+      if Rprob.flip(2,1)
+      then
+        match below with
+        | [] -> ()
+        | h::t -> goat t h (at::above)
+      else
+        match above with
+        | [] -> ()
+        | h::t -> goat (at::below) h t
+    end
+  | Lichen ->
+    begin
+      if Rprob.flip(3,1)
+      then
+        match below with
+        | [] -> ()
+        | h::t -> goat t h (at::above)
+      else
+        match above with
+        | [] -> ()
+        | h::t -> goat (at::below) h t
+    end
+;;
+
+()

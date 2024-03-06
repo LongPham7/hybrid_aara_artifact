@@ -1,0 +1,35 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/lambdas.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Simple function definitions.
+ *   
+ *)
+
+
+let a = 4
+
+let id : int -> int = fun x -> x
+
+let id2 : float -> float -> float = fun n m -> let x = 2 in m
+
+let fst : bool -> bool -> bool = fun a b -> a
+
+let snd : bool -> bool -> bool = fun a -> fun b -> b
+
+let snd : bool -> bool -> bool = fun a -> let x = 1 in fun b -> let x = 1 in b
+
+let _ = let x = 5 in 
+        let y = 6 in id
+
+
+

@@ -1,0 +1,77 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/user_types.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ *
+ * Description:
+ *   User-defined data type with function arguments.
+ *
+ *)
+
+type 'a chain =
+  | Here of 'a
+  | Next of 'a chain
+
+let id x = x
+let len0 = Here id
+let len1 = Next (Here id)
+
+type ('a,'b) tree =
+  | L of 'a
+  | Node of 'b * (('a,'b) tree) * (('a,'b) tree)
+
+let app f x = f x
+
+let app2 f x = f (f x)
+
+let t1 = Node (app, L 1, L 1)
+
+type 'a either = Left of 'a | Right of 'a
+
+let third x y z = z
+let second = third ()
+let _ = second 1
+let first x y = x
+
+;;
+begin match len0 with
+| Here f -> f id (1, 2)
+| Next e -> match e with
+  | Here f -> f id (3, 4)
+  | Next _ -> (5, 6)
+end
+,
+begin match len1 with
+| Here f -> f id (1, 2)
+| Next e -> match e with
+  | Here f -> f id (3, 4)
+  | Next _ -> (5, 6)
+end
+,
+begin match if true then [] else [id] with (* circumvent dead code detection *)
+| [] -> 7
+| f :: _ -> f 8
+end
+,
+begin match if false then [] else [id] with
+| [] -> 7
+| f :: _ -> f 8
+end
+,
+begin match t1 with
+| L _ -> raise Not_found
+| Node (app, _, _) -> app (fun x -> x) 9
+end
+,
+(* [first : int -> int -> int], not [[int; int] -> int] to match [second] *)
+begin match if true then Left second else Right first with
+| Left f -> let id = f 1 in id 2
+| Right _ -> 99
+end

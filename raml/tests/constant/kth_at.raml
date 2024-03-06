@@ -1,0 +1,38 @@
+exception Not_found_at of string 
+
+(*
+ * get k'th element of the list l
+ *)
+let rec at k l = 
+	match l with
+	| [] -> 
+		raise (Not_found_at "None")
+	| h::t ->
+		let _ = Raml.tick(1.0) in 
+		if (k = 1) then 
+			h
+		else
+			at (k -1) t
+;;
+
+(*
+ * get k'th element of the list l
+ * this function is constant resource
+ *)
+let const_at k l = 
+let rec const_at_aux res i k l = 
+  match l with 
+  | [] -> 
+  	let _ = Raml.tick(1.0) in 
+    if (i = 0 || k > 0 || k + i <= 0) then 
+      raise (Not_found_at "None") 
+    else
+      res 
+  | h::t ->
+    if (k = 1) then 
+      let _ = Raml.tick(1.0) in 
+      const_at_aux h (i + 1) (k - 1) t 
+    else 
+    	let _ = Raml.tick(1.0) in 
+      const_at_aux res (i + 1) (k - 1) t
+	in const_at_aux 0 0 k l

@@ -1,0 +1,47 @@
+import os
+import sys
+import importlib.util
+
+
+# Get a module inside each benchmark's utility directory
+
+
+def get_module(module_name, analysis_info):
+    benchmark_name = analysis_info["benchmark_name"]
+
+    # Benchmark directory
+    benchmark_directory = os.path.expanduser(os.path.join(
+        "/home", "hybrid_aara", "statistical_aara_test_suite", benchmark_name))
+    utility_directory = os.path.join(benchmark_directory, "utility")
+
+    # Import the config module
+    module_path = os.path.join(utility_directory, "{}.py".format(module_name))
+    spec = importlib.util.spec_from_file_location(module_name, module_path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+
+    return module
+
+
+# List all combinations of benchmarks names and hybrid modes
+
+
+list_benchmarks_data_driven_hybrid = [
+    "append", "concat", "insertion_sort", "linear_select", "quickselect", "quicksort", "z_algorithm"]
+
+list_benchmarks_data_driven = [
+    "bubble_sort", "round", "even_split_odd_tail"]
+
+
+def get_list_benchmark_hybrid_mode():
+
+    list_benchmark_hybrid_mode = []
+    for benchmark_name in list_benchmarks_data_driven_hybrid:
+        list_benchmark_hybrid_mode.append((benchmark_name, "data_driven"))
+        list_benchmark_hybrid_mode.append((benchmark_name, "hybrid"))
+
+    for benchmark_name in list_benchmarks_data_driven:
+        list_benchmark_hybrid_mode.append((benchmark_name, "data_driven"))
+
+    return list_benchmark_hybrid_mode

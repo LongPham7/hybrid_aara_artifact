@@ -1,0 +1,97 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_nat2.ml
+ *
+ * Author:
+ *   Jan Hoffmann (2015)
+ * 
+ * Description:
+ *   Operations on the nats.
+ *   
+ *)
+
+
+
+let ten = Rnat.of_int 10
+
+let twenty = Rnat.add ten ten
+
+let rec plus : Rnat.t -> Rnat.t -> Rnat.t =
+  fun n m ->
+    Raml.tick 1.0;
+    Rnat.ifz n
+      (fun () -> m)
+      (fun n' -> Rnat.succ (plus n' m)  )
+
+let rec mult : Rnat.t -> Rnat.t -> Rnat.t =
+  fun n m ->
+    Rnat.ifz n
+      (fun () -> Rnat.zero)
+      (fun n' ->
+	 let t = mult n' m in
+         plus m t
+      )
+
+
+let add_plus a b =
+  plus (Rnat.add a b) Rnat.zero
+    
+let mult_plus a b =
+  mult (Rnat.add a b) (Rnat.add a b)
+
+let mult_many x =
+  let y = mult (plus x x) (plus x x) in
+  mult y y
+
+let m = Rnat.mult (Rnat.of_int 10) (Rnat.of_int 20)
+  
+let _ = plus m m
+
+let h x y =
+  plus (Rnat.mult x y) Rnat.zero
+
+let h' x y =
+  let m = Rnat.mult x y in
+  (* let m' = Rnat.mult x y in   *)
+  plus (Rnat.mult m m) Rnat.zero
+
+let (d,m) = Rnat.minus twenty ten
+
+let id x = x
+
+let ff x y =
+  let (d,y) = Rnat.minus x y in
+  let x = Rnat.add d y in
+  plus (mult x x) (mult d x)
+
+let (d,m,ten') = Rnat.div_mod twenty ten
+let _ = plus (Rnat.mult ten' d) Rnat.zero
+
+
+let gg x y =
+  let (d,m,y) = Rnat.div_mod x y in
+  let x = Rnat.add (Rnat.mult d y) m in
+  plus x Rnat.zero
+
+
+let f twenty ten =
+( plus twenty Rnat.zero
+, add_plus twenty ten
+, let x = add_plus twenty ten in
+  let y = mult_plus x x in
+  add_plus y x
+, h twenty twenty
+, h' twenty twenty
+, ff twenty ten
+, gg twenty ten
+, gg twenty (Rnat.of_int 5)
+)
+
+;;
+
+f twenty ten

@@ -1,0 +1,39 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/analyze_nat2.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   Pattern matching for natural number, and zero/succ.
+ *   
+ *)
+
+
+
+let rec f x = 
+  Rnat.ifz x
+    begin fun () -> 
+      Rnat.zero 
+    end begin fun n -> 
+      if true then
+	let z = f n in
+	let y = z in
+	y
+      else
+	let x = 1 in
+	let y = x in
+	f n
+    end
+
+
+let _ = f (Rnat.succ (Rnat.succ (Rnat.succ Rnat.zero)))
+
+;;
+()

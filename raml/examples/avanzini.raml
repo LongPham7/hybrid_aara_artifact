@@ -1,0 +1,66 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Cases  * *
+ *
+ * File:
+ *   examples/avanzini.raml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2015)
+ * 
+ * Description:
+ *   Example from the paper "Analysing the Complexity of Functional Programs: Higher-Order Meets First-Order"
+ *   by Avanzini et al. which appeared at ICFP'15.
+ *   
+ *)
+
+let rec append l1 l2 =
+  match l1 with
+    | [] -> l2
+    | x::xs -> x::(append xs l2)
+
+
+let rec partition f l =
+  match l with
+    | [] -> ([],[])
+    | x::xs ->
+      let (cs,bs) = partition f xs in
+      if f x then
+	(cs,x::bs)
+      else
+	(x::cs,bs)
+	
+
+let rec quicksort gt = function
+  | [] -> []
+  | x::xs ->
+      let ys, zs = partition (gt x) xs in
+      append (quicksort gt ys) (x :: (quicksort gt zs))
+
+type ('a, 'b) either = Left of 'a | Right of 'b
+  
+let comp f x g = fun z -> f x (g z)
+
+let rec walk f xs =
+  match xs with
+    | [] -> (fun z ->  z)
+    | x::ys -> match x with
+	| Left _ -> fun y -> comp (walk f) ys (fun z -> x::z) y
+	| Right l ->
+	  let x' = Right (quicksort f l) in
+	  fun y -> comp (walk f) ys (fun z -> x'::z) y
+
+let rev_sort f l = walk f l []
+
+let _ = rev_sort (fun a b -> a <= b) [Right [3;2;1]; Right [2;1;0;-1]; Left 1; Left 2; Left 3; Right []]
+
+
+(* let rec walk xs = *)
+(*   match xs with *)
+(*     | [] -> (fun z ->  z) *)
+(*     | x::ys -> fun y -> comp walk ys (fun z -> x::z) y ;; *)
+
+(* let rev l = walk l [] ;; *)
+

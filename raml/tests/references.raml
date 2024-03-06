@@ -1,0 +1,53 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Unit Tests * *
+ *
+ * File:
+ *   tests/references.ml
+ *
+ * Author:
+ *   Jan Hoffmann, Shu-Chun Weng (2014)
+ * 
+ * Description:
+ *   References.
+ *   
+ *)
+
+
+let (x,z,_) =
+  let x = ref 1 in
+  (x, !x, (x := 0))
+
+let update : int -> int = 
+  fun n -> 
+    let r = !x in (x := n; r)
+
+let y = ref x 
+
+let triple : int -> int -> int -> int * int * int =
+    fun a b c -> (a,b,c)
+
+let z = ref 0
+
+;;
+
+(!x
+, update 2
+, update 3
+, update 4
+)
+,( y
+,  !y
+,  !(!y)
+)
+, triple (update 10) (update 11) (update 12)
+, !x
+, ((let _ = update 100 in z) := (update 200))
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+(* * * * * * * * * * *
+ * Resource Aware ML *
+ * * * * * * * * * * *
+ *
+ * * *  Use Case  * *
+ *
+ * File:
+ *   probability/sample_fast.raml
+ *
+ * Author:
+ *   David Kahn, Di Wang (2020)
+ * 
+ * Description:
+ *   Sample complexity. Degree 1.
+ *   
+ *)
+
+type red_or_black = Red | Black
+
+let sample_fast () =
+  let rec aux () =
+    let _ = Raml.tick 1. in
+    if Rprob.flip(1,1) then
+      let _ = Raml.tick 1. in
+      if Rprob.flip(1,1) then
+        let _ = Raml.tick 1. in
+        if Rprob.flip(1,1) then
+          let _ = Raml.tick 1. in
+          if Rprob.flip(1,1) then
+            aux ()
+          else
+            Red
+        else
+          Black
+      else
+        Black
+    else
+      Red
+  in
+  let _ = Raml.tick 1. in
+  if Rprob.flip(1,1) then
+    aux ()
+  else
+    Black
+
+;;
+
+()
