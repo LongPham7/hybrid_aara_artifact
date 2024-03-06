@@ -1,0 +1,125 @@
+% Useful packages for mathematical typesetting
+
+%%% Basic mathematics
+\usepackage{amsmath} % For advanced typesetting for mathematics
+\usepackage{amsthm} % For the proof environment
+% For a better enivronment for theorems. 
+% This package is used to restate theorems in the appendix without changing 
+% their numbering.
+\usepackage{thmtools,thm-restate} 
+
+%%% Math symbols
+\usepackage{amssymb} % For the blackboard font: \mathbb
+\usepackage{bbm} % For blackboard fonts of digits: \mathbbm
+\usepackage{stmaryrd} % For \llparenthesis, \rrparenthesis, \llbracket, \rrbracket, and \curlyveedownarrow
+\usepackage{mathtools} % For \coloneq
+\usepackage{latexsym} % For \leadsto
+\usepackage{pifont} % For \ding{55} for the x mark
+
+%%% Additional math packages
+\usepackage{mathpartir} % For inference rules
+\usepackage[all]{xy} % For commutative diagrams
+\usepackage{array} % For better arrays (e.g., matrices) in math
+
+%%% Pesudocode
+\usepackage{algorithm} % For the algorithm environment
+% For the algorithmic environment provided by the algorithmicx package, which 
+% is automatically loaded by the algpseudocode package
+\usepackage[noend]{algpseudocode}
+
+%%% Graphics
+\usepackage{graphicx} % Support the \includegraphics command and options
+\graphicspath{{./images/}}
+\usepackage{caption} % For placing figures side by side
+% For placing figures side by side by the subfigure environment. 
+% Also, we can customize the referneces to subfigures (i.e., \subref{...}).
+\usepackage[subrefformat=parens]{subcaption}
+\usepackage{wrapfig} % For wrapping text around figures
+
+%%% Code listings
+%\usepackage{minted} % For code color highlighting
+\usepackage{fancyvrb} % For advanced verbatim typesetting
+\usepackage{listings}
+\lstdefinestyle{raml}{
+	tabsize=2,
+	numbers=none, %use numbers=left
+	numbers=none,
+	firstnumber=auto,
+	numberstyle=\tiny,
+	stepnumber=1,
+	numbersep=5pt,
+	basicstyle=\linespread{0.8}\tt\footnotesize,
+	escapechar=\%,
+	mathescape,
+	language=CaML,
+	columns=flexible,
+	xleftmargin=0pt,
+	xrightmargin=0pt,
+	morekeywords={tick,stat},
+	deletekeywords={},
+	frame=none,
+	literate={->}{$\rightarrow$}{3}
+}
+
+% Introducing the listing environment for code listings
+\usepackage{newfloat}
+\DeclareFloatingEnvironment[name=Listing]{listing}
+\captionsetup[listing]{name={Lst.}}
+
+%%% Tables
+\usepackage{booktabs}
+\usepackage{tabularx} % For better wrapping of text in a table. It requires the array package. 
+\usepackage{multirow} % For multi-row table entries
+
+% For setting the table width. 
+% We use this when we want to squeeze an entire table to the textwidth by 
+% placing the tabular environment inside \begin{adjustbox}{max width=\textwidth} ... \end{adjustbox}.
+\usepackage{adjustbox}
+
+%%% Lists
+\usepackage[inline]{enumitem} % For customization of lists (e.g., inlined lists, list item labels, and vertical/horizontal spacing around lists)
+
+%%% Color
+\usepackage{xcolor}
+
+%%% Hyperlinks and URLs
+\usepackage[
+    colorlinks,
+    linkcolor=blue,
+    citecolor=brown,
+    backref=page,
+    urlcolor=blue,
+    pdfstartview=FitH
+]{hyperref} % It requires the xcolor package
+
+%%% References
+\usepackage{cleveref}
+\crefname{theorem}{Thm.}{Thms.}
+\crefname{algorithm}{Alg.}{Algs.}
+\crefname{lemma}{Lem.}{Lemmas}
+\crefname{proposition}{Prop.}{Props.}
+\crefname{corollary}{Cor.}{Cors.}
+\crefname{definition}{Defn.}{Defns.}
+\crefname{example}{Ex.}{Exs.}
+\crefname{figure}{Fig.}{Figs.}
+\crefname{table}{Tab.}{Tabs.}
+\crefformat{section}{\S#2#1#3}
+\crefmultiformat{section}{\S#2#1#3}{ and~\S#2#1#3}{, \S#2#1#3}{ and~\S#2#1#3}
+\crefname{equation}{Eqn.}{Eqns.}
+\crefname{listing}{Listing}{Listings}
+\crefname{sublisting}{Listing}{Listings}
+
+%%% Bibliography
+\usepackage[square,numbers]{natbib}
+
+%%% Theorem and equation setting
+\numberwithin{equation}{section}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{conjecture}{Conjecture}[section]
+
+%\declaretheorem[name=Example,numberwithin=section]{example}

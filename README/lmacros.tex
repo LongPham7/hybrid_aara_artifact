@@ -1,0 +1,52 @@
+%%% Some abbreviations
+
+\newcommand{\lam}{\lambda}
+\newcommand{\uscore}{\mbox{\tt\char`\_}}
+\newcommand{\arrow}{\mathbin{\rightarrow}}
+\newcommand{\red}{\longrightarrow}
+\newcommand{\nred}{\mathrel{\hspace*{1ex}\not\hspace*{-1ex}\longrightarrow}}
+\newcommand{\chk}{\Leftarrow}
+\newcommand{\syn}{\Rightarrow}
+\newcommand{\qqq}{\framebox{$?$}}
+\newcommand{\lbar}{{\langle}\mkern-3.75mu{|}}
+\newcommand{\rbar}{{|}\mkern-3.75mu{\rangle}}
+\newcommand{\with}{\mathbin{\binampersand}}
+% \newcommand{\with}{\mathbin{\&}}
+\newcommand{\semi}{\mathrel{;}}
+\newcommand{\rgt}{\mathrel{\triangleright}}
+\newcommand{\lft}{\mathrel{\triangleleft}}
+\newcommand{\ddd}{\raisebox{0.2em}[1.1em]{$\vdots$}}
+\newcommand{\limplies}{\mathbin{\supset}}
+\newcommand{\lpair}[2]{\lbar #1,#2\rbar}
+\newcommand{\DD}{\mathcal{D}}
+\newcommand{\EE}{\mathcal{E}}
+\newcommand{\FF}{\mathcal{F}}
+\newcommand{\lbb}{\llbracket}
+\newcommand{\rbb}{\rrbracket}
+\newcommand{\R}{\mathrel{R}}
+\newcommand{\RR}{\mathrel{\mathbb{R}}}
+
+%%% Font selection
+\newcommand{\m}[1]{\mathsf{#1}}
+
+\newcommand{\mb}[1]{\mathbf{#1}}
+\newcommand{\mi}[1]{\mbox{\it #1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\um}[1]{\underline{\m{#1}}}
+\newcommand{\ms}[1]{\mathsf{#1}}
+\newcommand{\mt}[1]{\mathtt{#1}}
+
+% Isomorphism
+\newcommand{\iso}[2]{\mathrel{\renewcommand{\arraystretch}{0.5}%
+\begin{array}[c]{c}
+\scriptstyle{#1} \\
+\longrightarrow \\
+\cong \\
+\longleftarrow \\
+\scriptstyle{#2}
+\end{array}}}
+\newcommand{\isorec}{\iso{\m{unfold}}{\m{fold}}}
+
+% Representation
+\newcommand{\rep}[1]{\ulcorner #1\mathstrut\urcorner}
+\newcommand{\unrep}[1]{\llcorner #1\mathstrut\lrcorner}

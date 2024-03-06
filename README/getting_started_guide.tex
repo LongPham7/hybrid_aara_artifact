@@ -1,0 +1,164 @@
+% !TeX root = README.tex
+
+\section{Getting Started Guide}
+
+Our artifact, dubbed Hybrid Resource-Aware ML (RaML), is a program analysis tool
+that takes in an OCaml program and infers its worst-case polynomial cost bound
+using the technique Hybrid AARA described in the paper.
+
+The artifact is wrapped inside the provided Docker image.
+%
+To run it, first install Docker according to the instructions at
+\url{https://docs.docker.com/engine/install/}.
+%
+To see if Docker has been installed properly, run
+\begin{verbatim}
+$ docker --version
+Docker version 25.0.3, build 4debf41
+\end{verbatim}
+
+Load and run the Docker image as follows:
+\begin{verbatim}
+$ docker load --input hybrid_aara.tar.gz
+$ docker run -it --rm hybrid_aara
+root@fca41f6f696d:/home/hybrid_aara/benchmark_suite/playground#
+\end{verbatim}
+
+In the initial working directory, we have a file \texttt{append.ml} that stores
+the \texttt{append} function written in OCaml.
+%
+Given two inputs lists, the \texttt{append} function appends the first input to
+the second one.
+%
+For each element in the first input that the function processes, it incurs a
+cost ranging from 0.5 to 1.0.
+%
+Therefore, the worst-case cost bound of the function is $1.0 \cdot M$, where $M$
+is the length of the first input list.
+
+Hybrid RaML's executable is the file \texttt{/home/hybrid\_aara/raml/main}, and
+its location has already been added to the \texttt{PATH} variable so that we can
+call Hybrid RaML by running \texttt{main} anywhere in the filesystem.
+%
+Hybrid AARA (and its artifact Hybrid RaML) provides three types of hybrid
+resource analysis: Hybrid \Opt{}, Hybrid \BayesWC{}, and Hybrid \BayesPC{}.
+
+\subsection{Hybrid \Opt{}}
+
+To perform Hybrid \Opt{} on the \texttt{append} function, run
+\begin{verbatim}
+# main stat_analyze ticks 1 -m append.ml append -config config_opt.json
+\end{verbatim}
+%
+In the command, \texttt{stat\_analyze} means we want to perform Hybrid AARA
+(instead of the conventional AARA).
+%
+The input \texttt{ticks} means the resource metric of our interest is the tick
+metric (instead of heap memory, for example).
+%
+The number 1 means we want to infer degree-1 polynomial cost bounds.
+%
+The input \texttt{append.ml} specifies the input file name, and the input
+\texttt{append} means we want to know a cost bound of the function
+\texttt{append} (instead of other functions in the same file).
+%
+Finally, the input \texttt{config\_opt.json} specifies the configuration file
+for Hybrid \Opt{}.
+
+In the output printed on the stdout, you should find
+\begin{verbatim}
+== append :
+
+[int list; int list] -> int list
+
+Non-zero annotations of the argument:
+    0.85  <--  ([::(*)], [])
+
+Non-zero annotations of result:
+
+Simplified bound:
+    0.85*M
+  where
+    M is the number of ::-nodes of the 1st component of the argument
+\end{verbatim}
+%
+It means that the cost bound inferred by Hybrid \Opt{} is $0.85 \cdot M$, where
+$M$ is the first input's length.
+
+\subsection{Hybrid \BayesWC{}}
+
+Next, to perform Hybrid \BayesWC{}, run
+\begin{verbatim}
+# main stat_analyze ticks 1 -m append.ml append -config config_bayeswc.json
+\end{verbatim}
+where the configuration file is now \texttt{config\_bayeswc.json}, which
+contains hyperparameters for Bayesian inference.
+%
+The analysis should finish in between 40 and 50 seconds.
+%
+Its output on the stdout should contain
+\begin{verbatim}
+== append :
+
+  [int list; int list] -> int list
+
+  Non-zero annotations of the argument:
+(avg, std) = (   2.18047,   0.633256)  <--
+                                         ([::(*)], [])
+(avg, std) = ( 0.0101388,  0.0158341)  <--  ([], [::(*)])
+(avg, std) = (         0,          0)  <--  ([], [])
+
+  Non-zero annotations of result:
+(avg, std) = (         0,          0)  <--
+                                   [::(*)]
+(avg, std) = (         0,          0)  <--  []
+
+  Simplified bound:
+     0.0101388*L + 2.18047*M
+   where
+     L is the number of ::-nodes of the 2nd component of the argument
+     M is the number of ::-nodes of the 1st component of the argument
+\end{verbatim}
+%
+Unlike Hybrid Opt{} that infers a single cost bound, Hybrid \BayesWC{} returns a
+collection of cost bounds, which approximate their posterior distribution.
+%
+In the stdout, 0.0101388 is the average degree-one coefficient for the first
+input in the posterior distribution, and likewise, 2.18047 is the average
+coefficient for the second input.
+
+\subsection{Hybrid \BayesPC{}}
+
+To perform Hybrid \BayesPC{}, run
+\begin{verbatim}
+# main stat_analyze ticks 1 -m append.ml append -config config_bayespc.json
+\end{verbatim}
+using the configuration file \texttt{config\_bayespc.json}.
+%
+The analysis should terminate within 90 seconds.
+%
+The output printed on the stdout should contain
+\begin{verbatim}
+== append :
+
+  [int list; int list] -> int list
+
+  Non-zero annotations of the argument:
+(avg, std) = (   2.03295,   0.228391)  <--  
+                                         ([::(*)], [])
+(avg, std) = (  0.281939,   0.146543)  <--  ([], [::(*)])
+(avg, std) = (  0.164309,  0.0824471)  <--  ([], [])
+
+  Non-zero annotations of result:
+(avg, std) = (         0,          0)  <--  
+                                   [::(*)]
+(avg, std) = (         0,          0)  <--  []
+
+  Simplified bound:
+     0.164309 + 0.281939*L + 2.03295*M
+   where
+     L is the number of ::-nodes of the 2nd component of the argument
+     M is the number of ::-nodes of the 1st component of the argument
+\end{verbatim}
+where \texttt{0.164309 + 0.281939*L + 2.03295*M} contains the average
+coefficients.
