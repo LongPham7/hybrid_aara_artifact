@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 
 from benchmark_manipulation import get_module, get_list_benchmark_hybrid_mode
@@ -616,21 +617,22 @@ def display_execution_time(execution_time_all_benchmarks):
 
 
 if __name__ == "__main__":
-    # analyze_inference_result_all_benchmarks()
+    script_arg = sys.argv[1]
 
-    print("Proportions of sound cost bounds of benchmarks")
-    proportion_sound_cost_bounds_dict = calculate_desired_quantity_all_benchmarks(
-        get_proportion_sound_cost_bounds)
-    display_proportion_sound_cost_bounds(proportion_sound_cost_bounds_dict)
-    print()
-
-    print("Relative errors of benchmarks")
-    relative_error = calculate_desired_quantity_all_benchmarks(
-        analyze_relative_errors)
-    display_relative_errors_all_benchmarks(relative_error)
-    print()
-
-    print("Analysis time of Hybrid AARA")
-    execution_time_dict = calculate_desired_quantity_all_benchmarks(
-        get_execution_time)
-    display_execution_time(execution_time_dict)
+    if script_arg == "plot":
+        analyze_inference_result_all_benchmarks()
+    elif script_arg == "soundness":
+        print("Proportions of sound cost bounds of benchmarks")
+        proportion_sound_cost_bounds_dict = calculate_desired_quantity_all_benchmarks(
+            get_proportion_sound_cost_bounds)
+        display_proportion_sound_cost_bounds(proportion_sound_cost_bounds_dict)
+    elif script_arg == "relative_error":
+        print("Relative errors of benchmarks")
+        relative_error = calculate_desired_quantity_all_benchmarks(
+            analyze_relative_errors)
+        display_relative_errors_all_benchmarks(relative_error)
+    else:
+        print("Analysis time of Hybrid AARA")
+        execution_time_dict = calculate_desired_quantity_all_benchmarks(
+            get_execution_time)
+        display_execution_time(execution_time_dict)

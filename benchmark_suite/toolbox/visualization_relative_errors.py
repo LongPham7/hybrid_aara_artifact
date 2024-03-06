@@ -1,18 +1,18 @@
 import os
 import matplotlib.gridspec as gridspec
-from run_experiment import calculate_desired_quantity_all_benchmarks, analyze_relative_errors
+from run_analysis import calculate_desired_quantity_all_benchmarks, analyze_relative_errors
 import matplotlib.pyplot as plt
 import itertools
 
 
-plt.rcParams.update({
-    "font.family": "serif",
-    "text.usetex": True,
-    'text.latex.preamble': r"""
-        \usepackage[tt=false]{libertine}
-        \usepackage[varqu]{zi4}
-        \usepackage[libertine]{newtxmath}"""
-})
+# plt.rcParams.update({
+#     "font.family": "serif",
+#     "text.usetex": True,
+#     'text.latex.preamble': r"""
+#         \usepackage[tt=false]{libertine}
+#         \usepackage[varqu]{zi4}
+#         \usepackage[libertine]{newtxmath}"""
+# })
 
 c = ['tab:red', 'tab:blue', 'y']
 m = 'o'

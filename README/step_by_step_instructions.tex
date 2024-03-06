@@ -1,3 +1,95 @@
 % !TeX root = README.tex
 
 \section{Step-by-Step Instructions}
+
+\subsection{Benchmark Suite}
+
+The artifact contains 10 benchmark programs for Hybrid AARA.
+%
+As listed in Section 7 of the paper, these benchmarks are: \texttt{MapAppend},
+\texttt{Concat}, \texttt{InsertionSort2}, \texttt{QuickSort},
+\texttt{QuickSelect}, \texttt{MedianOfMedians}, \texttt{ZAlgorithm},
+\texttt{BubbleSort}, \texttt{Round}, and \texttt{EvenOddTail}.
+%
+Inside the artifact, these benchmarks are referred to as \texttt{append},
+\texttt{concat}, \texttt{insertion\_sort}, \texttt{quicksort},
+\texttt{quickselect}, \texttt{linear\_select}, \texttt{z\_algorithm},
+\texttt{bubble\_sort}, \texttt{round}, and \texttt{even\_split\_odd\_tail}.
+%
+We have tested both data-driven resource analysis and hybrid resource analysis
+on the first seven benchmarks, and only data-driven resource analysis on the
+remaining three benchmarks.
+
+Inside the benchmark directory \texttt{/home/hybrid\_aara/benchmark\_suite},
+each benchmark has its own directory.
+%
+Furthermore, inside the benchmarks' directories, we have the following
+directories:
+\begin{enumerate}
+  \item \texttt{utility}: Python source files that contain (i)
+        benchmark-specific configurations for hybrid resource analysis and (ii)
+        functions for analyzing the inference result.
+  \item \texttt{bin}: input and output files for Hybrid RaML.
+  \item \texttt{images}: plots of inferred cost bounds.
+\end{enumerate}
+
+For each benchmark, the directory \texttt{bin} already contains the experiment
+results that we reported in the paper.
+%
+We will demonstrate how to generate the experiment results from scratch in
+\cref{sec:generate experiment results}.
+
+\subsection{Display Experiment Results}
+
+We demonstrate how to create tables and plots in the paper from the experiment
+results that are stored in each benchmark's \texttt{bin} directories.
+
+\paragraph{Table~1}
+
+In Table~1 in the paper, the 4\textsuperscript{th} and 5\textsuperscript{th}
+columns display the proportions of sound cost bounds inferred by data-driven and
+hybrid resource analyses, respectively.
+%
+To display these two columns, run
+\begin{verbatim}
+# cd /home/hybrid_aara/benchmark_suite/toolbox
+# python3 run_analysis.py soundness
+\end{verbatim}
+
+The 6\textsuperscript{th} and 7\textsuperscript{th} columns of Table~1 display
+the analysis time of data-driven hybrid resource analyses, respectively.
+To display these two columns, run
+\begin{verbatim}
+# cd /home/hybrid_aara/benchmark_suite/toolbox
+# python3 run_analysis.py time
+\end{verbatim}
+
+\paragraph{Figure~5}
+
+Figure~5 in the paper displays relative errors of 5 selected benchmarks.
+%
+To create this plot, run
+\begin{verbatim}
+# cd /home/hybrid_aara/benchmark_suite/toolbox
+# python3 visualization_relative_errors.py
+\end{verbatim}
+%
+This command creates a plot and stores it as a file
+\texttt{relative\_errors.pdf} inside the directory
+\texttt{/home/hybrid\_aara/benchmark\_suite/images}.
+%
+To view the plot, we first transfer the plot from the Docker container to the
+local filesystem.
+%
+Run the following command in the terminal of your local machine:
+\begin{verbatim}
+$ docker cp hybrid_aara:/home/hybrid_aara/benchmark_suite/images/relative_errors.pdf 
+    <path_to_local_directory>
+\end{verbatim}
+where the second argument \texttt{<path\_to\_local\_directory>} is the
+destination directory on your local filesystem.
+%
+You can then view it on your local machine.
+
+\subsection{Generate Experiment Results}
+\label{sec:generate experiment results}

@@ -8,13 +8,13 @@ FIGSIZE = (3.5, 3)
 # Originally, we also included the line \usepackage[varqu]{zi4} under
 # 'text.latex.preamble' in order to load the LaTex package zi4. However, it
 # causes an error in rendering some of the plots.
-plt.rcParams.update({
-    "font.family": "serif",
-    "text.usetex": True,
-    "text.latex.preamble": r"""
-        \usepackage[tt=false]{libertine}
-        \usepackage[libertine]{newtxmath}"""
-})
+# plt.rcParams.update({
+#     "font.family": "serif",
+#     "text.usetex": True,
+#     "text.latex.preamble": r"""
+#         \usepackage[tt=false]{libertine}
+#         \usepackage[libertine]{newtxmath}"""
+# })
 
 
 # Save a plot

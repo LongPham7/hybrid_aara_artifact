@@ -1,7 +1,9 @@
 import multiprocessing
+import sys
 from joblib import Parallel, delayed
 
-from benchmark_manipulation import get_module, get_list_benchmark_hybrid_mode
+from benchmark_manipulation import get_module, get_list_benchmark_hybrid_mode, \
+    list_benchmarks_data_driven_hybrid
 from aara import run_aara
 
 
@@ -74,4 +76,18 @@ def run_all_benchmarks():
 
 
 if __name__ == "__main__":
-    run_all_benchmarks()
+
+    if sys.argv[1] == "all":
+        run_all_benchmarks()
+    else:
+        # The user provides both a benchmark name and hybrid mode
+        if len(sys.argv) == 3:
+            benchmark_name = sys.argv[1]
+            hybrid_mode = sys.argv[2]
+            run_experiment_benchmark_hybrid_mode(benchmark_name, hybrid_mode)
+        # The user only provides a benchmark name, but not a hybrid mode
+        else:
+            benchmark_name = sys.argv[1]
+            run_experiment_benchmark_hybrid_mode(benchmark_name, "data_driven")
+            if benchmark_name in list_benchmarks_data_driven_hybrid:
+                run_experiment_benchmark_hybrid_mode(benchmark_name, "hybrid")
