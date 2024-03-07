@@ -11,10 +11,9 @@ As listed in Section 7 of the paper, these benchmarks are: \texttt{MapAppend},
 \texttt{QuickSelect}, \texttt{MedianOfMedians}, \texttt{ZAlgorithm},
 \texttt{BubbleSort}, \texttt{Round}, and \texttt{EvenOddTail}.
 %
-Inside the artifact, these benchmarks are referred to as \texttt{append},
-\texttt{concat}, \texttt{insertion\_sort}, \texttt{quicksort},
-\texttt{quickselect}, \texttt{linear\_select}, \texttt{z\_algorithm},
-\texttt{bubble\_sort}, \texttt{round}, and \texttt{even\_split\_odd\_tail}.
+Inside the artifact, the benchmark \texttt{EvenOddTail} goes by its full name,
+\texttt{EvenSplitOddTail}, instead of its shorthand \texttt{EvenOddTail} used
+throughout the paper.
 %
 We have tested both data-driven resource analysis and hybrid resource analysis
 on the first seven benchmarks, and only data-driven resource analysis on the
@@ -33,21 +32,22 @@ directories:
   \item \texttt{images}: plots of inferred cost bounds.
 \end{enumerate}
 
-For each benchmark, the directory \texttt{bin} already contains the experiment
-results that we reported in the paper.
-%
-We will demonstrate how to generate the experiment results from scratch in
-\cref{sec:generate experiment results}.
-
 \subsection{Display Experiment Results}
 
-We demonstrate how to create tables and plots in the paper from the experiment
-results that are stored in each benchmark's \texttt{bin} directories.
+In this section, we demonstrate how to create tables and plots in the paper from
+the experiment results that are stored in each benchmark's \texttt{bin}
+directories.
+%
+In the Docker container, the directory \texttt{bin} of each benchmark already
+contains the experiment results that we reported in the paper.
+%
+We will later demonstrate how to generate the experiment results from scratch in
+\cref{sec:generate experiment results}.
 
 \paragraph{Table~1}
 
 In Table~1 in the paper, the 4\textsuperscript{th} and 5\textsuperscript{th}
-columns display the proportions of sound cost bounds inferred by data-driven and
+columns display the percentages of sound cost bounds inferred by data-driven and
 hybrid resource analyses, respectively.
 %
 To display these two columns, run
@@ -71,25 +71,65 @@ Figure~5 in the paper displays relative errors of 5 selected benchmarks.
 To create this plot, run
 \begin{verbatim}
 # cd /home/hybrid_aara/benchmark_suite/toolbox
-# python3 visualization_relative_errors.py
+# python3 run_analysis.py plot_relative_errors
 \end{verbatim}
 %
 This command creates a plot and stores it as a file
 \texttt{relative\_errors.pdf} inside the directory
 \texttt{/home/hybrid\_aara/benchmark\_suite/images}.
 %
-To view the plot, we first transfer the plot from the Docker container to the
-local filesystem.
+To view the plot, we first transfer it from the Docker container to your local
+filesystem.
 %
 Run the following command in the terminal of your local machine:
 \begin{verbatim}
-$ docker cp hybrid_aara:/home/hybrid_aara/benchmark_suite/images/relative_errors.pdf 
-    <path_to_local_directory>
+$ docker cp hybrid_aara:/home/hybrid_aara/benchmark_suite\
+/images/relative_errors.pdf \
+<path-to-local-directory>
 \end{verbatim}
-where the second argument \texttt{<path\_to\_local\_directory>} is the
+where the second argument \texttt{<path-to-local-directory>} is a desired
 destination directory on your local filesystem.
 %
-You can then view it on your local machine.
+You can then view the plot on your local machine.
+
+\paragraph{Figures~6--24}
+
+For Figures~6--24 in the paper, to create them, run
+\begin{verbatim}
+# cd /home/hybrid_aara/benchmark_suite/toolbox
+# python3 run_analysis.py plot
+\end{verbatim}
+%
+This command creates all plots of inference results and stores them in the
+directory \texttt{benchmark\_suite/<benchmark-name>/images}.
+%
+For example, for hybrid BayesWC performed on \texttt{QuickSort}, we can
+find its plot in the file \texttt{inferred\_cost\_bound.pdf} in the directory
+\texttt{benchmark\_suite/QuickSort/images/hybrid/bayeswc}.
+
+To view the plot, again, we transfer it from the Docker container to your local
+filesystem.
+%
+Run this command on the terminal of the local machine:
+\begin{verbatim}
+$ docker cp hybrid_aara:/home/hybrid_aara/benchmark_suite\
+/QuickSort/images/hybrid/bayeswc/inferred_cost_bound.pdf \
+<path-to-local-directory>
+\end{verbatim}
+%
+You can then view the plot on your local machine.
+
+\paragraph{Tables~2--11}
+
+For Tables~2--11 in the paper, to create and display them on the stdout, run
+\begin{verbatim}
+# cd /home/hybrid_aara/benchmark_suite/toolbox
+# python3 run_analysis.py relative_errors
+\end{verbatim}
 
 \subsection{Generate Experiment Results}
 \label{sec:generate experiment results}
+
+\subsection{Source Code}
+
+
