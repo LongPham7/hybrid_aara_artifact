@@ -1,7 +1,7 @@
 import os
 import sys
 module_path = os.path.expanduser(os.path.join(
-    "/home", "hybrid_aara", "benchmark_suite", "concat", "utility"))
+    "/home", "hybrid_aara", "benchmark_suite", "Concat", "utility"))
 if module_path not in sys.path:
     sys.path.append(module_path)
 

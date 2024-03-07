@@ -7,7 +7,8 @@ if module_path not in sys.path:
 from input_data_generation import convert_lists_python_to_ocaml
 
 
-# Create OCaml code
+# Create OCaml code. Z-algorithm is described here:
+# https://cp-algorithms.com/string/z-function.html.
 
 
 z_algorithm_data_driven_ocaml_code = \

@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 import os
 import json
 
-from benchmark_manipulation import get_module
+from benchmark_manipulation import get_module, list_benchmarks_data_driven_hybrid, \
+    list_benchmarks_data_driven
 from pathnames import bin_directory
 from json_manipulation import read_input_data_json
 
@@ -24,12 +25,8 @@ def compute_line(start_point, end_point, xs):
 # List all benchmarks and hybrid modes
 
 
-benchmark_names_data_driven_and_hybrid = [
-    "append", "concat", "insertion_sort", "quicksort", "quickselect", "linear_select", "z_algorithm"]
-benchmark_names_data_driven = ["bubble_sort", "round", "even_split_odd_tail"]
-
 list_analysis_info = []
-for benchmark_name in benchmark_names_data_driven_and_hybrid:
+for benchmark_name in list_benchmarks_data_driven_hybrid:
     analysis_info_data_driven = {"benchmark_name": benchmark_name,
                                  "hybrid_mode": "data_driven"}
     analysis_info_hybrid = {"benchmark_name": benchmark_name,
@@ -37,7 +34,7 @@ for benchmark_name in benchmark_names_data_driven_and_hybrid:
     list_analysis_info.append(analysis_info_data_driven)
     list_analysis_info.append(analysis_info_hybrid)
 
-for benchmark_name in benchmark_names_data_driven:
+for benchmark_name in list_benchmarks_data_driven:
     analysis_info_data_driven = {"benchmark_name": benchmark_name,
                                  "hybrid_mode": "data_driven"}
     list_analysis_info.append(analysis_info_data_driven)
@@ -83,16 +80,16 @@ def get_input_coeff(analysis_info):
 
 
 num_highest_degree_coeffs_dict = {
-    "append": 2,
-    "bubble_sort": 1,
-    "concat": 3,
-    "even_split_odd_tail": 1,
-    "insertion_sort": 1,
-    "quickselect": 1,
-    "linear_select": 1,
-    "z_algorithm": 1,
-    "round": 1,
-    "quicksort": 1}
+    "MapAppend": 2,
+    "BubbleSort": 1,
+    "Concat": 3,
+    "EvenSplitOddTail": 1,
+    "InsertionSort2": 1,
+    "QuickSelect": 1,
+    "MedinaOfMedians": 1,
+    "ZAlgorithm": 1,
+    "Round": 1,
+    "QuickSort": 1}
 
 
 def get_coeff_statistic(analysis_info):

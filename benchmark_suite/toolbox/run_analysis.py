@@ -9,6 +9,7 @@ from visualization import plot_cost_gaps_opt, plot_cost_gaps_bayesian, \
     plot_gaps_ground_truth_opt, plot_gaps_ground_truth_bayesian, \
     plot_inferred_cost_bound, plot_inferred_cost_bound_3D, \
     plot_posterior_distribution_cost_bound, plot_median_cost_bound_3D
+from visualization_relative_errors import plot_relative_errors_selected_benchmarks
 from relative_errors import calculate_relative_error_opt_representative_samples, \
     calculate_relative_error_bayesian_representative_samples, \
     calculate_relative_error_opt_representative_samples_2D, \
@@ -160,16 +161,16 @@ def analyze_inference_result_cost_gaps_ground_truth(analysis_info, plot_name, sa
 
 
 cost_bound_plot_lim_dict = {
-    "append": 70,
-    "bubble_sort": 8000,
-    "concat": 3000,
-    "even_split_odd_tail": 400,
-    "insertion_sort": 400,
-    "linear_select": 1500,
-    "quickselect": 2000,
-    "quicksort": 50000,
-    "round": 400,
-    "z_algorithm": 300
+    "MapAppend": 70,
+    "BubbleSort": 8000,
+    "Concat": 3000,
+    "EvenSplitOddTail": 400,
+    "InsertionSort2": 400,
+    "MedianOfMedians": 1500,
+    "QuickSelect": 2000,
+    "QuickSort": 50000,
+    "Round": 400,
+    "ZAlgorithm": 300
 }
 
 
@@ -209,7 +210,7 @@ def analyze_inference_result_cost_bound(analysis_info, plot_name, save, show, ax
     get_predicted_cost = cost_evaluation_module.get_predicted_cost
     lim = cost_bound_plot_lim_dict[benchmark_name]
 
-    if benchmark_name == "append" or benchmark_name == "concat":
+    if benchmark_name == "MapAppend" or benchmark_name == "Concat":
         if data_analysis_mode == "opt":
             plot_function = plot_inferred_cost_bound_3D
         else:
@@ -311,12 +312,12 @@ def analyze_relative_errors(analysis_info):
         decompose_inference_result = read_inference_result_module.decompose_posterior_distribution
     get_relative_gap_ground_truth = cost_evaluation_module.get_relative_gap_ground_truth
 
-    if benchmark_name == "append":
+    if benchmark_name == "MapAppend":
         if data_analysis_mode == "opt":
             calculate_relative_error_function = calculate_relative_error_opt_representative_samples_2D
         else:
             calculate_relative_error_function = calculate_relative_error_bayesian_representative_samples_2D
-    elif benchmark_name == "concat":
+    elif benchmark_name == "Concat":
         if data_analysis_mode == "opt":
             calculate_relative_error_function = calculate_relative_error_opt_representative_samples_2D_concat
         else:
@@ -406,9 +407,9 @@ def get_string_data_analysis_mode(data_analysis_mode):
 def display_relative_errors_benchmark(benchmark_name, relative_error):
 
     def get_size_string(benchmark_name, size):
-        if benchmark_name == "append":
+        if benchmark_name == "MapAppend":
             return "({}, {})".format(size, size)
-        elif benchmark_name == "concat":
+        elif benchmark_name == "Concat":
             return "({}, {})".format(size * 5, size)
         else:
             return str(size)
@@ -531,7 +532,7 @@ def display_proportion_sound_cost_bounds(proportion_sound_cost_bonds_all_benchma
     def print_proportion_data_driven_data_analysis_mode(benchmark_name, data_analysis_mode, proportion):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:19} {:7} {:5.1f}%".format(
+        print("{:16} {:7} {:5.1f}%".format(
             benchmark_name,
             string_data_analysis_mode,
             100 * proportion[data_analysis_mode]))
@@ -539,7 +540,7 @@ def display_proportion_sound_cost_bounds(proportion_sound_cost_bonds_all_benchma
     def print_proportion_data_driven_hybrid_data_analysis_mode(benchmark_name, data_analysis_mode, proportion_data_driven, proportion_hybrid):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:19} {:7} {:5.1f}% {:5.1f}%".format(
+        print("{:16} {:7} {:5.1f}% {:5.1f}%".format(
             benchmark_name,
             string_data_analysis_mode,
             100 * proportion_data_driven[data_analysis_mode],
@@ -584,7 +585,7 @@ def display_execution_time(execution_time_all_benchmarks):
     def print_execution_time_data_driven(benchmark_name, data_analysis_mode, execution_time_dict):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:19} {:7} {:5.1f}s".format(
+        print("{:16} {:7} {:5.1f}s".format(
             benchmark_name,
             string_data_analysis_mode,
             execution_time_dict[data_analysis_mode]["execution_time"]))
@@ -592,7 +593,7 @@ def display_execution_time(execution_time_all_benchmarks):
     def print_execution_time_data_driven_hybrid(benchmark_name, data_analysis_mode, execution_time_data_driven, execution_time_hybrid):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:19} {:7} {:5.1f}s {:5.1f}s".format(
+        print("{:16} {:7} {:5.1f}s {:5.1f}s".format(
             benchmark_name,
             string_data_analysis_mode,
             execution_time_data_driven[data_analysis_mode]["execution_time"],
@@ -626,7 +627,11 @@ if __name__ == "__main__":
         proportion_sound_cost_bounds_dict = calculate_desired_quantity_all_benchmarks(
             get_proportion_sound_cost_bounds)
         display_proportion_sound_cost_bounds(proportion_sound_cost_bounds_dict)
-    elif script_arg == "relative_error":
+    elif script_arg == "plot_relative_errors":
+        relative_error = calculate_desired_quantity_all_benchmarks(
+            analyze_relative_errors)
+        plot_relative_errors_selected_benchmarks(relative_error)
+    elif script_arg == "relative_errors":
         print("Relative errors of benchmarks")
         relative_error = calculate_desired_quantity_all_benchmarks(
             analyze_relative_errors)

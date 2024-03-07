@@ -27,7 +27,7 @@ def run_single_experiment(analysis_info):
     degree = config_module.degree
 
     # Get input data
-    if (benchmark_name == "quickselect" or benchmark_name == "quicksort") and hybrid_mode == "hybrid" and data_analysis_mode == "bayespc":
+    if (benchmark_name == "QuickSelect" or benchmark_name == "QuickSort") and hybrid_mode == "hybrid" and data_analysis_mode == "bayespc":
         input_data = config_module.input_data_extracted
     else:
         input_data = config_module.input_data

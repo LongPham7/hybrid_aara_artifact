@@ -1,36 +1,48 @@
 import os
 import sys
 module_path = os.path.expanduser(os.path.join(
-    "/home", "hybrid_aara", "benchmark_suite", "quicksort", "utility"))
+    "/home", "hybrid_aara", "benchmark_suite", "QuickSelect", "utility"))
 if module_path not in sys.path:
     sys.path.append(module_path)
 
 from cost_evaluation import partition, partition_cost
 
 
-def quicksort_all_partition_calls(input_list):
+def quickselect_all_partition_calls(integer_list_pair):
+    index, input_list = integer_list_pair
     if len(input_list) == 0:
-        return []
+        raise Exception("The input list is empty")
+    elif len(input_list) == 1:
+        if index == 0:
+            return []
+        else:
+            raise Exception("The index should be zero for a singleton list")
     else:
         head_element = input_list[0]
         lower_list, upper_list = partition(head_element, input_list[1:])
-        list_partition_calls_lower_list = quicksort_all_partition_calls(
-            lower_list)
-        list_partition_calls_upper_list = quicksort_all_partition_calls(
-            upper_list)
-        return [(head_element, input_list[1:], lower_list, upper_list)] + list_partition_calls_lower_list + list_partition_calls_upper_list
+        if index < len(lower_list):
+            cumulative_partition_calls = quickselect_all_partition_calls(
+                (index, lower_list))
+            return [(head_element, input_list[1:], lower_list, upper_list)] + cumulative_partition_calls
+        elif index == len(lower_list):
+            return [(head_element, input_list[1:], lower_list, upper_list)]
+        else:
+            cumulative_partition_calls = quickselect_all_partition_calls(
+                (index - len(lower_list) - 1, upper_list))
+            return [(head_element, input_list[1:], lower_list, upper_list)] + cumulative_partition_calls
 
 
 def get_all_partition_calls(input_data):
     input_data_partition = []
-    for input_list in input_data:
-        input_data_partition += quicksort_all_partition_calls(input_list)
+    for integer_list_pair in input_data:
+        input_data_partition += quickselect_all_partition_calls(
+            integer_list_pair)
     return input_data_partition
 
 
-def evaluate_cost_partition(partition_call, modulo=5, lower_cost=0.5):
+def evaluate_cost_partition(partition_call):
     pivot, input_list, _, _ = partition_call
-    return partition_cost(pivot, input_list, modulo, lower_cost)
+    return partition_cost(pivot, input_list)
 
 
 def create_runtime_cost_data_annotated_code(input_data):
@@ -76,9 +88,4 @@ def get_cost_gap_annotated_code(cost_measurement, input_coeffs, output_coeffs):
     input_output_size, actual_cost = cost_measurement
     predicted_cost = get_predicted_cost_annotated_code(
         input_output_size, input_coeffs, output_coeffs)
-
-    if predicted_cost < actual_cost - 0.0001:
-        print("input-output size: {} input_coeffs: {} output_coeffs: {}, predicted_cost = {}, actual_cost = {}".format(
-            input_output_size, input_coeffs, output_coeffs, predicted_cost, actual_cost))
-
     return predicted_cost - actual_cost

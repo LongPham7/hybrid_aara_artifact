@@ -355,7 +355,7 @@ def plot_inferred_cost_bound(runtime_cost_data, inferred_coefficients,
 
     # Use a log scale for the y axis in quicksort
     benchmark_name = analysis_info["benchmark_name"]
-    if benchmark_name == "quicksort":
+    if benchmark_name == "QuickSort":
         ax.set_ylim(1, ylim)
         ax.set_yscale('log')
 
@@ -371,7 +371,7 @@ def plot_inferred_cost_bound(runtime_cost_data, inferred_coefficients,
 
     # Legend
     if axis_label:
-        if benchmark_name == "quicksort":
+        if benchmark_name == "QuickSort":
             ax.legend(loc='lower right', framealpha=1, fancybox=False)
         else:
             ax.legend(loc='upper left', framealpha=1, fancybox=False)
@@ -443,7 +443,7 @@ def plot_posterior_distribution_cost_bound(runtime_cost_data, posterior_distribu
 
     # Use a log scale for the y axis in quicksort
     benchmark_name = analysis_info["benchmark_name"]
-    if benchmark_name == "quicksort":
+    if benchmark_name == "QuickSort":
         ax.set_ylim(1, ylim)
         ax.set_yscale('log')
 
@@ -458,7 +458,7 @@ def plot_posterior_distribution_cost_bound(runtime_cost_data, posterior_distribu
         ax.set_yticks([], minor=True)
 
     # Legend
-    # if benchmark_name == "quicksort":
+    # if benchmark_name == "QuickSort":
     #     ax.legend(loc='lower right', framealpha=1, fancybox=False)
     # else:
     #     ax.legend(loc='upper left', framealpha=1, fancybox=False)

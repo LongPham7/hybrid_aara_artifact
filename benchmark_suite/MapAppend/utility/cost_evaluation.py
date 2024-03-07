@@ -1,6 +1,3 @@
-import numpy as np
-import csv
-
 # Cost of running append
 
 

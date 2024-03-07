@@ -1,6 +1,5 @@
 import os
 import matplotlib.gridspec as gridspec
-from run_analysis import calculate_desired_quantity_all_benchmarks, analyze_relative_errors
 import matplotlib.pyplot as plt
 import itertools
 
@@ -68,7 +67,7 @@ def plot_relative_errors_benchmark(ax, relative_error_benchmark):
     ax.set_ylim([ymin, None])
 
 
-def plot_relative_errors_selected_benchmarks():
+def plot_relative_errors_selected_benchmarks(relative_error):
     gs_kw = dict(width_ratios=[2, 2, 2, 1, 1])
     fig, axes = plt.subplots(
         tight_layout=True, gridspec_kw=gs_kw, figsize=(10, 3), ncols=5)
@@ -82,15 +81,12 @@ def plot_relative_errors_selected_benchmarks():
     #     fig.add_subplot(gs[1, :]),
     # ]
 
-    relative_error = calculate_desired_quantity_all_benchmarks(
-        analyze_relative_errors)
-
-    plot_relative_errors_benchmark(axes[0], relative_error['quicksort'])
-    plot_relative_errors_benchmark(axes[1], relative_error['quickselect'])
-    plot_relative_errors_benchmark(axes[2], relative_error['linear_select'])
-    plot_relative_errors_benchmark(axes[3], relative_error['round'])
+    plot_relative_errors_benchmark(axes[0], relative_error['QuickSort'])
+    plot_relative_errors_benchmark(axes[1], relative_error['QuickSelect'])
+    plot_relative_errors_benchmark(axes[2], relative_error['MedianOfMedians'])
+    plot_relative_errors_benchmark(axes[3], relative_error['Round'])
     plot_relative_errors_benchmark(
-        axes[4], relative_error['even_split_odd_tail'])
+        axes[4], relative_error['EvenSplitOddTail'])
 
     axes[0].set_title(r'\texttt{QuickSort}')
     axes[1].set_title(r'\texttt{QuickSelect}')
@@ -144,7 +140,3 @@ def plot_relative_errors_selected_benchmarks():
         os.makedirs(image_directory_path)
     image_path = os.path.join(image_directory_path, "relative_errors.pdf")
     plt.savefig(image_path, format="pdf", dpi=300, bbox_inches='tight')
-
-
-if __name__ == "__main__":
-    plot_relative_errors_selected_benchmarks()
