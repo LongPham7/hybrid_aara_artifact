@@ -79,8 +79,6 @@ ADD ./benchmark_suite /home/hybrid_aara/benchmark_suite
 # Test Hybrid AARA
 WORKDIR /home/hybrid_aara/benchmark_suite/playground
 
-# Add Hybrid RaML's executbale to the PATH
+# Add Hybrid RaML's executbale to the PATH so that we can call main anywhere in
+# the filesystem to run Hybrid RaML
 ENV PATH "$PATH:/home/hybrid_aara/raml"
-
-# If we want the container to keep running, comment out the following line.
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
