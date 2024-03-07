@@ -6,9 +6,10 @@ Our artifact, dubbed Hybrid Resource-Aware ML (RaML), is a program analysis tool
 that takes in an OCaml program and infers its worst-case polynomial cost bound
 using the technique Hybrid AARA described in the paper.
 
-The artifact is wrapped inside the provided Docker image.
+The artifact is wrapped inside the accompanying Docker image
+\texttt{hybrid\_aara.tar.gz}.
 %
-To run it, first install Docker according to the instructions at
+Before running it, first install Docker as instructed here:
 \url{https://docs.docker.com/engine/install/}.
 %
 To see if Docker has been installed properly, run
@@ -20,14 +21,16 @@ Docker version 25.0.3, build 4debf41
 Load and run the Docker image as follows:
 \begin{verbatim}
 $ docker load --input hybrid_aara.tar.gz
-$ docker run -it --rm hybrid_aara
+$ docker run --name hybrid_aara -it --rm hybrid_aara
 root@fca41f6f696d:/home/hybrid_aara/benchmark_suite/playground#
 \end{verbatim}
-The current working directory is
-\texttt{/home/hybrid\_aara/benchmark\_suite/playground}.
+%
+Throughout this document, any command line starting with \texttt{\#} is executed
+inside the Docker container, and any command line starting with \texttt{\$} is
+executed in your local machine's terminal.
 
-In this directory, we have a file \texttt{append.ml} that stores an OCaml
-function \texttt{append}.
+The initial working directory \texttt{playground} has a file \texttt{append.ml},
+which stores an OCaml function \texttt{append}.
 %
 Given two inputs lists, the \texttt{append} function appends the first input to
 the second one.
@@ -41,9 +44,10 @@ is the length of the first input list.
 Hybrid RaML's executable is the file \texttt{/home/hybrid\_aara/raml/main}.
 %
 Its location has already been added to the \texttt{PATH} variable so that we can
-call Hybrid RaML by running \texttt{main} anywhere in the filesystem.
+call Hybrid RaML by running \texttt{main} anywhere in the Docker container's
+filesystem.
 %
-Hybrid AARA (and its implementation Hybrid RaML) provides three types of hybrid
+Hybrid AARA (and its implementation Hybrid RaML) provides three modes of hybrid
 resource analysis: Hybrid \Opt{}, Hybrid \BayesWC{}, and Hybrid \BayesPC{}.
 
 \subsection{Hybrid \Opt{}}
@@ -96,7 +100,7 @@ Next, to perform Hybrid \BayesWC{}, run
 where the configuration file is now \texttt{config\_bayeswc.json}, which
 contains hyperparameters for Bayesian inference.
 %
-The analysis should finish in between 40 and 50 seconds.
+The analysis should finish in 50 seconds.
 %
 Its output on the stdout should be close to
 \begin{verbatim}
@@ -123,10 +127,11 @@ Its output on the stdout should be close to
 \end{verbatim}
 %
 Unlike Hybrid Opt{} that infers a single cost bound, Hybrid \BayesWC{} returns a
-collection of cost bounds, which approximate their posterior distribution.
+collection of cost bounds, which approximate their posterior distribution in
+Bayesian inference.
 %
 In the stdout, 0.0101388 is the average degree-one coefficient for the first
-input in the posterior distribution, and likewise, 2.18047 is the average
+input in the posterior distribution, and 2.18047 is the average
 coefficient for the second input.
 
 \subsection{Hybrid \BayesPC{}}
