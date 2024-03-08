@@ -78,8 +78,8 @@ To display these two columns, run
 
 This table supports the two key claims in our paper (Section~7).
 %
-Firstly, \BayesWC{} and \BayesPC{} have higher percentages of sound cost bounds
-than \Opt{} (in both data-driven and hybrid resource analysis).
+Firstly, in both data-driven and hybrid resource analysis, \BayesWC{} and
+\BayesPC{} have higher percentages of sound cost bounds than \Opt{}.
 %
 Secondly, hybrid resource analysis (Hybrid \BayesWC{} and Hybrid \BayesPC{}) has
 higher percentages of sound cost bounds than purely data-driven resource
@@ -93,6 +93,15 @@ To display these two columns, run
 \begin{verbatim}
 # python3 run_analysis.py time
 \end{verbatim}
+
+The table of analysis time produced by the artifact looks different from the one
+in the submitted version of the paper, in terms of both the numbers and layout.
+%
+This is because, since the submission, we have changed the configuration of
+sampling-based Bayesian inference algorithms and rerun experiments.
+%
+In the camera ready version of the paper, we will update the analysis time in
+Table~1.
 
 \paragraph{Relative errors}
 
