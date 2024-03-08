@@ -28,14 +28,14 @@ def get_module(module_name, analysis_info):
 
 
 list_benchmarks_data_driven_hybrid = [
-    "MapAppend", "Concat", "InsertionSort2", "MedianOfMedians", "QuickSelect", "QuickSort", "ZAlgorithm"]
+    "MapAppend", "Concat", "InsertionSort2", "MedianOfMedians",
+    "QuickSelect", "QuickSort", "ZAlgorithm"]
 
 list_benchmarks_data_driven = [
     "BubbleSort", "Round", "EvenSplitOddTail"]
 
 
 def get_list_benchmark_hybrid_mode():
-
     list_benchmark_hybrid_mode = []
     for benchmark_name in list_benchmarks_data_driven_hybrid:
         list_benchmark_hybrid_mode.append((benchmark_name, "data_driven"))

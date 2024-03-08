@@ -2,7 +2,8 @@ import os
 import sys
 import numpy as np
 
-from benchmark_manipulation import get_module, get_list_benchmark_hybrid_mode
+from benchmark_manipulation import get_module, get_list_benchmark_hybrid_mode, \
+    list_benchmarks_data_driven_hybrid, list_benchmarks_data_driven
 from pathnames import bin_directory
 from json_manipulation import read_input_data_json, read_execution_time_json
 from visualization import plot_cost_gaps_opt, plot_cost_gaps_bayesian, \
@@ -529,22 +530,52 @@ def get_proportion_sound_cost_bounds(analysis_info):
 
 def display_proportion_sound_cost_bounds(proportion_sound_cost_bonds_all_benchmarks):
 
+    column_benchmark_name = "Benchmark"
+    column_data_analysis_mode = "Analysis"
+    column_proportion_data_driven = "Data-driven"
+    column_proportion_hybrid = "Hybrid"
+
+    list_all_benchmark_names = list_benchmarks_data_driven_hybrid + \
+        list_benchmarks_data_driven
+    width_benchmark_name = max([len(column_benchmark_name)] + [len(name)
+                                                               for name in list_all_benchmark_names])
+    width_data_analysis_mode = max([len(column_data_analysis_mode)] + [len(name)
+                                                                       for name in ["Opt", "BayesWC", "BayesPC"]])
+    width_proportion = max(len(column_proportion_data_driven),
+                           len((column_proportion_hybrid)))
+    precision_proportion = 1
+
     def print_proportion_data_driven_data_analysis_mode(benchmark_name, data_analysis_mode, proportion):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:16} {:7} {:5.1f}%".format(
+        print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_proportion}.{precision_proportion}f}%".format(
             benchmark_name,
             string_data_analysis_mode,
-            100 * proportion[data_analysis_mode]))
+            100 * proportion[data_analysis_mode],
+            width_benchmark_name=width_benchmark_name,
+            width_data_analysis_mode=width_data_analysis_mode,
+            width_proportion=width_proportion-1,
+            precision_proportion=precision_proportion))
 
     def print_proportion_data_driven_hybrid_data_analysis_mode(benchmark_name, data_analysis_mode, proportion_data_driven, proportion_hybrid):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:16} {:7} {:5.1f}% {:5.1f}%".format(
+        print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_proportion}.{precision_proportion}f}% {:{width_proportion}.{precision_proportion}f}%".format(
             benchmark_name,
             string_data_analysis_mode,
             100 * proportion_data_driven[data_analysis_mode],
-            100 * proportion_hybrid[data_analysis_mode]))
+            100 * proportion_hybrid[data_analysis_mode],
+            width_benchmark_name=width_benchmark_name,
+            width_data_analysis_mode=width_data_analysis_mode,
+            width_proportion=width_proportion-1,
+            precision_proportion=precision_proportion))
+
+    print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_proportion}} {:>{width_proportion}}".format(
+          column_benchmark_name, column_data_analysis_mode,
+          column_proportion_data_driven, column_proportion_hybrid,
+          width_benchmark_name=width_benchmark_name,
+          width_data_analysis_mode=width_data_analysis_mode,
+          width_proportion=width_proportion))
 
     for benchmark_name, proportion_sound_cost_bonds in proportion_sound_cost_bonds_all_benchmarks.items():
         if "hybrid" in proportion_sound_cost_bonds:
@@ -582,22 +613,96 @@ def get_execution_time(analysis_info):
 
 def display_execution_time(execution_time_all_benchmarks):
 
+    column_benchmark_name = "Benchmark"
+    column_data_analysis_mode = "Analysis"
+    column_time = "Total time"
+    column_num_chains = "#Chains"
+    column_num_iterations = "#Iterations"
+
+    list_all_benchmark_names = list_benchmarks_data_driven_hybrid + \
+        list_benchmarks_data_driven
+    width_benchmark_name = max([len(column_benchmark_name)] + [len(name)
+                                                               for name in list_all_benchmark_names])
+    width_data_analysis_mode = max([len(column_data_analysis_mode)] + [len(name)
+                                                                       for name in ["Opt", "BayesWC", "BayesPC"]])
+    width_time = len(column_time)
+    width_num_chains = len(column_num_chains)
+    width_num_iterations = len(column_num_iterations)
+    precision_time = 2
+
+    def get_corrected_execution_time(data_analysis_mode, execution_time_dict):
+        execution_time = execution_time_dict[data_analysis_mode]["execution_time"]
+        num_chains = execution_time_dict[data_analysis_mode]["num_chains"]
+        num_samples_per_chain_original = execution_time_dict[
+            data_analysis_mode]["num_samples_per_chain"]
+
+        if data_analysis_mode == "bayeswc":
+            # For BayesWC, we use Stan, and the number of iterations supplied to
+            # Stan when we invoke it is only the number of iterations "after"
+            # warmup. So we need to add the number of warmup iterations in order
+            # to obtain the total number of iterations (per chain). Pystan
+            # (i.e., the Python-Stan binding) calls the function lookup_default
+            # in httpstan:
+            # https://github.com/stan-dev/httpstan/blob/09c0cf229fd3276babe262355155b95ed02d336f/httpstan/services/arguments.py#L35.
+            # In turn, httpStan in turn calls CmdStan, which stores the default
+            # value of 1000 for the number of warmup iterations:
+            # https://github.com/stan-dev/cmdstan/blob/c8f2e95e56d33c99910d4f8163a3da0390c6e2ad/src/cmdstan/arguments/arg_sample.hpp#L21.
+            num_samples_per_chain = num_samples_per_chain_original + 1000
+        else:
+            num_samples_per_chain = num_samples_per_chain_original
+        return execution_time, num_chains, num_samples_per_chain
+
     def print_execution_time_data_driven(benchmark_name, data_analysis_mode, execution_time_dict):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:16} {:7} {:5.1f}s".format(
+        execution_time, num_chains, num_samples_per_chain = get_corrected_execution_time(
+            data_analysis_mode, execution_time_dict)
+        print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_time}.{precision_time}f}s {:{width_num_chains}} {:{width_num_iterations}}".format(
             benchmark_name,
             string_data_analysis_mode,
-            execution_time_dict[data_analysis_mode]["execution_time"]))
+            execution_time,
+            num_chains,
+            num_samples_per_chain,
+            width_benchmark_name=width_benchmark_name,
+            width_data_analysis_mode=width_data_analysis_mode,
+            width_time=width_time-1,
+            precision_time=precision_time,
+            width_num_chains=width_num_chains,
+            width_num_iterations=width_num_iterations
+        ))
 
     def print_execution_time_data_driven_hybrid(benchmark_name, data_analysis_mode, execution_time_data_driven, execution_time_hybrid):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        print("{:16} {:7} {:5.1f}s {:5.1f}s".format(
+        execution_time_data_driven, num_chains_data_driven, num_samples_per_chain_data_driven = get_corrected_execution_time(
+            data_analysis_mode, execution_time_data_driven)
+        execution_time_hybrid, num_chains_hybrid, num_samples_per_chain_hybrid = get_corrected_execution_time(
+            data_analysis_mode, execution_time_hybrid)
+        print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_time}.{precision_time}f}s {:{width_num_chains}} {:{width_num_iterations}} {:{width_time}.{precision_time}f}s {:{width_num_chains}} {:{width_num_iterations}}".format(
             benchmark_name,
             string_data_analysis_mode,
-            execution_time_data_driven[data_analysis_mode]["execution_time"],
-            execution_time_hybrid[data_analysis_mode]["execution_time"]))
+            execution_time_data_driven,
+            num_chains_data_driven,
+            num_samples_per_chain_data_driven,
+            execution_time_hybrid,
+            num_chains_hybrid,
+            num_samples_per_chain_hybrid,
+            width_benchmark_name=width_benchmark_name,
+            width_data_analysis_mode=width_data_analysis_mode,
+            width_time=width_time-1,
+            precision_time=precision_time,
+            width_num_chains=width_num_chains,
+            width_num_iterations=width_num_iterations))
+
+    print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_time}} {:{width_num_chains}} {:{width_num_iterations}} {:{width_time}} {:{width_num_chains}} {:{width_num_iterations}}".format(
+        column_benchmark_name, column_data_analysis_mode, column_time,
+        column_num_chains, column_num_iterations, column_time,
+        column_num_chains, column_num_iterations,
+        width_benchmark_name=width_benchmark_name,
+        width_data_analysis_mode=width_data_analysis_mode,
+        width_time=width_time,
+        width_num_chains=width_num_chains,
+        width_num_iterations=width_num_iterations))
 
     for benchmark_name, execution_time_dict in execution_time_all_benchmarks.items():
         if "hybrid" in execution_time_dict:

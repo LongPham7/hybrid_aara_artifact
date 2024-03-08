@@ -76,7 +76,6 @@ def run_all_benchmarks():
 
 
 if __name__ == "__main__":
-
     if sys.argv[1] == "all":
         run_all_benchmarks()
     else:
