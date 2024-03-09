@@ -31,11 +31,11 @@ subdirectories:
   \item \texttt{images}: plots of inferred cost bounds.
 \end{enumerate}
 
-\subsection{Display Experiment Results}
+\subsection{Display Experimental Results}
 \label{sec:display experiment results}
 
 In this section, we demonstrate how to produce tables and plots in the paper
-from the experiment results that are stored in each benchmark's \texttt{bin}
+from the experimental results that are stored in each benchmark's \texttt{bin}
 directory.
 %
 In the Docker container, the \texttt{bin} directory of each benchmark already
@@ -43,18 +43,6 @@ contains the experimental results that we reported in the paper.
 %
 We will demonstrate how to generate the experimental results from scratch in
 \cref{sec:generate experiment results}.
-
-The tables and plots produced by the artifact are different from the ones in the
-submitted version of the paper.
-%
-This is because, since the submission, we have adjusted the hyperparameters for
-\BayesWC{} and \BayesPC{} in order to an automatic procedure for choosing
-hyperparameters.
-%
-The updated experiments results still preserve our key claims in Section~7 of
-the paper.
-%
-The updated version of the paper accompanies the artifact.
 
 Go to the directory \texttt{/home/hybrid\_aara/benchmark\_suite/toolbox}.
 %
@@ -166,7 +154,7 @@ $ docker cp hybrid_aara:/home/hybrid_aara/benchmark_suite\
 %
 You can then view the plot on your local machine.
 
-\subsection{Generate Experiment Results}
+\subsection{Generate Experimental Results}
 \label{sec:generate experiment results}
 
 This section demonstrates how to perform Hybrid AARA on the 10 benchmark
@@ -220,10 +208,10 @@ This can take up to 2 hours to run\footnote{We have tried Python's
 multiprocessing to run multiple benchmarks in parallel, but it did not work
 properly in Docker. So our artifact can only run benchmarks sequentially.}.
 
-To view the updated tables and plots of the new experiment results, follow the
+To view the updated tables and plots of the new experimental results, follow the
 steps in \cref{sec:display experiment results}.
 %
-The experiment results for (Data-Driven and Hybrid) \BayesWC{} and \BayesPC{}
+The experimental results for (Data-Driven and Hybrid) \BayesWC{} and \BayesPC{}
 after rerunning the experiments may look different from the tables and plots
 reported in the updated version of the paper.
 %
@@ -274,3 +262,8 @@ If you want to save the image as a tar archive and compress it, run
 \begin{verbatim}
 $ docker save hybrid_aara | gzip > hybrid_aara.tar.gz
 \end{verbatim}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "README"
+%%% End:
