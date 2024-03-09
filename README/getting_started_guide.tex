@@ -5,6 +5,10 @@
 Our artifact, dubbed Hybrid Resource-Aware ML (Hybrid RaML), is a program analysis tool
 that takes in an OCaml program and infers its worst-case polynomial cost bound
 using the technique Hybrid AARA described in the paper.
+%
+Hybrid AARA integrates data-driven resource analysis (i.e., inferring a cost
+bound from the runtime cost measurements of the program) and static resource
+analysis (i.e., inferring a cost bound from the source code of the program).
 
 The artifact is wrapped inside the accompanying Docker image
 \texttt{hybrid\_aara.tar.gz}.
@@ -32,17 +36,51 @@ Throughout this document, any command line starting with \texttt{\#} is executed
 inside the Docker container, and any command line starting with \texttt{\$} is
 executed in your local machine's terminal.
 
-The initial working directory \texttt{playground} has a file \texttt{append.ml},
-which stores an OCaml function \texttt{append}.
+\subsection{Example Program}
+
+The initial working directory \texttt{playground} has a file \texttt{append.ml}.
 %
-Given two inputs lists, the \texttt{append} function appends the first input to
+It stores (i) an OCaml function \texttt{append} and (ii) inputs to the function
+\texttt{append} for generating runtime cost measurements.
+%
+To view the function \texttt{append}'s source code, run
+\begin{verbatim}
+# cat append.ml | head -16
+\end{verbatim}
+
+Given two inputs lists, the function \texttt{append} appends the first input to
 the second one.
 %
-For each element in the first input that the function processes, it incurs a
-cost ranging from 0.5 to 1.0.
+For each element in the first input processed by the function, it incurs a cost
+ranging from 0.5 to 1.0 (indicated by a code annotation \texttt{Raml.tick}).
 %
-Therefore, the worst-case cost bound of the function is $1.0 \cdot M$, where $M$
+Therefore, the worst-case cost bound of the function \texttt{append} is $1.0 \cdot M$, where $M$
 is the length of the first input list.
+
+Our goal is to infer a sound worst-case bound of the function \texttt{append} by
+Hybrid AARA, which integrates data-driven and static resource analyses.
+%
+The stepping function \texttt{step\_function} called inside function
+\texttt{append} is enclosed by a code annotation \texttt{Raml.stat}.
+%
+This annotation indicates we perform data-driven resource analysis on the
+stepping function---the rest of \texttt{append}'s source code is analyzed by
+static resource analysis.
+%
+To perform data-driven analysis, Hybrid AARA first runs the function
+\texttt{append} and collect runtime cost measurements of the stepping function
+\texttt{step\_function}.
+%
+The inputs to \texttt{append} used for generating runtime cost measurements are
+stored in the second half of the file \texttt{append.ml}.
+%
+To view these inputs, run
+\begin{verbatim}
+# cat append.ml | tail -74
+\end{verbatim}
+%
+In our case, we have chosen inputs in such a way that (i) the input sizes grow
+exponentially and (ii) the values of list elements are chosen randomly.
 
 Hybrid RaML's executable is the file \texttt{/home/hybrid\_aara/raml/main}.
 %
@@ -52,9 +90,16 @@ filesystem.
 %
 Hybrid AARA (and its implementation Hybrid RaML) provides three modes of hybrid
 resource analysis: Hybrid \Opt{}, Hybrid \BayesWC{}, and Hybrid \BayesPC{}.
+%
+Although the paper also describes purely data-driven resource analysis, which is
+a special case of hybrid resource analysis, this Getting Started Guide focuses
+on hybrid resource analysis of the function \texttt{append}.
 
 \subsection{Hybrid \Opt{}}
 
+Hybrid \Opt{} uses \underline{opt}imization, specifically linear programming,
+for the data-driven part of resource analysis.
+%
 To perform Hybrid \Opt{} on the \texttt{append} function, run
 \begin{verbatim}
 # main stat_analyze ticks 1 -m append.ml append -config config_opt.json
@@ -96,7 +141,11 @@ It means that the cost bound of the function \texttt{append} inferred by Hybrid
 
 \subsection{Hybrid \BayesWC{}}
 
-Next, to perform Hybrid \BayesWC{}, run
+Hybrid \BayesWC{} conducts \underline{Bayes}ian inference on
+\underline{w}orst-case \underline{c}osts for the data-driven part of resource
+analysis.
+%
+To perform Hybrid \BayesWC{}, run
 \begin{verbatim}
 # main stat_analyze ticks 1 -m append.ml append -config config_bayeswc.json
 \end{verbatim}
@@ -139,6 +188,10 @@ coefficient for the second input.
 
 \subsection{Hybrid \BayesPC{}}
 
+Hybrid \BayesPC{} conducts \underline{Bayes}ian inference on
+\underline{p}olynomial \underline{c}oefficients for the data-driven part of
+resource analysis.
+%
 To perform Hybrid \BayesPC{}, run
 \begin{verbatim}
 # main stat_analyze ticks 1 -m append.ml append -config config_bayespc.json
@@ -172,6 +225,37 @@ The output printed on the stdout should be close to
 \end{verbatim}
 where each coefficient in the inference result \texttt{0.164309 + 0.281939*L +
   2.03295*M} is the average of its posterior distribution.
+
+\subsection{Configuration Files}
+
+Configuration files supplied to Hybrid RaML specify hyperparameters for
+linear programming and Bayesian inference.
+
+In the configuration file \texttt{config\_opt.json} for \Opt{},
+\texttt{cost\_gaps\_optimization} inside set to true, and
+\texttt{coefficients\_optimization} is set to \texttt{Equal\_weights}.
+%
+The first setting means we optimize not only the coefficients of an overall cost
+bound but also the cost gaps (i.e., the gaps between the predicted costs and
+observed costs).
+%
+The second setting means we assign equal weights to all coefficients in an
+overall cost bound regardless of their degrees.
+
+The configuration file \texttt{config\_bayeswc.json} for \BayesWC{} specifies
+(i) the probabilistic model hyperparameters $\beta$ and $s$ in Weibull survival
+analysis\footnote{Explained in this PyMC tutorial:
+  \url{https://www.pymc.io/projects/examples/en/2022.12.0/survival_analysis/bayes_param_survival_pymc3.html}}
+and (ii) the inference hyperparameters such as the number of chains and the
+number of iterations to run in a sampling-based Bayesian inference algorithm.
+
+The configuration file \texttt{config\_bayespc.json} for \BayesPC{} contains (i)
+the probabilistic model hyperparameters for Gaussian and Weibull distributions
+and (ii) the inference hyperparameters for reflective Hamiltonian Monte Carlo
+(HMC) used in \BayesWC{}.
+%
+Reflective HMC runs a sampling-based Bayesian inference algorithm within a
+feasible region of a linear program.
 
 %%% Local Variables:
 %%% mode: latex

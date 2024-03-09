@@ -15,12 +15,12 @@ These benchmarks are: \texttt{MapAppend}, \texttt{Concat},
 Inside the artifact, the benchmark \texttt{EvenOddTail} goes by its full name,
 \texttt{EvenSplitOddTail}, instead of its shorthand \texttt{EvenOddTail} used
 in the paper.
-%
+
 The paper evaluates both purely data-driven resource analysis and hybrid
 resource analysis on the first seven benchmarks, and only data-driven resource
 analysis on the remaining three benchmarks.
 
-Inside the benchmark directory \texttt{/home/hybrid\_aara/benchmark\_suite},
+Inside the benchmark suite directory \texttt{/home/hybrid\_aara/benchmark\_suite},
 each benchmark has its own directory, which contains the following three
 subdirectories:
 \begin{enumerate}
@@ -88,7 +88,7 @@ in the submitted version of the paper, in terms of both the numbers and layout.
 This is because, since the submission, we have changed the configuration of
 sampling-based Bayesian inference algorithms and rerun experiments.
 %
-In the camera ready version of the paper, we will update the analysis time in
+In the camera-ready version of the paper, we will update the analysis time in
 Table~1.
 
 \paragraph{Relative errors}
@@ -172,14 +172,13 @@ analysis mode.
 The inference result will be stored inside each benchmarks' \texttt{bin}
 directory.
 
-To perform Hybrid AARA on the benchmark \texttt{QuickSort} using purely
-data-driven resource analysis, run
+For example, to perform Hybrid AARA on the benchmark \texttt{QuickSort} using
+purely data-driven resource analysis, run
 \begin{verbatim}
 # python3 run_experiment.py QuickSort data_driven
 \end{verbatim}
 %
-It will run Data-Driven \Opt{}, Data-Driven \BayesWC{}, and Data-Driven
-\BayesPC{}.
+It runs Data-Driven \Opt{}, Data-Driven \BayesWC{}, and Data-Driven \BayesPC{}.
 %
 The analysis should finish within 2 minutes.
 %
@@ -188,7 +187,7 @@ If we instead want to perform hybrid resource analysis,
 # python3 run_experiment.py QuickSort hybrid
 \end{verbatim}
 %
-It will run Hybrid \Opt{}, Hybrid \BayesWC{}, and Hybrid \BayesPC{}.
+It runs Hybrid \Opt{}, Hybrid \BayesWC{}, and Hybrid \BayesPC{}.
 %
 The analysis should finish in 11 minutes.
 %
@@ -224,13 +223,13 @@ Nonetheless, there should not be any significant deviation.
 
 Our artifact contains three tools that we have built by ourselves: (i) Hybrid
 RaML (in OCaml), (ii) the volesti-RaML interface (in C++), and (iii) the
-benchmark suite (in Python).
+execution and analysis of benchmark suite (in Python).
 %
 Their source code is stored in directories \texttt{raml},
 \texttt{volesti\_raml\_interface}, and \texttt{benchmark\_suite} inside the
 project directory \texttt{/home/hybrid\_aara} in the Docker image.
 
-The project directory inside the image contains two additional directories.
+The project directory contains two additional directories.
 %
 The third-party C++ library volesti\footnote{Available here:
 \url{https://github.com/GeomScale/volesti}.} is stored in the directory
