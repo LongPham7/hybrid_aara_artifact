@@ -22,16 +22,29 @@ $ docker --version
 Docker version 25.0.3, build 4debf41
 \end{verbatim}
 
-Load and run the Docker image as follows:
+Load a Docker image by running
 \begin{verbatim}
 $ docker load --input hybrid_aara.tar.gz
+\end{verbatim}
+%
+It creates an image named \texttt{hybrid\_aara} and stores it locally on your
+machine.
+%
+On some platforms (e.g., macOS), Docker may create an image with a slightly
+different name from \texttt{hybrid\_aara}.
+%
+You can check the name of the image by running \verb|$ docker ps|, which will
+display a list of images on your local machine.
+
+To run the image \texttt{hybrid\_aara}, run
+\begin{verbatim}
 $ docker run --name hybrid_aara -it --rm hybrid_aara
 root@fca41f6f696d:/home/hybrid_aara/benchmark_suite/playground#
 \end{verbatim}
 %
-It creates a Docker conainer (i.e., a runnable instance of the Docker image) and
-starts a shell inside the container.
-%
+It creates a Docker container (i.e., a runnable instance of the Docker image)
+named \texttt{hybrid\_aara} and starts a shell inside the container.
+
 Throughout this document, any command line starting with \texttt{\#} is executed
 inside the Docker container, and any command line starting with \texttt{\$} is
 executed in your local machine's terminal.
@@ -91,9 +104,10 @@ filesystem.
 Hybrid AARA (and its implementation Hybrid RaML) provides three modes of hybrid
 resource analysis: Hybrid \Opt{}, Hybrid \BayesWC{}, and Hybrid \BayesPC{}.
 %
-Although the paper also describes purely data-driven resource analysis, which is
-a special case of hybrid resource analysis, this Getting Started Guide focuses
-on hybrid resource analysis of the function \texttt{append}.
+Although the paper also describes purely data-driven resource analysis
+(Section~5), which is a special case of hybrid resource analysis, this Getting
+Started Guide focuses on hybrid resource analysis of the function
+\texttt{append}.
 
 \subsection{Hybrid \Opt{}}
 

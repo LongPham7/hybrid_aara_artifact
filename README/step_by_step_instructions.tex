@@ -204,8 +204,8 @@ analyses), run
 # python3 run_experiment.py all
 \end{verbatim}
 This can take up to 2 hours to run\footnote{We have tried Python's
-multiprocessing to run multiple benchmarks in parallel, but it did not work
-properly in Docker. So our artifact can only run benchmarks sequentially.}.
+  multiprocessing to run multiple benchmarks in parallel, but it did not work
+  properly in Docker. So our artifact can only run benchmarks sequentially.}.
 
 To view the updated tables and plots of the new experimental results, follow the
 steps in \cref{sec:display experiment results}.
@@ -217,7 +217,8 @@ reported in the updated version of the paper.
 This is because \BayesWC{} and \BayesPC{} run sampling-based Bayesian inference
 algorithms that are stochastic.
 %
-Nonetheless, there should not be any significant deviation.
+Nonetheless, there should not be any significant deviation from the results
+reported in the paper.
 
 \subsection{Source Code}
 
@@ -229,16 +230,17 @@ Their source code is stored in directories \texttt{raml},
 \texttt{volesti\_raml\_interface}, and \texttt{benchmark\_suite} inside the
 project directory \texttt{/home/hybrid\_aara} in the Docker image.
 
-The project directory contains two additional directories.
+The project directory contains two additional directories that come from other
+sources.
 %
 The third-party C++ library volesti\footnote{Available here:
-\url{https://github.com/GeomScale/volesti}.} is stored in the directory
+  \url{https://github.com/GeomScale/volesti}.} is stored in the directory
 \texttt{volesti}.
 %
 The linear-program solver COIN-OR CLP\footnote{Available here:
-\url{https://github.com/coin-or/Clp}.} is stored in the directory \texttt{clp}.
+  \url{https://github.com/coin-or/Clp}.} is stored in the directory \texttt{clp}.
 
-The code for building a Docker image is publicly available on GitHub:
+The code for building a Docker image is available on GitHub:
 \url{https://github.com/LongPham7/hybrid_aara_artifact}.
 %
 To build a Docker image, clone the GitHub repository and then run (in the root
@@ -247,12 +249,15 @@ directory)
 $ docker build -t hybrid_aara .
 \end{verbatim}
 %
-It will take 20--30 minutes.
+We need a period at the end of the command to indciate that Dockerfile exists in
+the current working directory.
+%
+The build will take 20--30 minutes.
 %
 The resulting image is named \texttt{hybrid\_aara} and is stored locally on your
 machine.
-%
-To run this image after it is built, run
+
+To run the image \texttt{hybrid\_aara}, run
 \begin{verbatim}
 $ docker run --name hybrid_aara -it --rm hybrid_aara
 \end{verbatim}
