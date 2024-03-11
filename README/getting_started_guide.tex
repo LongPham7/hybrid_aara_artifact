@@ -4,7 +4,7 @@
 
 Our artifact, dubbed Hybrid Resource-Aware ML (Hybrid RaML), is a program analysis tool
 that takes in an OCaml program and infers its worst-case polynomial cost bound
-using the technique Hybrid AARA described in the paper.
+using the technique Hybrid AARA developed in the paper.
 %
 Hybrid AARA integrates data-driven resource analysis (i.e., inferring a cost
 bound from the runtime cost measurements of the program) and static resource
@@ -257,16 +257,18 @@ The second setting means we assign equal weights to all coefficients in an
 overall cost bound regardless of their degrees.
 
 The configuration file \texttt{config\_bayeswc.json} for \BayesWC{} specifies
-(i) the probabilistic model hyperparameters $\beta$ and $s$ in Weibull survival
-analysis\footnote{Explained in this PyMC tutorial:
-  \url{https://www.pymc.io/projects/examples/en/2022.12.0/survival_analysis/bayes_param_survival_pymc3.html}}
+(i) the probabilistic model hyperparameter $\gamma_0$ in Weibull survival
+analysis\footnote{See Appendix~C of the updated version of the paper. The
+probabilistic model is also explained in this PyMC tutorial:
+\url{https://www.pymc.io/projects/examples/en/2022.12.0/survival_analysis/bayes_param_survival_pymc3.html}.}
 and (ii) the inference hyperparameters such as the number of chains and the
 number of iterations to run in a sampling-based Bayesian inference algorithm.
 
 The configuration file \texttt{config\_bayespc.json} for \BayesPC{} contains (i)
-the probabilistic model hyperparameters for Gaussian and Weibull distributions
-and (ii) the inference hyperparameters for reflective Hamiltonian Monte Carlo
-(HMC) used in \BayesWC{}.
+the probabilistic model hyperparameters $\gamma_0$ for normal prior
+distributions and $\theta_0, \theta_1$ for Weibull prior distributions and (ii)
+the inference hyperparameters for reflective Hamiltonian Monte Carlo (HMC) used
+in \BayesPC{}.
 %
 Reflective HMC runs a sampling-based Bayesian inference algorithm within a
 feasible region of a linear program.
