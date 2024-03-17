@@ -846,11 +846,11 @@ module Make (Solver : SOLVER) (Amode : AMODE) = struct
             in
             (* For debugging *)
             let () =
-              print_endline "List of selected variables before adjusgtment:";
+              print_endline "List of selected variables before adjustment:";
               List.iter selected_coefficients_before_adjustment ~f:(fun v ->
                   printf "%i " v);
               print_newline ();
-              print_endline "List of selected variables after adjusgtment:";
+              print_endline "List of selected variables after adjustment:";
               List.iter selected_coefficients_after_adjustment ~f:(fun v ->
                   printf "%i " v);
               print_newline ()

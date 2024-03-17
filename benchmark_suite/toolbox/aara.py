@@ -1,8 +1,7 @@
 import os
 import subprocess
 import json
-import time
-from json_manipulation import write_input_data_json, write_execution_time_json
+from json_manipulation import write_input_data_json
 from pathnames import bin_directory
 
 
@@ -157,16 +156,8 @@ def run_aara(ocaml_code, input_data, degree, config, analysis_info):
     raml_main_path = os.path.expanduser(
         os.path.join("/home", "hybrid_aara", "raml", "main"))
     output_file = os.path.join(bin_path, "inference_result.json")
-    start_time = time.perf_counter()
     subprocess.run([raml_main_path, "stat_analyze", "ticks", str(
         degree), "-m", file_path, function_name, "-config", config_path, "-o", output_file])
-    end_time = time.perf_counter()
-
-    # Record the execution time
-    execution_time = end_time - start_time
-    execution_time_file_path = os.path.join(bin_path, "execution_time.json")
-    write_execution_time_json(
-        execution_time, hybrid_aara_config_python, execution_time_file_path)
 
     # Write input data
     input_data_file_path = os.path.join(bin_path, "input_data.json")

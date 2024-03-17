@@ -42,7 +42,8 @@ def plot_relative_errors_benchmark(ax, relative_error_benchmark):
             continue
 
         relative_error_opt = relative_error_benchmark["hybrid"]["opt"][size_string]["lower"]
-        ax.scatter([i+.65], relative_error_opt, facecolor='none')
+        ax.scatter([i+.65], relative_error_opt, marker=m,
+                   facecolor='none', edgecolor=c[0])
 
         relative_error_bayeswc = list(
             relative_error_benchmark["hybrid"]["bayeswc"][size_string].values())
@@ -117,14 +118,14 @@ def plot_relative_errors_selected_benchmarks(relative_error):
     axes[3].text(x=.98, y=.95, s='Sound\nRegion', va='top',
                  ha='right', transform=axes[3].transAxes)
 
-    axes[1].plot([], [], c=c[0], marker=m, mec=c[0],
-                 mfc=c[0], label=r'\textsc{OPT} Data-Driven')
+    axes[1].scatter([], [], c=c[0], marker=m,
+                    label=r'\textsc{OPT} Data-Driven')
     axes[1].plot([], [], c=c[1], marker=m, mec=c[1], mfc=c[1],
                  label=r'\textsc{BayesWC} Data-Driven')
     axes[1].plot([], [], c=c[2], marker=m, mec=c[2], mfc=c[2],
                  label=r'\textsc{BayesPC} Data-Driven')
-    axes[1].plot([], [], c=c[0], marker=m, mec=c[0],
-                 mfc='none', label=r'\textsc{OPT} Hybrid')
+    axes[1].scatter([], [], marker=m, facecolor='none',
+                    edgecolor=c[0], label=r'\textsc{OPT} Hybrid')
     axes[1].plot([], [], c=c[1], marker=m, mec=c[1],
                  mfc='none', label=r'\textsc{BayesWC} Hybrid')
     axes[1].plot([], [], c=c[2], marker=m, mec=c[2],

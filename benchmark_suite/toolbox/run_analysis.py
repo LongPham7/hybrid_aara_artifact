@@ -5,7 +5,7 @@ import numpy as np
 from benchmark_manipulation import get_module, get_list_benchmark_hybrid_mode, \
     list_benchmarks_data_driven_hybrid, list_benchmarks_data_driven
 from pathnames import bin_directory
-from json_manipulation import read_input_data_json, read_execution_time_json
+from json_manipulation import read_input_data_json, read_analysis_time_json
 from visualization import plot_cost_gaps_opt, plot_cost_gaps_bayesian, \
     plot_gaps_ground_truth_opt, plot_gaps_ground_truth_bayesian, \
     plot_inferred_cost_bound, plot_inferred_cost_bound_3D, \
@@ -246,15 +246,15 @@ def analyze_inference_result_single_experiment(analysis_info):
         print("Plot inference results: benchmark = {}, hybrid mode = {}, data analysis mode = {}".format(
             benchmark_name, hybrid_mode, data_analysis_mode))
 
-    analyze_inference_result_cost_gaps(analysis_info, "cost_gaps", save, show)
-    analyze_inference_result_cost_gaps_ground_truth(
-        analysis_info, "cost_gaps_ground_truth", save, show)
+    # analyze_inference_result_cost_gaps(analysis_info, "cost_gaps", save, show)
+    # analyze_inference_result_cost_gaps_ground_truth(
+    #     analysis_info, "cost_gaps_ground_truth", save, show)
+    # analyze_inference_result_cost_gaps_annotated_code(
+    #     analysis_info, "cost_gaps_annotated_code", save, show)
     analyze_inference_result_cost_bound(
         analysis_info, "inferred_cost_bound", save, show, axis_label=True)
     analyze_inference_result_cost_bound(
         analysis_info, "inferred_cost_bound_no_axis_labels", save, show, axis_label=False)
-    analyze_inference_result_cost_gaps_annotated_code(
-        analysis_info, "cost_gaps_annotated_code", save, show)
 
 
 def analyze_inference_result_benchmark_hybrid_mode(benchmark_name, hybrid_mode):
@@ -475,9 +475,95 @@ def display_relative_errors_benchmark(benchmark_name, relative_error):
             benchmark_name, 1000, relative_error_data_driven)
 
 
+# Display a table of relative errors in LaTex
+
+
+def display_relative_errors_benchmark_latex(benchmark_name, relative_error):
+
+    def get_size_string_latex(benchmark_name, size):
+        if benchmark_name == "MapAppend":
+            size_string = "({}, {})".format(size, size)
+        elif benchmark_name == "concat":
+            size_string = "({}, {})".format(size * 5, size)
+        else:
+            size_string = str(size)
+        return "\multirow[t]{{3}}{{*}}{{{}}}".format(size_string)
+
+    def get_string_data_analysis_mode_latex(data_analysis_mode):
+        if data_analysis_mode == "opt":
+            string_data_analysis_mode = "\Opt"
+        elif data_analysis_mode == "bayeswc":
+            string_data_analysis_mode = "\BayesWC"
+        else:
+            string_data_analysis_mode = "\BayesPC"
+        return string_data_analysis_mode
+
+    def print_relative_error_fixed_size_data_driven_data_analysis_mode(size, size_string, data_analysis_mode, relative_error_dict):
+        size_key = "size{}".format(size)
+        relative_error = relative_error_dict[data_analysis_mode][size_key]
+        string_data_analysis_mode = get_string_data_analysis_mode_latex(
+            data_analysis_mode)
+        print("{} & {} & {:.2f} & {:.2f} & {:.2f} & $\\varnothing$ & $\\varnothing$ & $\\varnothing$ \\\\".format(
+            size_string, string_data_analysis_mode, relative_error["lower"], relative_error["median"], relative_error["upper"]))
+
+    def print_relative_error_fixed_size_data_driven(benchmark_name, size, relative_error):
+        size_string_latex = get_size_string_latex(benchmark_name, size)
+        print_relative_error_fixed_size_data_driven_data_analysis_mode(
+            size, size_string_latex, "opt", relative_error)
+        print_relative_error_fixed_size_data_driven_data_analysis_mode(
+            size, "~", "bayeswc", relative_error)
+        print_relative_error_fixed_size_data_driven_data_analysis_mode(
+            size, "~", "bayespc", relative_error)
+
+    def print_relative_error_fixed_size_data_driven_data_hybrid_analysis_mode(size, size_string, data_analysis_mode, relative_error_dict_data_driven, relative_error_dict_hybrid):
+        size_key = "size{}".format(size)
+        relative_error_data_driven = relative_error_dict_data_driven[data_analysis_mode][size_key]
+        relative_error_hybrid = relative_error_dict_hybrid[data_analysis_mode][size_key]
+        string_data_analysis_mode = get_string_data_analysis_mode_latex(
+            data_analysis_mode)
+        print("{} & {} & {:.2f} & {:.2f} & {:.2f} & ".format(
+            size_string, string_data_analysis_mode, relative_error_data_driven["lower"], relative_error_data_driven["median"], relative_error_data_driven["upper"]), end="")
+        print("{:.2f} & {:.2f} & {:.2f} \\\\".format(
+            relative_error_hybrid["lower"], relative_error_hybrid["median"], relative_error_hybrid["upper"]))
+
+    def print_relative_error_fixed_size_data_driven_hybrid(benchmark_name, size, relative_error_data_driven, relative_error_hybrid):
+        size_string_latex = get_size_string_latex(benchmark_name, size)
+        print_relative_error_fixed_size_data_driven_data_hybrid_analysis_mode(
+            size, size_string_latex, "opt", relative_error_data_driven, relative_error_hybrid)
+        print_relative_error_fixed_size_data_driven_data_hybrid_analysis_mode(
+            size, "~", "bayeswc", relative_error_data_driven, relative_error_hybrid)
+        print_relative_error_fixed_size_data_driven_data_hybrid_analysis_mode(
+            size, "~", "bayespc", relative_error_data_driven, relative_error_hybrid)
+
+    relative_error_data_driven = relative_error["data_driven"]
+    if "hybrid" in relative_error:
+        relative_error_hybrid = relative_error["hybrid"]
+
+        print_relative_error_fixed_size_data_driven_hybrid(
+            benchmark_name, 10, relative_error_data_driven, relative_error_hybrid)
+        print("\\cmidrule{2-8}")
+        print_relative_error_fixed_size_data_driven_hybrid(
+            benchmark_name, 100, relative_error_data_driven, relative_error_hybrid)
+        print("\\cmidrule{2-8}")
+        print_relative_error_fixed_size_data_driven_hybrid(
+            benchmark_name, 1000, relative_error_data_driven, relative_error_hybrid)
+        print()
+    else:
+        print_relative_error_fixed_size_data_driven(
+            benchmark_name, 10, relative_error_data_driven)
+        print("\\cmidrule{2-8}")
+        print_relative_error_fixed_size_data_driven(
+            benchmark_name, 100, relative_error_data_driven)
+        print("\\cmidrule{2-8}")
+        print_relative_error_fixed_size_data_driven(
+            benchmark_name, 1000, relative_error_data_driven)
+        print()
+
+
 def display_relative_errors_all_benchmarks(relative_error):
     for benchmark_name, relative_error in relative_error.items():
         print("Benchmark: {}".format(benchmark_name))
+        # display_relative_errors_benchmark_latex(benchmark_name, relative_error)
         display_relative_errors_benchmark(benchmark_name, relative_error)
 
 
@@ -597,21 +683,51 @@ def display_proportion_sound_cost_bounds(proportion_sound_cost_bonds_all_benchma
                 "", "bayespc", proportion)
 
 
-# Get the execution time of AARA
+# Get the analysis time of AARA
 
 
-def get_execution_time(analysis_info):
-    # Retrieve the execution time
+def get_analysis_time(analysis_info):
+    # Retrieve the analysis time
     bin_path = bin_directory(analysis_info)
-    execution_time_file_path = os.path.join(bin_path, "execution_time.json")
-    execution_time_dict = read_execution_time_json(execution_time_file_path)
-    return execution_time_dict
+    inference_result_file_path = os.path.join(
+        bin_path, "inference_result.json")
+    analysis_time = read_analysis_time_json(inference_result_file_path)
+
+    # Retrieve the number of chains and the number of iterations per chain
+    config_module = get_module("config", analysis_info)
+
+    hybrid_mode = analysis_info["hybrid_mode"]
+    data_analysis_mode = analysis_info["data_analysis_mode"]
+    if data_analysis_mode == "opt":
+        num_chains = 1
+        num_samples_per_chain = 1
+    elif data_analysis_mode == "bayeswc":
+        num_chains = 4
+        # For BayesWC, we use Stan, and the number of iterations supplied to
+        # Stan when we invoke it is only the number of iterations "after"
+        # warmup. So we need to add the number of warmup iterations in order
+        # to obtain the total number of iterations (per chain). Pystan
+        # (i.e., the Python-Stan binding) calls the function lookup_default
+        # in httpstan:
+        # https://github.com/stan-dev/httpstan/blob/09c0cf229fd3276babe262355155b95ed02d336f/httpstan/services/arguments.py#L35.
+        # In turn, httpStan in turn calls CmdStan, which stores the default
+        # value of 1000 for the number of warmup iterations:
+        # https://github.com/stan-dev/cmdstan/blob/c8f2e95e56d33c99910d4f8163a3da0390c6e2ad/src/cmdstan/arguments/arg_sample.hpp#L21.
+        num_samples_per_chain = config_module.config_dict[
+            hybrid_mode][data_analysis_mode]["num_samples"] + 1000
+    else:
+        num_chains = 1
+        num_samples_per_chain = config_module.config_dict[
+            hybrid_mode][data_analysis_mode]["num_samples"]
+
+    analysis_time_triple = (analysis_time, num_chains, num_samples_per_chain)
+    return analysis_time_triple
 
 
-# Display a table of execution time of AARA
+# Display a table of analysis time of AARA
 
 
-def display_execution_time(execution_time_all_benchmarks):
+def display_analysis_time(analysis_time_all_benchmarks):
 
     column_benchmark_name = "Benchmark"
     column_data_analysis_mode = "Analysis"
@@ -628,39 +744,17 @@ def display_execution_time(execution_time_all_benchmarks):
     width_time = len(column_time)
     width_num_chains = len(column_num_chains)
     width_num_iterations = len(column_num_iterations)
-    precision_time = 2
+    precision_time = 3
 
-    def get_corrected_execution_time(data_analysis_mode, execution_time_dict):
-        execution_time = execution_time_dict[data_analysis_mode]["execution_time"]
-        num_chains = execution_time_dict[data_analysis_mode]["num_chains"]
-        num_samples_per_chain_original = execution_time_dict[
-            data_analysis_mode]["num_samples_per_chain"]
-
-        if data_analysis_mode == "bayeswc":
-            # For BayesWC, we use Stan, and the number of iterations supplied to
-            # Stan when we invoke it is only the number of iterations "after"
-            # warmup. So we need to add the number of warmup iterations in order
-            # to obtain the total number of iterations (per chain). Pystan
-            # (i.e., the Python-Stan binding) calls the function lookup_default
-            # in httpstan:
-            # https://github.com/stan-dev/httpstan/blob/09c0cf229fd3276babe262355155b95ed02d336f/httpstan/services/arguments.py#L35.
-            # In turn, httpStan in turn calls CmdStan, which stores the default
-            # value of 1000 for the number of warmup iterations:
-            # https://github.com/stan-dev/cmdstan/blob/c8f2e95e56d33c99910d4f8163a3da0390c6e2ad/src/cmdstan/arguments/arg_sample.hpp#L21.
-            num_samples_per_chain = num_samples_per_chain_original + 1000
-        else:
-            num_samples_per_chain = num_samples_per_chain_original
-        return execution_time, num_chains, num_samples_per_chain
-
-    def print_execution_time_data_driven(benchmark_name, data_analysis_mode, execution_time_dict):
+    def print_analysis_time_data_driven(benchmark_name, data_analysis_mode, analysis_time):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        execution_time, num_chains, num_samples_per_chain = get_corrected_execution_time(
-            data_analysis_mode, execution_time_dict)
+        analysis_time, num_chains, num_samples_per_chain = analysis_time[
+            data_analysis_mode]
         print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_time}.{precision_time}f}s {:{width_num_chains}} {:{width_num_iterations}}".format(
             benchmark_name,
             string_data_analysis_mode,
-            execution_time,
+            analysis_time,
             num_chains,
             num_samples_per_chain,
             width_benchmark_name=width_benchmark_name,
@@ -671,20 +765,20 @@ def display_execution_time(execution_time_all_benchmarks):
             width_num_iterations=width_num_iterations
         ))
 
-    def print_execution_time_data_driven_hybrid(benchmark_name, data_analysis_mode, execution_time_data_driven, execution_time_hybrid):
+    def print_analysis_time_data_driven_hybrid(benchmark_name, data_analysis_mode, analysis_time_data_driven, analysis_time_hybrid):
         string_data_analysis_mode = get_string_data_analysis_mode(
             data_analysis_mode)
-        execution_time_data_driven, num_chains_data_driven, num_samples_per_chain_data_driven = get_corrected_execution_time(
-            data_analysis_mode, execution_time_data_driven)
-        execution_time_hybrid, num_chains_hybrid, num_samples_per_chain_hybrid = get_corrected_execution_time(
-            data_analysis_mode, execution_time_hybrid)
+        analysis_time_data_driven, num_chains_data_driven, num_samples_per_chain_data_driven = analysis_time_data_driven[
+            data_analysis_mode]
+        analysis_time_hybrid, num_chains_hybrid, num_samples_per_chain_hybrid = analysis_time_hybrid[
+            data_analysis_mode]
         print("{:{width_benchmark_name}} {:{width_data_analysis_mode}} {:{width_time}.{precision_time}f}s {:{width_num_chains}} {:{width_num_iterations}} {:{width_time}.{precision_time}f}s {:{width_num_chains}} {:{width_num_iterations}}".format(
             benchmark_name,
             string_data_analysis_mode,
-            execution_time_data_driven,
+            analysis_time_data_driven,
             num_chains_data_driven,
             num_samples_per_chain_data_driven,
-            execution_time_hybrid,
+            analysis_time_hybrid,
             num_chains_hybrid,
             num_samples_per_chain_hybrid,
             width_benchmark_name=width_benchmark_name,
@@ -704,22 +798,22 @@ def display_execution_time(execution_time_all_benchmarks):
         width_num_chains=width_num_chains,
         width_num_iterations=width_num_iterations))
 
-    for benchmark_name, execution_time_dict in execution_time_all_benchmarks.items():
-        if "hybrid" in execution_time_dict:
-            execution_time_data_driven = execution_time_dict["data_driven"]
-            execution_time_hybrid = execution_time_dict["hybrid"]
-            print_execution_time_data_driven_hybrid(
-                benchmark_name, "opt", execution_time_data_driven, execution_time_hybrid)
-            print_execution_time_data_driven_hybrid(
-                "", "bayeswc", execution_time_data_driven, execution_time_hybrid)
-            print_execution_time_data_driven_hybrid(
-                "", "bayespc", execution_time_data_driven, execution_time_hybrid)
+    for benchmark_name, analysis_time_dict in analysis_time_all_benchmarks.items():
+        if "hybrid" in analysis_time_dict:
+            analysis_time_data_driven = analysis_time_dict["data_driven"]
+            analysis_time_hybrid = analysis_time_dict["hybrid"]
+            print_analysis_time_data_driven_hybrid(
+                benchmark_name, "opt", analysis_time_data_driven, analysis_time_hybrid)
+            print_analysis_time_data_driven_hybrid(
+                "", "bayeswc", analysis_time_data_driven, analysis_time_hybrid)
+            print_analysis_time_data_driven_hybrid(
+                "", "bayespc", analysis_time_data_driven, analysis_time_hybrid)
         else:
-            execution_time = execution_time_dict["data_driven"]
-            print_execution_time_data_driven(
-                benchmark_name, "opt", execution_time)
-            print_execution_time_data_driven("", "bayeswc", execution_time)
-            print_execution_time_data_driven("", "bayespc", execution_time)
+            analysis_time = analysis_time_dict["data_driven"]
+            print_analysis_time_data_driven(
+                benchmark_name, "opt", analysis_time)
+            print_analysis_time_data_driven("", "bayeswc", analysis_time)
+            print_analysis_time_data_driven("", "bayespc", analysis_time)
 
 
 if __name__ == "__main__":
@@ -743,6 +837,6 @@ if __name__ == "__main__":
         display_relative_errors_all_benchmarks(relative_error)
     else:
         print("Analysis time of Hybrid AARA")
-        execution_time_dict = calculate_desired_quantity_all_benchmarks(
-            get_execution_time)
-        display_execution_time(execution_time_dict)
+        analysis_time_dict = calculate_desired_quantity_all_benchmarks(
+            get_analysis_time)
+        display_analysis_time(analysis_time_dict)

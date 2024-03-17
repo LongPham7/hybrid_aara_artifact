@@ -42,20 +42,29 @@ def run_single_experiment(analysis_info):
     run_aara(ocaml_code, input_data, degree, config, analysis_info)
 
 
-def run_experiment_benchmark_hybrid_mode(benchmark_name, hybrid_mode):
-    analysis_info_opt = {"benchmark_name": benchmark_name,
+def run_experiment_benchmark_hybrid_mode_data_analysis_mode(benchmark_name, hybrid_mode, data_analysis_mode):
+    if data_analysis_mode == "opt":
+        analysis_info = {"benchmark_name": benchmark_name,
                          "hybrid_mode": hybrid_mode,
                          "data_analysis_mode": "opt"}
-    analysis_info_bayeswc = {"benchmark_name": benchmark_name,
-                             "hybrid_mode": hybrid_mode,
-                             "data_analysis_mode": "bayeswc"}
-    analysis_info_bayespc = {"benchmark_name": benchmark_name,
-                             "hybrid_mode": hybrid_mode,
-                             "data_analysis_mode": "bayespc"}
+    elif data_analysis_mode == "bayeswc":
+        analysis_info = {"benchmark_name": benchmark_name,
+                         "hybrid_mode": hybrid_mode,
+                         "data_analysis_mode": "bayeswc"}
+    else:
+        analysis_info = {"benchmark_name": benchmark_name,
+                         "hybrid_mode": hybrid_mode,
+                         "data_analysis_mode": "bayespc"}
+    run_single_experiment(analysis_info)
 
-    run_single_experiment(analysis_info_opt)
-    run_single_experiment(analysis_info_bayeswc)
-    run_single_experiment(analysis_info_bayespc)
+
+def run_experiment_benchmark_hybrid_mode(benchmark_name, hybrid_mode):
+    run_experiment_benchmark_hybrid_mode_data_analysis_mode(
+        benchmark_name, hybrid_mode, "opt")
+    run_experiment_benchmark_hybrid_mode_data_analysis_mode(
+        benchmark_name, hybrid_mode, "bayeswc")
+    run_experiment_benchmark_hybrid_mode_data_analysis_mode(
+        benchmark_name, hybrid_mode, "bayespc")
 
 
 def run_all_benchmarks():
@@ -67,8 +76,6 @@ def run_all_benchmarks():
     #     run_experiment_benchmark_hybrid_mode(benchmark_name, hybrid_mode)
 
     # Parallel computation
-    # Parallel computation does not work well inside a Docker container. So we
-    # set n_jobs = 1 instead of n_jobs = multiprocessing.cpu_count().
     # n_jobs = multiprocessing.cpu_count()
     n_jobs = 1
     Parallel(n_jobs=n_jobs)(delayed(run_experiment_benchmark_hybrid_mode)(
@@ -79,13 +86,21 @@ if __name__ == "__main__":
     if sys.argv[1] == "all":
         run_all_benchmarks()
     else:
-        # The user provides both a benchmark name and hybrid mode
         if len(sys.argv) == 3:
+            # The user provides a benchmark name and hybrid mode
             benchmark_name = sys.argv[1]
             hybrid_mode = sys.argv[2]
             run_experiment_benchmark_hybrid_mode(benchmark_name, hybrid_mode)
-        # The user only provides a benchmark name, but not a hybrid mode
+        elif len(sys.argv) == 4:
+            # The user provides a benchmark name, hybrid mode, and data-analysis
+            # mode
+            benchmark_name = sys.argv[1]
+            hybrid_mode = sys.argv[2]
+            data_analysis_mode = sys.argv[3]
+            run_experiment_benchmark_hybrid_mode_data_analysis_mode(
+                benchmark_name, hybrid_mode, data_analysis_mode)
         else:
+            # The user only provides a benchmark name, but not a hybrid mode
             benchmark_name = sys.argv[1]
             run_experiment_benchmark_hybrid_mode(benchmark_name, "data_driven")
             if benchmark_name in list_benchmarks_data_driven_hybrid:

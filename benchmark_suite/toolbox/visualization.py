@@ -3,7 +3,11 @@ import matplotlib.pyplot as plt
 import os
 from pathnames import image_directory
 
+# Figure size for plots of inferred cost bounds with axis labels and ticks
 FIGSIZE = (3.5, 3)
+
+# Figure size for plots of inferred cost bounds without axis labels and ticks
+FIGSIZE_SMALL = (2, 2)
 
 # Originally, we also included the line \usepackage[varqu]{zi4} under
 # 'text.latex.preamble' in order to load the LaTex package zi4. However, it
@@ -172,12 +176,28 @@ def plot_true_cost_bound_3D(ax, runtime_cost_data, get_ground_truth_cost):
     ax.plot_surface(X, Y, true_cost_bound, color='r', alpha=1/5)
 
 
-# Plot a two-dimensional inferred cost bound, together with runtime cost data
-# and true worst-case cost bound
+# Determine the figure size of inferred cost bounds based on whether the axis
+# labels and ticks will be shown
 
 
-def plot_cost_bound_3D(ax, runtime_cost_data, input_coeffs, output_coeffs,
-                       get_ground_truth_cost, get_predicted_cost):
+def get_figure_size(axis_label):
+    if axis_label:
+        return FIGSIZE
+    else:
+        return FIGSIZE_SMALL
+
+
+# Plot a two-dimensional cost bound inferred by Opt
+
+
+def plot_inferred_cost_bound_3D(runtime_cost_data, inferred_coefficients,
+                                decompose_inferred_coefficients, get_ground_truth_cost,
+                                get_predicted_cost, zlim, analysis_info,
+                                plot_name, save=True, show=True, axis_label=True):
+    figsize = get_figure_size(axis_label)
+    fig = plt.figure(figsize=figsize, tight_layout=True)
+    ax = fig.add_subplot(1, 1, 1, projection="3d")
+
     max_input_size1, max_input_size2 = calculate_max_sizes(runtime_cost_data)
     x_range = max_input_size1 * 1.5
     y_range = max_input_size2 * 1.5
@@ -186,8 +206,10 @@ def plot_cost_bound_3D(ax, runtime_cost_data, input_coeffs, output_coeffs,
     X, Y = np.meshgrid(xs, ys, indexing="ij")
 
     # Inferred cost bound
+    input_coeffs, _ = decompose_inferred_coefficients(
+        inferred_coefficients)
     predicted_cost_bounds = get_predicted_cost(
-        (X, Y), input_coeffs, output_coeffs)
+        (X, Y), input_coeffs, None)
     ax.plot_surface(X, Y, predicted_cost_bounds, color='b', alpha=1/5)
 
     # Runtime cost data
@@ -198,31 +220,16 @@ def plot_cost_bound_3D(ax, runtime_cost_data, input_coeffs, output_coeffs,
 
     ax.set_xlim(0, x_range+1)
     ax.set_ylim(0, y_range+1)
-
-
-# Plot a two-dimensional cost bound inferred by Opt
-
-
-def plot_inferred_cost_bound_3D(runtime_cost_data, inferred_coefficients,
-                                decompose_inferred_coefficients, get_ground_truth_cost,
-                                get_predicted_cost, zlim, analysis_info,
-                                plot_name, save=True, show=True, axis_label=True):
-    input_coeffs, _ = decompose_inferred_coefficients(
-        inferred_coefficients)
-
-    fig = plt.figure(figsize=FIGSIZE, tight_layout=True)
-    ax = fig.add_subplot(1, 1, 1, projection="3d")
-
-    plot_cost_bound_3D(ax, runtime_cost_data, input_coeffs,
-                       None, get_ground_truth_cost, get_predicted_cost)
-    # ax.set_title("Inferred cost bound of OPT")
     ax.set_zlim(0, zlim)
 
     if axis_label:
-        ax.set_xlabel("Input Size 1")
-        ax.set_ylabel("Input Size 2")
-        # ax.set_zlabel("Cost")
-        # ax.legend()
+        benchmark_name = analysis_info["benchmark_name"]
+        if benchmark_name == "MapAppend":
+            ax.set_xlabel("Input Size 1")
+            ax.set_ylabel("Input Size 2")
+        else:
+            ax.set_xlabel("Total Size")
+            ax.set_ylabel("Outer List Size")
     else:
         ax.set_xticks([])
         ax.set_yticks([])
@@ -241,10 +248,10 @@ def plot_median_cost_bound_3D(runtime_cost_data, posterior_distribution,
                               decompose_posterior_distribution, get_ground_truth_cost,
                               get_predicted_cost, zlim, analysis_info,
                               plot_name, save=True, show=True, axis_label=True):
-    fig = plt.figure(figsize=FIGSIZE, tight_layout=True)
+    figsize = get_figure_size(axis_label)
+    fig = plt.figure(figsize=figsize, tight_layout=True)
     ax = fig.add_subplot(1, 1, 1, projection="3d")
 
-    # Calculate the median cost bound and plot it
     max_input_size1, max_input_size2 = calculate_max_sizes(runtime_cost_data)
     x_range = max_input_size1 * 1.5
     y_range = max_input_size2 * 1.5
@@ -252,6 +259,7 @@ def plot_median_cost_bound_3D(runtime_cost_data, posterior_distribution,
     ys = np.linspace(0, y_range + 1, 100)
     X, Y = np.meshgrid(xs, ys, indexing="ij")
 
+    # Calculate the median cost bound and plot it
     list_input_coeffs, _ = decompose_posterior_distribution(
         posterior_distribution)
     list_predicted_cost_bounds = []
@@ -273,8 +281,13 @@ def plot_median_cost_bound_3D(runtime_cost_data, posterior_distribution,
     ax.set_zlim(0, zlim)
 
     if axis_label:
-        ax.set_xlabel("Input Size 1")
-        ax.set_ylabel("Input Size 2")
+        benchmark_name = analysis_info["benchmark_name"]
+        if benchmark_name == "MapAppend":
+            ax.set_xlabel("Input Size 1")
+            ax.set_ylabel("Input Size 2")
+        else:
+            ax.set_xlabel("Total Size")
+            ax.set_ylabel("Outer List Size")
     else:
         ax.set_xticks([])
         ax.set_yticks([])
@@ -346,9 +359,10 @@ def plot_inferred_cost_bound(runtime_cost_data, inferred_coefficients,
                              decompose_inferred_coefficients, get_ground_truth_cost,
                              get_predicted_cost, ylim, analysis_info,
                              plot_name, save=True, show=True, axis_label=True):
-    input_coeffs, _ = decompose_inferred_coefficients(inferred_coefficients)
+    figsize = get_figure_size(axis_label)
+    _, ax = plt.subplots(figsize=figsize, tight_layout=True)
 
-    _, ax = plt.subplots(figsize=FIGSIZE, tight_layout=True)
+    input_coeffs, _ = decompose_inferred_coefficients(inferred_coefficients)
     plot_cost_bound(ax, runtime_cost_data, input_coeffs, None,
                     get_ground_truth_cost, get_predicted_cost)
     ax.set_ylim(0, ylim)
@@ -433,10 +447,11 @@ def plot_posterior_distribution_cost_bound(runtime_cost_data, posterior_distribu
                                            decompose_posterior_distribution, get_ground_truth_cost,
                                            get_predicted_cost, ylim, analysis_info,
                                            plot_name, save=True, show=True, axis_label=True):
+    figsize = get_figure_size(axis_label)
+    _, ax = plt.subplots(figsize=figsize, tight_layout=True)
+
     list_input_coeffs, _ = decompose_posterior_distribution(
         posterior_distribution)
-
-    _, ax = plt.subplots(figsize=FIGSIZE, tight_layout=True)
     plot_list_cost_bounds(ax, runtime_cost_data, list_input_coeffs,
                           None, get_ground_truth_cost, get_predicted_cost)
     ax.set_ylim(0, ylim)
@@ -458,7 +473,7 @@ def plot_posterior_distribution_cost_bound(runtime_cost_data, posterior_distribu
         ax.set_yticks([], minor=True)
 
     # Legend
-    # if benchmark_name == "QuickSort":
+    # if benchmark_name == "quicksort":
     #     ax.legend(loc='lower right', framealpha=1, fancybox=False)
     # else:
     #     ax.legend(loc='upper left', framealpha=1, fancybox=False)

@@ -281,6 +281,7 @@ let analyze_module analysis_mode config_json_and_dataset m_name metric deg1 deg2
         parse_hybrid_aara_config_json config_json dataset
   in
   let analyze_fun f_name e =
+    (* We start the clock for the analysis time. *)
     let start_time = sys_time () in
     let e_normal = Shareletnormal.share_let_normal "#" e in
     let e_normal_stack = Typecheck.typecheck_stack ~linear:true e_normal env in
@@ -334,17 +335,19 @@ let analyze_module analysis_mode config_json_and_dataset m_name metric deg1 deg2
               let _ =
                 Pprint.print_anno_funtype ~indent:"  " (f_name, atarg, atres)
               in
+              (* We stop the clock for the analysis time. *)
+              let analysis_time = sys_time () -. start_time in
               let _ =
                 match output_file with
                 | None -> ()
                 | Some output_filename ->
-                    Hybrid_aara_pprint.write_coefficients_to_json_file
-                      output_filename (f_name, atarg, atres)
+                    Hybrid_aara_pprint
+                    .write_coefficients_and_analysis_time_to_json_file
+                      output_filename (f_name, atarg, atres) analysis_time
               in
               let constr = Clp.get_num_constraints () in
-              let time = sys_time () -. start_time in
               printf "--";
-              print_data amode_name m_name deg time constr;
+              print_data amode_name m_name deg analysis_time constr;
               let () =
                 if List.length fun_type_list = 0 then printf "====\n\n"
                 else
@@ -363,20 +366,21 @@ let analyze_module analysis_mode config_json_and_dataset m_name metric deg1 deg2
           | Output_distribution (atarg, atres, fun_type_list) ->
               printf "\n%!";
               let _ =
-                Hybrid_aara_pprint.print_anno_funtype_distribution
-                  ~indent:"  " (f_name, atarg, atres)
+                Hybrid_aara_pprint.print_anno_funtype_distribution ~indent:"  "
+                  (f_name, atarg, atres)
               in
+              let analysis_time = sys_time () -. start_time in
               let _ =
                 match output_file with
                 | None -> ()
                 | Some output_filename ->
-                    Hybrid_aara_pprint.write_distribution_to_json_file
-                      output_filename (f_name, atarg, atres)
+                    Hybrid_aara_pprint
+                    .write_distribution_and_analysis_time_to_json_file
+                      output_filename (f_name, atarg, atres) analysis_time
               in
               let constr = Clp.get_num_constraints () in
-              let time = sys_time () -. start_time in
               printf "--";
-              print_data amode_name m_name deg time constr;
+              print_data amode_name m_name deg analysis_time constr;
               let () =
                 if List.length fun_type_list = 0 then printf "====\n\n"
                 else
@@ -609,8 +613,8 @@ let main argv =
             tcheck_prog e env;
             let dataset, heap = generate_dataset e in
             (* The generated dataset is printed out. *)
-            Hybrid_aara_pprint.print_dataset_categorized_by_expression
-              dataset heap
+            Hybrid_aara_pprint.print_dataset_categorized_by_expression dataset
+              heap
           in
           let generate_m _ _ _ =
             print_usage_error

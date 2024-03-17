@@ -6,11 +6,20 @@ where we perform Weibull survival analysis to infer theoretically worst-case
 costs. The probabilistic model for Weibull survival analysis comes from a
 tutorial of PyMC:
 https://www.pymc.io/projects/examples/en/stable/survival_analysis/bayes_param_survival_pymc3.html
-*)
+
+This probabilistic model for Weibull survival analysis takes the logarithm of
+cost. So the model only works when the costs are strictly positive. The cost of
+zero will result in an error. *)
 
 let _ =
   Py.initialize ();
   print_endline "The Python library for py.ml is loaded"
+
+(* The following Stan code uses a truncated normal distribution for the latent
+variable s, which should come from a half-normal distribution according to the
+PyMC tutorial. This is fine because, as described in the Wikipedia article on
+half-normal distributions, half-normal distributions and truncated zero-mean
+normal distributions coincide. *)
 
 let stan_model =
   "\n\
@@ -94,6 +103,16 @@ let extract_inferred_model_parameters inference_result field_name =
   |> convert_numpy_array_to_python_list
   |> convert_python_nested_float_list_to_ocaml_list
 
+(* Conditionally sample an inferred worst-case cost from a Gumbel distribution
+(for the logarithm of costs). This sampling is done conditionally on that the
+worst-case cost is larger than or equal to the maximum observed cost.
+
+Given a Gumbel distribution (specified by its location and scale parameters), we
+first calculate gumbel_cdf_right_edge, which denotes the CDF of the Gumbel
+distribution at the log maximum observed cost. We then draw a sample uniformly
+randomly from the interval [gumbel_cdf_right_edge, 1]. From this sample, we
+compute the corresponding log cost. In effect, we draw a sample from the Gumbel
+distribution truncated to the interval [log_max_observed_cost, infinite). *)
 let gumbel_conditional_sampling loc scale log_max_observed_cost =
   let open Owl_stats in
   assert (scale > 0.);
@@ -133,6 +152,10 @@ let evaluate_inferred_worst_case_costs beta_vector_distribution s_distribution
       evaluate_inferred_worst_case_costs_all_samples beta_vector s
         size_matrix_and_cost_vector)
 
+(* Extract all cindices of degree at most one. So this includes the degree-zero
+cindices (i.e., constant potential in the typing context). For simplicity, we
+only use degree-one cindices (e.g., the outer length of a nested list) as
+covariates in Weibull survival analysis. *)
 let extract_degree_one_cindices_dataset_of_e dataset_of_e =
   let list_cindex_potential, _, list_costs = dataset_of_e in
   let cindex_is_degree_one cindex_list_potential =

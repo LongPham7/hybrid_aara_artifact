@@ -284,11 +284,12 @@ let print_anno_funtype_distribution ?(indent = "") ?(simple_name = false)
 
 (* Printing functions related to posterior distributions *)
 
-(* Write out the coefficients in a function's resource annotation to a JSON
-file. This function is used when the analysis returns a single inferred cost
-bound, rather than a posterior distribution of inferred cost bounds. *)
-let write_coefficients_to_json_file output_file
-    (fid, annotated_arg_type, annotated_return_type) =
+(* Write out (i) the coefficients in a function's resource annotation and (ii)
+the analysis time to a JSON file. This function is used when the analysis
+returns a single inferred cost bound, rather than a posterior distribution of
+inferred cost bounds. *)
+let write_coefficients_and_analysis_time_to_json_file output_file
+    (fid, annotated_arg_type, annotated_return_type) analysis_time =
   let index_and_coefficient_json annotated_type =
     let list_indices =
       Indices.indices_max_deg ~empty:[]
@@ -312,14 +313,15 @@ let write_coefficients_to_json_file output_file
         ("fid", `String fid);
         ("typing_context", index_and_coefficient_json annotated_arg_type);
         ("return_type", index_and_coefficient_json annotated_return_type);
+        ("analysis_time", `Float analysis_time);
       ]
   in
   Yojson.Basic.to_file output_file inference_result_json
 
-(* Write out the posterior distribution of a function's resource annotation to a
-JSON file.*)
-let write_distribution_to_json_file output_file
-    (fid, annotated_arg_type, annotated_return_type) =
+(* Write out (i) the posterior distribution of a function's resource annotation
+and (ii) the analysis time to a JSON file.*)
+let write_distribution_and_analysis_time_to_json_file output_file
+    (fid, annotated_arg_type, annotated_return_type) analysis_time =
   let index_and_distribution_json annotated_type =
     let list_indices =
       Indices.indices_max_deg ~empty:[]
@@ -344,6 +346,7 @@ let write_distribution_to_json_file output_file
         ("fid", `String fid);
         ("typing_context", index_and_distribution_json annotated_arg_type);
         ("return_type", index_and_distribution_json annotated_return_type);
+        ("analysis_time", `Float analysis_time);
       ]
   in
   Yojson.Basic.to_file output_file inference_result_json
