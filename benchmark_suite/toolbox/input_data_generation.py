@@ -1,5 +1,6 @@
 import random
 
+
 # Create a random list
 
 
@@ -12,10 +13,12 @@ def create_random_list(max_size, max_achieved=False):
 
     max_element_size = max_size
 
-    # We randomly sample list elements without replacement.
-    # We don't allow replacement so that the complexity analysis of median of medians works.
+    # We randomly sample list elements without replacement. We don't allow
+    # replacement so that the complexity analysis of the median-of-medians-based
+    # linear-time selection algorithm works.
     return random.sample(list(range(0, max_element_size)), list_length)
     # return random.choices(list(range(1, max_element_size+1)), k=list_length)
+
 
 # Create lists.
 
@@ -58,7 +61,8 @@ def create_input_data_lists(input_data_generation_params):
         raise Exception("The given input size distribution is invalid.")
     return input_data_python
 
-# Create pairs of lists. This is used in the benchmark append.
+
+# Create pairs of lists. This is used in the benchmark MapAppend.
 
 
 def create_random_pairs_lists(num_samples, max_input_size1, max_input_size2):
@@ -111,10 +115,11 @@ def create_input_data_pairs_lists(input_data_generation_params):
         raise Exception("The given input size distribution is invalid.")
     return input_data_python
 
-# Create nested lists. This is used in the benchmark concat.
+
+# Create nested lists. This is used in the benchmark Concat.
 
 
-def create_random_nested_list(max_num_inner_lists, max_inner_list_size, max_num_inner_lists_achieved=False, max_inner_list_size_achieved=False):
+def create_random_nested_list(max_num_inner_lists, max_inner_list_size, max_num_inner_lists_achieved=False):
     if (max_num_inner_lists == 0 or max_num_inner_lists_achieved):
         num_inner_lists = max_num_inner_lists
     else:
@@ -182,6 +187,7 @@ def create_input_data_nested_lists(input_data_generation_params):
         raise Exception("The given input size distribution is invalid.")
     return input_data_python
 
+
 # Convert a list from Python to OCaml
 
 
@@ -193,6 +199,7 @@ def convert_list_python_to_ocaml(list_python):
         else:
             list_ocaml += "; " + str(element)
     return list_ocaml + "]"
+
 
 # Convert input data of lists from Python to OCaml
 
@@ -209,6 +216,7 @@ def convert_lists_python_to_ocaml(input_data_python, split_line=True):
             else:
                 input_data_ocaml += ";" + input_list_ocaml
     return input_data_ocaml + "]"
+
 
 # Convert input data of pairs of lists from Python to OCaml
 
@@ -227,6 +235,7 @@ def convert_pairs_lists_python_to_ocaml(input_data_python, split_line=True):
             else:
                 input_data_ocaml += ";" + input_pair_ocaml
     return input_data_ocaml + "]"
+
 
 # Convert input data of nested lists from Python to OCaml
 
@@ -256,7 +265,9 @@ def convert_nested_lists_python_to_ocaml(input_data_python, split_line=True):
                 input_data_ocaml += "; " + nested_list_ocaml
     return input_data_ocaml + "]"
 
+
 # Convert input data of integer-list pairs from Python to OCaml
+
 
 def convert_integer_list_pair_python_to_ocaml(input_data_python, split_line=True):
     input_data_ocaml = "["
@@ -272,3 +283,16 @@ def convert_integer_list_pair_python_to_ocaml(input_data_python, split_line=True
             else:
                 input_data_ocaml += ";" + input_pair_ocaml
     return input_data_ocaml + "]"
+
+
+if __name__ == "__main__":
+    input_data_generation_params = {
+        "input_size_distribution": "exponential_growth",
+        "initial_size": 2,
+        "exponential_base": 2,
+        "num_size_categories": 5,
+        "num_samples_per_category": 3
+    }
+    input_data_python = create_input_data_lists(input_data_generation_params)
+    input_data_ocaml = convert_lists_python_to_ocaml(input_data_python)
+    print(input_data_ocaml)
