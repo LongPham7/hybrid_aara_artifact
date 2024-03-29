@@ -26,6 +26,9 @@ artifact by cloning the GitHub repository and building a Docker image locally on
 your machine? We are happy that at least you successfully built the image on
 your machine.
 
+In Section 2 of the revised `README.pdf`, we refer the reader to Section 4.2 if
+they have trouble running the prebuilt image.
+
 > It would be good to add instructions in the README to recompile the code
 > directly inside the docker, and avoid those crashes. This would additionally
 > allow user to tweak the code directly inside the docker, and observe changes

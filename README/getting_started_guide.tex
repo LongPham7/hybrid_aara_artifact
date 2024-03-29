@@ -32,8 +32,11 @@ It creates an image named \texttt{hybrid\_aara} and stores it locally on your
 Docker may create an image with a slightly different name from
 \texttt{hybrid\_aara}.
 %
-You can check the name of the image by running \verb|$ docker images|, which
-will display a list of images on your local machine.
+To check the name of the image, display all Docker images on your local machine
+by running
+\begin{verbatim}
+$ docker images
+\end{verbatim}
 
 To run the image \texttt{hybrid\_aara}, run
 \begin{verbatim}
@@ -43,6 +46,9 @@ root@fca41f6f696d:/home/hybrid_aara/benchmark_suite/playground#
 %
 It creates a Docker container (i.e., a runnable instance of the Docker image)
 named \texttt{hybrid\_aara} and starts a shell inside the container.
+%
+If the command does not run properly, you can instead build the image locally on
+your machine as instructed in \cref{sec:Build the Docker Image}.
 
 Throughout this document, any command line starting with \texttt{\#} is executed
 inside the Docker container, and any command line starting with \texttt{\$} is
