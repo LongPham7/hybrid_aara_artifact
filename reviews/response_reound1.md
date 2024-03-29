@@ -34,9 +34,9 @@ your machine.
 Thank you for the suggestion. Technically, from the Dockerfile in the GitHub
 repository, one can learn how to recompile the code inside the Docker container.
 
-In the revision of `README.pdf`, we will provide details on how to recompile (i)
-the C++ code of the volesti-RaML interface and (i) the OCaml code of Hybrid
-RaML. The remaining code, such as the Python scripts, does not need
+In Section 4.4 of the revised `README.pdf`, we provide details on how to
+recompile (i) the C++ code of the volesti-RaML interface and (i) the OCaml code
+of Hybrid RaML. The remaining code, such as the Python scripts, does not need
 recompilation after modification.
 
 > Being able to test to analyser on new benchmarks is required to grant the
@@ -46,12 +46,12 @@ recompilation after modification.
 
 If the user wishes to analyze their custom OCaml program using Hybrid RaML, the
 user should first prepare (i) the source file of their OCaml program, augmented
-with a list of inputs for runtime cost data generation and (ii) a configuration
-file specifying hyperparameters of Hybrid AARA. To learn the formats of these
-files, the user can look at the examples inside the artifact. Finally, The user
-runs Hybrid RaML as demonstrated in Section 1 of `README.pdf`.
+with a collection of inputs for generating runtime cost data and (ii) a
+configuration file specifying hyperparameters of Hybrid AARA. To learn the
+formats of these files, the user can look at the examples inside the artifact.
+Finally, The user runs Hybrid RaML as demonstrated in Section 1 of `README.pdf`.
 
-We will explain this point in the revision of `README.pdf`.
+In Section 4.3 of the revised `README.pdf`, we explain this point.
 
 > It would improve the artifact to include an editor.
 
@@ -73,7 +73,7 @@ by the user. The content of each list is determined randomly. The function
 `convert_lists_python_to_ocaml` then converts a list from the Python format to
 the OCaml format.
 
-We will mention this Python script in the revised `README.pdf`. Also, we will
-revise the script such that, when the user runs `python3
+In Section 4.3 of the revised `README.pdf`, we mention this Python script. Also,
+we will revise the script such that, when the user runs `python3
 input_data_generation.py`, the script prints out an example collection of input
 lists used for runtime cost data generation.

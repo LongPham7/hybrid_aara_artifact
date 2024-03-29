@@ -172,8 +172,16 @@ analysis mode.
 The inference result will be stored inside each benchmarks' \texttt{bin}
 directory.
 
-For example, to perform Hybrid AARA on the benchmark \texttt{QuickSort} using
-purely data-driven resource analysis, run
+For example, to perform Data-Driven \Opt{} on the benchmark \texttt{QuickSort},
+run
+\begin{verbatim}
+# # python3 run_experiment.py QuickSort data_driven opt
+\end{verbatim}
+%
+The analysis should finish in 15 seconds.
+%
+To perform all data-driven resource analyses on the benchmark
+\texttt{QuickSort}, run
 \begin{verbatim}
 # python3 run_experiment.py QuickSort data_driven
 \end{verbatim}
@@ -182,7 +190,8 @@ It runs Data-Driven \Opt{}, Data-Driven \BayesWC{}, and Data-Driven \BayesPC{}.
 %
 The analysis should finish within 2 minutes.
 %
-If we instead want to perform hybrid resource analysis,
+If we instead want to perform all hybrid resource analyses, replace
+\texttt{data\_driven} with \texttt{hybrid}:
 \begin{verbatim}
 # python3 run_experiment.py QuickSort hybrid
 \end{verbatim}
@@ -219,53 +228,6 @@ algorithms that are stochastic.
 %
 Nonetheless, there should not be any significant deviation from the results
 reported in the paper.
-
-\subsection{Source Code}
-
-Our artifact contains three tools that we have built by ourselves: (i) Hybrid
-RaML (in OCaml), (ii) the volesti-RaML interface (in C++), and (iii) the
-execution and analysis of benchmark suite (in Python).
-%
-Their source code is stored in directories \texttt{raml},
-\texttt{volesti\_raml\_interface}, and \texttt{benchmark\_suite} inside the
-project directory \texttt{/home/hybrid\_aara} in the Docker image.
-
-The project directory contains two additional directories that come from other
-sources.
-%
-The third-party C++ library volesti\footnote{Available here:
-  \url{https://github.com/GeomScale/volesti}.} is stored in the directory
-\texttt{volesti}.
-%
-The linear-program solver COIN-OR CLP\footnote{Available here:
-  \url{https://github.com/coin-or/Clp}.} is stored in the directory \texttt{clp}.
-
-The code for building a Docker image is available on GitHub:
-\url{https://github.com/LongPham7/hybrid_aara_artifact}.
-%
-To build a Docker image, clone the GitHub repository and then run (in the root
-directory)
-\begin{verbatim}
-$ docker build -t hybrid_aara .
-\end{verbatim}
-%
-We need a period at the end of the command to indciate that Dockerfile exists in
-the current working directory.
-%
-The build will take 20--30 minutes.
-%
-The resulting image is named \texttt{hybrid\_aara} and is stored locally on your
-machine.
-
-To run the image \texttt{hybrid\_aara}, run
-\begin{verbatim}
-$ docker run --name hybrid_aara -it --rm hybrid_aara
-\end{verbatim}
-%
-If you want to save the image as a tar archive and compress it, run
-\begin{verbatim}
-$ docker save hybrid_aara | gzip > hybrid_aara.tar.gz
-\end{verbatim}
 
 %%% Local Variables:
 %%% mode: latex

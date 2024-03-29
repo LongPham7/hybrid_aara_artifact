@@ -28,10 +28,9 @@ $ docker load --input hybrid_aara.tar.gz
 \end{verbatim}
 %
 It creates an image named \texttt{hybrid\_aara} and stores it locally on your
-machine.
 %
-On some platforms (e.g., macOS), Docker may create an image with a slightly
-different name from \texttt{hybrid\_aara}.
+Docker may create an image with a slightly different name from
+\texttt{hybrid\_aara}.
 %
 You can check the name of the image by running \verb|$ docker images|, which
 will display a list of images on your local machine.
@@ -50,6 +49,7 @@ inside the Docker container, and any command line starting with \texttt{\$} is
 executed in your local machine's terminal.
 
 \subsection{Example Program}
+\label{sec:Example Program}
 
 The initial working directory \texttt{playground} has a file \texttt{append.ml}.
 %
@@ -258,9 +258,9 @@ overall cost bound regardless of their degrees.
 
 The configuration file \texttt{config\_bayeswc.json} for \BayesWC{} specifies
 (i) the probabilistic model hyperparameter $\gamma_0$ in Weibull survival
-analysis\footnote{See Appendix~C of the updated version of the paper. The
-probabilistic model is also explained in this PyMC tutorial:
-\url{https://www.pymc.io/projects/examples/en/2022.12.0/survival_analysis/bayes_param_survival_pymc3.html}.}
+analysis\footnote{See Appendix~B of the updated version of the paper. The
+  probabilistic model is also explained in this PyMC tutorial:
+  \url{https://www.pymc.io/projects/examples/en/2022.12.0/survival_analysis/bayes_param_survival_pymc3.html}.}
 and (ii) the inference hyperparameters such as the number of chains and the
 number of iterations to run in a sampling-based Bayesian inference algorithm.
 

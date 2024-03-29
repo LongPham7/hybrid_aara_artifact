@@ -1,0 +1,149 @@
+% !TeX root = README.tex
+
+\section{Build and Customize the Artifact}
+
+This section describes how to build and customize Hybrid RaML.
+
+\subsection{Source Code}
+\label{sec:Source Code}
+
+Our artifact contains three tools that we have built by ourselves: (i) Hybrid
+RaML (in OCaml), (ii) the volesti-RaML interface (in C++), and (iii) the
+execution and analysis of benchmark suite (in Python).
+%
+Their source code is stored in directories \texttt{raml},
+\texttt{volesti\_raml\_interface}, and \texttt{benchmark\_suite} inside the
+project directory \texttt{/home/hybrid\_aara} in the Docker image.
+
+The project directory contains two additional directories that come from other
+sources.
+%
+The third-party C++ library volesti\footnote{Available here:
+  \url{https://github.com/GeomScale/volesti}.} is stored in the directory
+\texttt{volesti}.
+%
+The linear-program solver COIN-OR CLP\footnote{Available here:
+  \url{https://github.com/coin-or/Clp}.} is stored in the directory \texttt{clp}.
+
+\subsection{Build the Docker Image}
+
+The code for building a Docker image is available on GitHub:
+\url{https://github.com/LongPham7/hybrid_aara_artifact}.
+%
+To build a Docker image, clone the GitHub repository and then run (in the root
+directory)
+\begin{verbatim}
+$ docker build -t hybrid_aara .
+\end{verbatim}
+%
+We need a period at the end of the command to indciate that \texttt{Dockerfile}
+exists in the current working directory.
+%
+The build will take 20--30 minutes.
+%
+The resulting image is named \texttt{hybrid\_aara} and is stored locally on your
+machine.
+
+To run the image \texttt{hybrid\_aara}, run
+\begin{verbatim}
+$ docker run --name hybrid_aara -it --rm hybrid_aara
+\end{verbatim}
+%
+It creates and runs a Docker container with the same name \texttt{hybrid\_aara}.
+%
+If you want to save the image as a tar archive and compress it, run
+\begin{verbatim}
+$ docker save hybrid_aara | gzip > hybrid_aara.tar.gz
+\end{verbatim}
+
+\subsection{Test Custom Input OCaml Programs}
+
+Suppose we want to analyze a custom OCaml function $f$ using Hybrid AARA.
+%
+We first prepare two files: (i) an OCaml source file and (ii) a JSON
+configuration file.
+
+The OCaml source file stores (i) the OCaml code of the function $f$ (and
+possibly other auxiliary functions) and (ii) the OCaml code to be executed in
+order to collect runtime cost samples of the function $f$.
+%
+For example, in the file \texttt{append.ml} described in \cref{sec:Example
+  Program}, the OCaml code used for generating runtime cost data has the form
+\begin{verbatim}
+let input_dataset = [([31; 11; 26; 25], [10; 36; 20; 24]); ...] in
+map input_dataset (fun (x, y) -> append x y)
+\end{verbatim}
+%
+This code first creates a list of inputs (i.e. pairs of integer lists) to the
+function \texttt{append} and then runs the function on every input.
+%
+During its execution, whenever we encounter an annotated code fragment
+\texttt{Raml.stat(...)}, we record its runtime sample, namely the input, output,
+and cost.
+%
+We aggregate all runtime cost samples into a dataset, which will later be used
+in data-driven resource analysis.
+
+For convenience, our artifact comes with a Python script for generating a
+collection of inputs for OCaml programs.
+%
+The file \texttt{input\_data\_generation.py} inside the directory
+\texttt{/home/hybrid\_aara/benchmark\_suite/toolbox}
+contains a function \texttt{create\_exponential\_lists}, which creates a
+collection of integer lists whose sizes grow exponentially (e.g., 1, 2, 4, 8,
+etc.).
+%
+The content of each integer list is chosen randomly.
+%
+The function \texttt{convert\_list\_python\_to\_ocaml} then converts integer
+lists from the Python format to the OCaml format.
+%
+To see an example, in the directory
+\texttt{/home/hybrid\_aara/benchmark\_suite/toolbox}, run
+\begin{verbatim}
+# python3 input_data_generation.py
+\end{verbatim}
+%
+It prints out a collection of lists whose sizes grow exponentially.
+
+Finally, the JSON configuration file specifies hyperparameters of Hybrid AARA.
+%
+To learn its syntax, you can take a look at the file \texttt{config.json} inside
+each benchmark's \texttt{bin} directory.
+
+\subsection{Modify and Compile Source Code inside the Docker Container}
+
+To modify files inside the Docker container while it runs, we can use the text
+editor Vim.
+%
+If you wish to use a different text editor, modify \texttt{Dockerfile} in the
+GitHub repository and rebuild the artifact as instructed in \cref{sec:Source
+Code}.
+%
+Alternatively, while the Docker container runs, you can install the text
+editor by
+\begin{verbatim}
+# apt update && apt install <text-editor> -y
+\end{verbatim}
+
+To recompile code \emph{inside} the Docker container after the code has been
+modified, follow these steps.
+%
+For the OCaml source code of Hybrid RaML, go to the directory
+\texttt{/home/hybrid\_aara/raml} and then run
+\begin{verbatim}
+# eval $(opam env)
+# make
+\end{verbatim}
+%
+The first line, which initializes OCaml-related environment variables, is only
+necessary the first time you recompile Hybrid RaML's source code.
+
+To compile the C++ source code of the volesti-RaML interface, go to the
+directory \texttt{/home/hybrid\_aara/volesti\_raml\_interface/bin} and then run
+\begin{verbatim}
+# cmake .. && cmake --build .
+\end{verbatim}
+
+All the other code in the artifact, such as Python scripts inside the benchmark
+suite, does not require recompilation after modification.

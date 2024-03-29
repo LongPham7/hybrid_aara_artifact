@@ -9,10 +9,7 @@ RUN apt install -y python3 pip
 
 # Install OCaml 4.06.0
 RUN apt install -y opam
-RUN opam init --disable-sandboxing -y
-RUN eval $(opam env)
-RUN opam switch create 4.06.0
-RUN opam switch 4.06.0
+RUN opam init --comp 4.06.0 --disable-sandboxing -y
 RUN eval $(opam env)
 
 # Install the library lp-solve
@@ -26,8 +23,7 @@ RUN apt install -y wget vim
 RUN wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
 | gpg --dearmor | tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
 RUN echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | tee /etc/apt/sources.list.d/oneAPI.list
-RUN apt update
-RUN apt install -y intel-oneapi-mkl-devel
+RUN apt update && apt install -y intel-oneapi-mkl-devel
 
 # Install the libraries BLAS, Eigen, and Boost used by volesti
 RUN apt install -y libblas-dev libeigen3-dev libboost-dev
@@ -64,7 +60,7 @@ ADD ./raml /home/hybrid_aara/raml
 WORKDIR /home/hybrid_aara/raml
 RUN ./configure --with-coin-clp /home/hybrid_aara/clp
 ENV LD_LIBRARY_PATH "/home/hybrid_aara/clp/lib"
-RUN opam switch 4.06.0 && eval $(opam env) && make
+RUN eval $(opam env) && make
 
 # Add Hybrid RaML's executbale to the PATH so that we can call main anywhere in
 # the filesystem to run Hybrid RaML
@@ -74,5 +70,5 @@ ENV PATH "$PATH:/home/hybrid_aara/raml"
 # container
 ADD ./benchmark_suite /home/hybrid_aara/benchmark_suite
 
-# Test Hybrid AARA using example OCaml programs
+# Go to the playground directory where we have an example OCaml program
 WORKDIR /home/hybrid_aara/benchmark_suite/playground
