@@ -16,7 +16,7 @@ The build will take 20-30 minutes.
 
 To run the image `hybrid_aara`, run
 ```
-docker run --name hybrid_aara -it --rm
+docker run --name hybrid_aara -it --rm hybrid_aara
 ```
 It creates a Docker container (i.e., a runnable instance of a Docker image)
 named `hybrid_aara`. The container then starts a shell, through which the user
