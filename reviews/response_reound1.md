@@ -34,8 +34,7 @@ they have trouble running the prebuilt image.
 > allow user to tweak the code directly inside the docker, and observe changes
 > there.
 
-Thank you for the suggestion. Technically, from the Dockerfile in the GitHub
-repository, one can learn how to recompile the code inside the Docker container.
+Thank you for the suggestion.
 
 In Section 4.4 of the revised `README.pdf`, we provide details on how to
 recompile (i) the C++ code of the volesti-RaML interface and (i) the OCaml code
@@ -52,7 +51,7 @@ user should first prepare (i) the source file of their OCaml program, augmented
 with a collection of inputs for generating runtime cost data and (ii) a
 configuration file specifying hyperparameters of Hybrid AARA. To learn the
 formats of these files, the user can look at the examples inside the artifact.
-Finally, The user runs Hybrid RaML as demonstrated in Section 1 of `README.pdf`.
+Finally, the user runs Hybrid RaML as demonstrated in Section 1 of `README.pdf`.
 
 In Section 4.3 of the revised `README.pdf`, we explain this point.
 
