@@ -16,15 +16,24 @@ not encounter any technical issues with the artifact.
 > instruction (core dumped)) on my architecture (described below to ease
 > debugging).
 
-Thank you for reporting this issue. We suspect that the Docker container
-requires an instruction that your computer does not support. We built the docker
-image on the OS Ubuntu 22.04 LTS and the CPU Intel(R) Core(TM) i7-7600U CPU @
-2.80GHz.
+Thank you for reporting this issue. The same error message has been reported in
+other Docker images (e.g.,
+[here](https://github.com/ultralytics/ultralytics/issues/7085)). We suspect that
+the prebuilt Docker image requires an instruction that your computer does not
+support. We built the Docker image on the OS Ubuntu 22.04 LTS and the CPU
+Intel(R) Core(TM) i7-7600U CPU @ 2.80GHz. We also tested the prebuilt image on
+macOS with Apple silicon, and it ran successfully.
 
-We could not identify the root cause of the issue. So could you please run the
-artifact by cloning the GitHub repository and building a Docker image locally on
-your machine? We are happy that at least you successfully built the image on
-your machine.
+We could not identify the root cause of the issue. We believe it is a technical
+issue of Docker, rather than our code. As stated on the website of PLDI 2024
+Artifact Evaluation, it is recommended to provide prebuilt Docker images (or
+VMs), instead of providing scripts for building them. Hence, we will keep the
+artifact in the form of a prebuilt Docker image, even though it is not
+self-contained anymore if the user has trouble with the prebuilt image.
+
+If you do not mind, could you please run the artifact by cloning the GitHub
+repository and building a Docker image locally on your machine? We are happy
+that at least you successfully built the image on your machine.
 
 In Section 2 of the revised `README.pdf`, we refer the reader to Section 4.2 if
 they have trouble running the prebuilt image.
@@ -36,7 +45,7 @@ they have trouble running the prebuilt image.
 
 Thank you for the suggestion.
 
-In Section 4.4 of the revised `README.pdf`, we provide details on how to
+In Section 4.4 of the revised `README.pdf`, we provide details of how to
 recompile (i) the C++ code of the volesti-RaML interface and (i) the OCaml code
 of Hybrid RaML. The remaining code, such as the Python scripts, does not need
 recompilation after modification.
