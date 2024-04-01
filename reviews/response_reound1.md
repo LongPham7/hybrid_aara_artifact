@@ -1,4 +1,5 @@
-Thank you all for the feedback.
+Thank you all for the feedback. We have revised the artifact and `README.pdf`.
+They are available on [Zenodo](https://doi.org/10.5281/zenodo.10901662).
 
 # Review A
 
